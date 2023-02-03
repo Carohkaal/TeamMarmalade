@@ -1,10 +1,11 @@
-﻿using Rooting.Api;
+﻿using Rooting.WebApi.Client.Api;
+using Rooting.WebApi.Client.Model;
 
 namespace Rooting.WebApi.Client
 {
     public class UseClient
     {
-        private readonly HttpClient _httpClient = new();
+        private readonly WeatherForecastApi _apiClient = new WeatherForecastApi("https://rootingwebapi.azurewebsites.net/");
 
         public UseClient()
         {
@@ -12,8 +13,7 @@ namespace Rooting.WebApi.Client
 
         public async Task<WeatherForecast[]> CurrentForecastAsync()
         {
-            var c = new RootingClient("https://rootingwebapi.azurewebsites.net/", _httpClient);
-            var fc = await c.GetWeatherForecastAsync();
+            var fc = await _apiClient.GetWeatherForecastAsync();
             return fc.ToArray();
         }
     }
