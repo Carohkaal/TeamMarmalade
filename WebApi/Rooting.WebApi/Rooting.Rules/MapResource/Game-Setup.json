@@ -1,331 +1,319 @@
 {
-    "Requirements": [
+  "Requirements": [
+    {
+      "Name": "Surface",
+      "Description": "Aboveground locations.",
+      "RequireTier": 0,
+      "RequireFamily": "Any",
+      "RequireTileControl": false,
+      "RequireTileDistance": 0
+    },
+    {
+      "Name": "Subsurface",
+      "Description": "Underground locations.",
+      "RequireTier": 0,
+      "RequireFamily": "Any",
+      "RequireTileControl": false,
+      "RequireTileDistance": 0
+    },
+    {
+      "Name": "Plant Village",
+      "Description": "A collection of plants and trees, having had the time to grow.",
+      "RequireTier": 1,
+      "RequireFamily": "Plant",
+      "RequireTileControl": true,
+      "RequireTileDistance": 0
+    },
+    {
+      "Name": "Plant City",
+      "Description": "An well-established collection of plants and trees, grown to epic proportions.",
+      "RequireTier": 2,
+      "RequireFamily": "Plant",
+      "RequireTileControl": true,
+      "RequireTileDistance": 0
+    },
+    {
+      "Name": "Fungi Village",
+      "Description": "The first aboveground indication of the spreading fungi underground.",
+      "RequireTier": 1,
+      "RequireFamily": "Fungi",
+      "RequireTileControl": true,
+      "RequireTileDistance": 0
+    },
+    {
+      "Name": "Fungi City",
+      "Description": "A bustling group of mushrooms indicating a massive underground fungal network.",
+      "RequireTier": 2,
+      "RequireFamily": "Fungi",
+      "RequireTileControl": true,
+      "RequireTileDistance": 0
+    },
+    {
+      "Name": "Animal Village",
+      "Description": "A group of animals taking root in this place, making for a small 'village'.",
+      "RequireTier": 1,
+      "RequireFamily": "Animal",
+      "RequireTileControl": true,
+      "RequireTileDistance": 0
+    },
+    {
+      "Name": "Animal City",
+      "Description": "A large group of animals have made this place their home, rooting strongly into the environment.",
+      "RequireTier": 2,
+      "RequireFamily": "Animal",
+      "RequireTileControl": true,
+      "RequireTileDistance": 0
+    }
+  ],
+  "Actions": [
+    {
+      "Name": "Plants Colonize",
+      "Cost": 1,
+      "Scores": [
         {
-            "Name": "Surface",
-            "Description": "Aboveground locations.",
-            "RequireTier": 0,
-            "RequireFamily": "Any",
-            "RequireTileControl": false,
-            "RequireTileDistance": 0
-        },
-        {
-            "Name": "Subsurface",
-            "Description": "Underground locations.",
-            "RequireTier": 0,
-            "RequireFamily": "Any",
-            "RequireTileControl": false,
-            "RequireTileDistance": 0
-        },
-        {
-            "Name": "Plant Village",
-            "Description": "A collection of plants and trees, having had the time to grow.",
-            "RequireTier": 1,
-            "RequireFamily": "Plant",
-            "RequireTileControl": true,
-            "RequireTileDistance": 0
-        },
-        {
-            "Name": "Plant City",
-            "Description": "An well-established collection of plants and trees, grown to epic proportions.",
-            "RequireTier": 2,
-            "RequireFamily": "Plant",
-            "RequireTileControl": true,
-            "RequireTileDistance": 0
-        },
-        {
-            "Name": "Fungi Village",
-            "Description": "The first aboveground indication of the spreading fungi underground.",
-            "RequireTier": 1,
-            "RequireFamily": "Fungi",
-            "RequireTileControl": true,
-            "RequireTileDistance": 0
-        },
-        {
-            "Name": "Fungi City",
-            "Description": "A bustling group of mushrooms indicating a massive underground fungal network.",
-            "RequireTier": 2,
-            "RequireFamily": "Fungi",
-            "RequireTileControl": true,
-            "RequireTileDistance": 0
-        },
-        {
-            "Name": "Animal Village",
-            "Description": "A group of animals taking root in this place, making for a small 'village'.",
-            "RequireTier": 1,
-            "RequireFamily": "Animal",
-            "RequireTileControl": true,
-            "RequireTileDistance": 0
-        },
-        {
-            "Name": "Animal City",
-            "Description": "A large group of animals have made this place their home, rooting strongly into the environment.",
-            "RequireTier": 2,
-            "RequireFamily": "Animal",
-            "RequireTileControl": true,
-            "RequireTileDistance": 0
+          "FamilyType": "Plant",
+          "ScoreType": "Control",
+          "Score": "plantRuleColonization"
         }
-    ],
-    "Actions": [
+      ]
+    },
+    {
+      "Name": "Plants Defense",
+      "Cost": 1,
+      "Scores": [
         {
-            "Name": "Plants Colonize",
-            "Cost": 1,
-            "Scores": [
-                {
-                    "FamilyType": "Plant",
-                    "ScoreType": "Control",
-                    "Score": "plantRuleColonization"
-                }
-            ]
+          "FamilyType": "Animal",
+          "ScoreType": "Control",
+          "Score": "-5"
         },
         {
-            "Name": "Plants Defense",
-            "Cost": 1,
-            "Scores": [
-                {
-                    "FamilyType": "Animal",
-                    "ScoreType": "Control",
-                    "Score": "-5"
-                },
-                {
-                    "FamilyType": "Fungi",
-                    "ScoreType": "Control",
-                    "Score": "1"
-                },
-                {
-                    "FamilyType": "Plant",
-                    "ScoreType": "Control",
-                    "Score": "-5"
-                }
-            ]
+          "FamilyType": "Fungi",
+          "ScoreType": "Control",
+          "Score": "1"
         },
         {
-            "Name": "Plants Assimilate",
-            "Cost": 1,
-            "Scores": [
-                {
-                    "FamilyType": "Fungi",
-                    "ScoreType": "Control",
-                    "Score": "plantRuleAssimilate"
-                }
-            ]
-        },
-        {
-            "Name": "Plants Rooting",
-            "Cost": 1,
-            "Scores": [
-                {
-                    "FamilyType": "Fungi",
-                    "ScoreType": "Control",
-                    "Score": "plantRuleRooting"
-                }
-            ]
-        },
-        {
-            "Name": "Plants Decay",
-            "Cost": 1,
-            "Scores": [
-                {
-                    "FamilyType": "Fungi",
-                    "ScoreType": "Control",
-                    "Score": "plantRuleDecay"
-                }
-            ]
-        },
-        {
-            "Name": "Plants Debilitating Vines",
-            "Cost": 1,
-            "Scores": [
-                {
-                    "FamilyType": "Fungi",
-                    "ScoreType": "Control",
-                    "Score": "plantRuleDebilitatingVines"
-                }
-            ]
-        },
-        {
-            "Name": "Plants Rampant Growth",
-            "Cost": 1,
-            "Scores": [
-                {
-                    "FamilyType": "Fungi",
-                    "ScoreType": "Control",
-                    "Score": "plantRuleRampantGrowth"
-                }
-            ]
-        },
-        {
-            "Name": "Fungi Colonize",
-            "Cost": 1,
-            "Scores": [
-                {
-                    "FamilyType": "Fungi",
-                    "ScoreType": "Control",
-                    "Score": "fungiRuleColonization"
-                }
-            ]
+          "FamilyType": "Plant",
+          "ScoreType": "Control",
+          "Score": "-5"
         }
-    ],
-    "Cards": [
+      ]
+    },
+    {
+      "Name": "Plants Assimilate",
+      "Cost": 1,
+      "Scores": [
         {
-            "Name": "Growth",
-            "AssetListName": "Plants-T1-Colonization",
-            "Tier": 1,
-            "FamilyType": "Plant",
-            "Description": "Attempts colonization of area. Much more effective on untainted lands.",
-            "Art": "Plants - Colonization.png",
-            "PlayRange": 1,
-            "Actions": [
-                "Plants Colonize"
-            ],
-            "Requirements": [
-                "Surface"
-            ]
-        },
-        {
-            "Name": "Reclaim",
-            "AssetListName": "Plants-T1-Defense",
-            "Tier": 1,
-            "FamilyType": "Plant",
-            "Description": "Creates minor presence but more strongly reduces enemy presence.",
-            "Art": "Plants - Defence.png",
-            "PlayRange": 1,
-            "Actions": [
-                "Plants Defense"
-            ],
-            "Requirements": [
-                "Surface"
-            ]
-        },
-        {
-            "Name": "Assimilation",
-            "AssetListName": "Plants-T1-Assimilate",
-            "Tier": 1,
-            "FamilyType": "Plant",
-            "Description": "Assimilate enemy presence, weak when no enemies are around.",
-            "Art": "Plants - Assimilate.png",
-            "PlayRange": 1,
-            "Actions": [
-                "Plants Assimilate"
-            ],
-            "Requirements": [
-            ]
-        },
-        {
-            "Name": "Rooting",
-            "AssetListName": "Plants-T2-Rooting",
-            "Tier": 2,
-            "FamilyType": "Plant",
-            "Description": "From a surface place of dominance, lay claim to the depths below.",
-            "Art": "Plants - Rooting.png",
-            "PlayRange": 0,
-            "Actions": [
-                "Plants Rooting"
-            ],
-            "Requirements": [
-                "Surface",
-                "Plant Village"
-            ]
-        },
-        {
-            "Name": "Decay",
-            "AssetListName": "Plants-T2-Decay",
-            "Tier": 2,
-            "FamilyType": "Plant",
-            "Description": "Too much becomes a little.",
-            "Art": "Plants - Rooting.png",
-            "PlayRange": 3,
-            "Actions": [
-                "Plants Decay"
-            ],
-            "Requirements": [
-                "Plant Village"
-            ]
-        },
-        {
-            "Name": "Debilitating Vines",
-            "AssetListName": "Plants-T3-DebilitatingVines",
-            "Tier": 3,
-            "FamilyType": "Plant",
-            "Description": "Prevent the non-plants from expanding.",
-            "Art": "todo.png",
-            "PlayRange": 1,
-            "Actions": [
-                "Plants Debilitating Vines"
-            ],
-            "Requirements": [
-                "Plant City"
-            ]
-        },
-        {
-            "Name": "Rampant Growth",
-            "AssetListName": "Plants-T3-RampantGrowth",
-            "Tier": 3,
-            "FamilyType": "Plant",
-            "Description": "Prevent the non-plants from expanding.",
-            "Art": "todo.png",
-            "PlayRange": 0,
-            "Actions": [
-                "Plants Rampant Growth"
-            ],
-            "Requirements": [
-                "Plant City"
-            ]
-        },
-        {
-            "Name": "Expansion",
-            "AssetListName": "Fungi-T1-Colonization",
-            "Tier": 1,
-            "FamilyType": "Fungi",
-            "Description": "Attempts colonization of area. Much more effective on untainted lands.",
-            "Art": "todo.jpg",
-            "PlayRange": 1,
-            "Actions": [
-                "Fungi Colonize"
-            ],
-            "Requirements": [
-                "Subsurface"
-            ]
+          "FamilyType": "Fungi",
+          "ScoreType": "Control",
+          "Score": "plantRuleAssimilate"
         }
-    ],
-    "Deck": [
+      ]
+    },
+    {
+      "Name": "Plants Rooting",
+      "Cost": 1,
+      "Scores": [
         {
-            "Id": 1,
-            "Name": "Rooting"
-        },
-        {
-            "Id": 2,
-            "Name": "Rooting"
-        },
-        {
-            "Id": 3,
-            "Name": "Decay"
-        },
-        {
-            "Id": 4,
-            "Name": "Decay"
-        },
-        {
-            "Id": 5,
-            "Name": "Expansion"
-        },
-        {
-            "Id": 6,
-            "Name": "Debilitating Vines"
-        },
-        {
-            "Id": 7,
-            "Name": "Debilitating Vines"
-        },
-        {
-            "Id": 8,
-            "Name": "Rampant Growth"
+          "FamilyType": "Fungi",
+          "ScoreType": "Control",
+          "Score": "plantRuleRooting"
         }
-    ],
-    "Map": [
-        "############",
-        "..##T#######",
-        ".##T########",
-        "....#F######",
-        "##T########."
-    ]
+      ]
+    },
+    {
+      "Name": "Plants Decay",
+      "Cost": 1,
+      "Scores": [
+        {
+          "FamilyType": "Fungi",
+          "ScoreType": "Control",
+          "Score": "plantRuleDecay"
+        }
+      ]
+    },
+    {
+      "Name": "Plants Debilitating Vines",
+      "Cost": 1,
+      "Scores": [
+        {
+          "FamilyType": "Fungi",
+          "ScoreType": "Control",
+          "Score": "plantRuleDebilitatingVines"
+        }
+      ]
+    },
+    {
+      "Name": "Plants Rampant Growth",
+      "Cost": 1,
+      "Scores": [
+        {
+          "FamilyType": "Fungi",
+          "ScoreType": "Control",
+          "Score": "plantRuleRampantGrowth"
+        }
+      ]
+    },
+    {
+      "Name": "Fungi Colonize",
+      "Cost": 1,
+      "Scores": [
+        {
+          "FamilyType": "Fungi",
+          "ScoreType": "Control",
+          "Score": "fungiRuleColonization"
+        }
+      ]
+    }
+  ],
+  "Cards": [
+    {
+      "Name": "Growth",
+      "AssetListName": "Plants-T1-Colonization",
+      "Tier": 1,
+      "FamilyType": "Plant",
+      "Description": "Attempts colonization of area. Much more effective on untainted lands.",
+      "Art": "Plants - Colonization.png",
+      "PlayRange": 1,
+      "Actions": [
+        "Plants Colonize"
+      ],
+      "Requirements": [
+        "Surface"
+      ]
+    },
+    {
+      "Name": "Reclaim",
+      "AssetListName": "Plants-T1-Defense",
+      "Tier": 1,
+      "FamilyType": "Plant",
+      "Description": "Creates minor presence but more strongly reduces enemy presence.",
+      "Art": "Plants - Defence.png",
+      "PlayRange": 1,
+      "Actions": [
+        "Plants Defense"
+      ],
+      "Requirements": [
+        "Surface"
+      ]
+    },
+    {
+      "Name": "Assimilation",
+      "AssetListName": "Plants-T1-Assimilate",
+      "Tier": 1,
+      "FamilyType": "Plant",
+      "Description": "Assimilate enemy presence, weak when no enemies are around.",
+      "Art": "Plants - Assimilate.png",
+      "PlayRange": 1,
+      "Actions": [
+        "Plants Assimilate"
+      ],
+      "Requirements": [
+      ]
+    },
+    {
+      "Name": "Rooting",
+      "AssetListName": "Plants-T2-Rooting",
+      "Tier": 2,
+      "FamilyType": "Plant",
+      "Description": "From a surface place of dominance, lay claim to the depths below.",
+      "Art": "Plants - Rooting.png",
+      "PlayRange": 0,
+      "Actions": [
+        "Plants Rooting"
+      ],
+      "Requirements": [
+        "Surface",
+        "Plant Village"
+      ]
+    },
+    {
+      "Name": "Decay",
+      "AssetListName": "Plants-T2-Decay",
+      "Tier": 2,
+      "FamilyType": "Plant",
+      "Description": "Too much becomes a little.",
+      "Art": "Plants - Rooting.png",
+      "PlayRange": 3,
+      "Actions": [
+        "Plants Decay"
+      ],
+      "Requirements": [
+        "Plant Village"
+      ]
+    },
+    {
+      "Name": "Debilitating Vines",
+      "AssetListName": "Plants-T3-DebilitatingVines",
+      "Tier": 3,
+      "FamilyType": "Plant",
+      "Description": "Prevent the non-plants from expanding.",
+      "Art": "todo.png",
+      "PlayRange": 1,
+      "Actions": [
+        "Plants Debilitating Vines"
+      ],
+      "Requirements": [
+        "Plant City"
+      ]
+    },
+    {
+      "Name": "Rampant Growth",
+      "AssetListName": "Plants-T3-RampantGrowth",
+      "Tier": 3,
+      "FamilyType": "Plant",
+      "Description": "Prevent the non-plants from expanding.",
+      "Art": "todo.png",
+      "PlayRange": 0,
+      "Actions": [
+        "Plants Rampant Growth"
+      ],
+      "Requirements": [
+        "Plant City"
+      ]
+    },
+    {
+      "Name": "Expansion",
+      "AssetListName": "Fungi-T1-Colonization",
+      "Tier": 1,
+      "FamilyType": "Fungi",
+      "Description": "Attempts colonization of area. Much more effective on untainted lands.",
+      "Art": "todo.jpg",
+      "PlayRange": 1,
+      "Actions": [
+        "Fungi Colonize"
+      ],
+      "Requirements": [
+        "Subsurface"
+      ]
+    }
+  ],
+  "Deck": [
+    {
+      "Id": 1,
+      "Name": "Pawn"
+    },
+    {
+      "Id": 2,
+      "Name": "Pawn"
+    },
+    {
+      "Id": 3,
+      "Name": "Pawn"
+    },
+    {
+      "Id": 4,
+      "Name": "Rook"
+    },
+    {
+      "Id": 5,
+      "Name": "Rook"
+    }
+  ],
+  "Map": [
+    "############",
+    "..##T#######",
+    ".##T########",
+    "....#F######",
+    "##T########."
+  ]
 }
