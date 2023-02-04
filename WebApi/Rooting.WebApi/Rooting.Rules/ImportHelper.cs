@@ -336,6 +336,12 @@ namespace Rooting.Rules
         private static CardBase? InterpretCard(GameSetup setup, DefineCard? data)
         {
             if (data == null) return null;
+
+            if (!Enum.TryParse<FamilyTypes>(data.FamilyType, out var type))
+            {
+                setup.NotFound(nameof(CardBase), $"Could not find family {data.FamilyType} for card {data.Name}");
+            }
+
             var c = new CardBase
             {
                 Name = data.Name,
@@ -343,6 +349,7 @@ namespace Rooting.Rules
                 Art = data.Art,
                 Tier = data.Tier,
                 PlayRange = data.PlayRange,
+                FamilyTypes = type,
             };
 
             var cost = 0;

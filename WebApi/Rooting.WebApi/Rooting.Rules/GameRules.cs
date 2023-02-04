@@ -8,9 +8,28 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using System.Numerics;
+using System.Runtime.Serialization;
 
 namespace Rooting.Rules
 {
+    public class GameException : ApplicationException
+    {
+        public GameException()
+        { }
+
+        public GameException(string? message) : base(message)
+        {
+        }
+
+        public GameException(string? message, Exception? innerException) : base(message, innerException)
+        {
+        }
+
+        protected GameException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+    }
+
     public interface IGameStatistics
     {
         long GameId { get; }
@@ -18,6 +37,7 @@ namespace Rooting.Rules
         GameStatus CurrentGameStatus { get; }
         IEnumerable<Player> Players { get; }
         DateTime AutoStartTime { get; }
+        DateTime NextTurn { get; }
 
         PlayingCard[] CurrentInHand(FamilyTypes familyType);
 
@@ -36,6 +56,7 @@ namespace Rooting.Rules
         private long gameId = DateTime.Today.Ticks;
         private readonly ConcurrentDictionary<FamilyTypes, Player> activePlayers = new();
         private readonly IGameDefinitionFactory gameDefinitionFactory;
+        private readonly IGameEngine gameEngine;
         private GameSetup gameSetup;
         public long GameId => gameId;
         public int Generation { get; set; }
@@ -43,7 +64,7 @@ namespace Rooting.Rules
         public IEnumerable<Player> Players => activePlayers.Values;
         public DateTime AutoStartTime { get; private set; }
         public GameLog gameLog = new();
-        private DateTime NextTurn { get; set; }
+        public DateTime NextTurn { get; private set; }
 
         private readonly Player System = new Player
         {
@@ -55,7 +76,9 @@ namespace Rooting.Rules
             IGameEngine gameEngine)
         {
             this.gameDefinitionFactory = gameDefinitionFactory;
-            gameSetup = gameDefinitionFactory.NewGame(1);
+            this.gameEngine = gameEngine;
+            gameSetup = new GameSetup();
+            ResetGame();
         }
 
         public PlayerModel ClaimPlayer(PlayerModel model, string remoteIp)
@@ -187,11 +210,15 @@ namespace Rooting.Rules
 
         public GameGeneration StartGame(Player player, bool force)
         {
+            if (!Players.Any(p => p.Uuid == player.Uuid)) throw new GameException("Invalid player");
+            if (Players.Count() == 0) throw new GameException("No players");
+
             var r = new GameGeneration
             {
                 GameStatus = CurrentGameStatus,
                 CurrentTime = DateTime.Now,
                 Id = GameId,
+                NextTurn = NextTurn,
             };
 
             if (CurrentGameStatus == GameStatus.WaitingForPlayers)
@@ -204,6 +231,9 @@ namespace Rooting.Rules
                     NextTurn = DateTime.Now.Add(gameLoopTime);
                     r.GameStatus = GameStatus.GameWaitingForEndOfTurn;
                     r.NextTurn = NextTurn;
+                    r.Shout = "Game Started";
+
+                    foreach (var p in Players) player.IsPlaying = true;
                 }
                 else
                 {
@@ -218,11 +248,17 @@ namespace Rooting.Rules
                 NextTurn = DateTime.Now.Add(gameLoopTime);
                 r.GameStatus = GameStatus.GameWaitingForEndOfTurn;
                 r.NextTurn = NextTurn;
+                r.Shout = "Game Started";
+
+                foreach (var p in Players) player.IsPlaying = true;
             }
             else
             {
                 AddGameLog(player, LogLevel.Warning, $"{player.Name} tried to restart the game.");
+                r.Shout = "Restart not allowed";
             }
+
+            gameEngine.ExecuteLoop(this);
             return r;
         }
 

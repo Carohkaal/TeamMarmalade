@@ -1,5 +1,6 @@
 ﻿using Rooting.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Rooting.Rules
 {
@@ -9,19 +10,13 @@ namespace Rooting.Rules
 
         private readonly Random r = new Random();
 
-        public GameRulesGGJ2023(ILogger<GameRulesGGJ2023> logger)
+        public GameRulesGGJ2023(ILogger<GameRulesGGJ2023>? logger = null)
         {
-            this.logger = logger;
+            this.logger = logger ?? NullLogger<GameRulesGGJ2023>.Instance;
         }
 
         public void ExecuteLoop(IGameStatistics gameStatistics)
         {
-            if (gameStatistics.Players.Count() < 3)
-            {
-                gameStatistics.Generation = 0;
-                return;
-            }
-
             // make sure each family has 5 cards
             foreach (FamilyTypes fam in Enum.GetValues(typeof(FamilyTypes)))
             {
@@ -33,14 +28,16 @@ namespace Rooting.Rules
                     var cardsLeft = gameStatistics.NotPlayedCards(fam);
                     if (cardsLeft.Length == 0)
                     {
-                        gameStatistics.PlayerIsPlaying(fam, false);
                         break;
                     }
                     var cardId = r.Next(cardsLeft.Length);
                     var card = cardsLeft[cardId];
                     gameStatistics.TakeCardInHand(fam, card.Id);
                 }
+                if (currentCards.Length == 0) gameStatistics.PlayerIsPlaying(fam, false);
             }
+
+            if (gameStatistics.NextTurn > DateTime.Now) return;
         }
     }
 }
