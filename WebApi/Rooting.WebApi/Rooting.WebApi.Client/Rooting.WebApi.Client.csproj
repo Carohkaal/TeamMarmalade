@@ -8,23 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />    
-    <PackageReference Include="Polly" Version="7.2.3" />
-    <PackageReference Include="RestSharp" Version="108.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="RootingClient.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>RootingClient.json</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="RootingClient.json">
-      <Generator>OpenApiCodeGenerator</Generator>
-      <LastGenOutput>RootingClient.cs</LastGenOutput>
-    </None>
   </ItemGroup>
 
 </Project>
