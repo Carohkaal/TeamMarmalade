@@ -100,7 +100,7 @@ namespace Rooting.Desktop
             _cards = _cardDefinitions.Value;
             _players = _currentPlayers.Value;
 
-            Game.Window.TextInput += TextInputHandler;
+            Window.TextInput += TextInputHandler;
 
             base.Initialize();
         }
@@ -126,12 +126,12 @@ namespace Rooting.Desktop
             //{
             //    try
             //    {
-             //      var cardTexture = Content.Load<Texture2D>(card.Art);
+            //       var cardTexture = Content.Load<Texture2D>(card.Art);
             //        if (cardTexture != null)
             //            cardTextures.Add(card.Name, cardTexture);
-           //     }
+            //    }
             //    catch { }
-           // }
+            //}
 
             // TODO: use this.Content to load your game content here
         }
@@ -181,8 +181,8 @@ namespace Rooting.Desktop
             ButtonOnClick(mouseState.Position, isClicked, new Rectangle(740, 540, 200, 200));
 
             // Respond to user input for menu selections, etc
-            if (pushedStartGameButton)
-                _state = GameState.GamePlay;
+            //if (pushedStartGameButton)
+            //    _state = GameState.GamePlay;
         }
 
         void UpdateGameplay(GameTime deltaTime)
@@ -191,8 +191,8 @@ namespace Rooting.Desktop
             // Respond to user actions in the game.
             // Update enemies
             // Handle collisions
-            if (playerDied)
-                _state = GameState.MainMenu;
+            //if (playerDied)
+            //    _state = GameState.MainMenu;
         }
 
 
@@ -231,13 +231,15 @@ namespace Rooting.Desktop
         protected override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
-
-            case GameState.MainMenu:
-                DrawMainMenu(gameTime);
-                break;
-            case GameState.Gameplay:
-                DrawGameplay(gameTime);
-                break;
+            switch (_state)
+            {
+                case GameState.MainMenu:
+                    DrawMainMenu(gameTime);
+                    break;
+                case GameState.Gameplay:
+                    DrawGameplay(gameTime);
+                    break;
+            }
         }
 
         void DrawMainMenu(GameTime deltaTime)
@@ -256,6 +258,14 @@ namespace Rooting.Desktop
             _spriteBatch.DrawString(_currentFont, textBox, new Vector2(20, 20), Color.Black);
             _spriteBatch.Draw(_startButton, new Vector2(810, 640), Color.White);
             _spriteBatch.End();
+        }
+
+        void DrawGameplay(GameTime deltaTime)
+        {
+            // Draw the background the level
+            // Draw enemies
+            // Draw the player
+            // Draw particle effects, etc
         }
 
     }
