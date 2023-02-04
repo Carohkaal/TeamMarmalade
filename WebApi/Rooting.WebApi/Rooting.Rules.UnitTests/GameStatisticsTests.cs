@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Moq;
@@ -35,6 +36,15 @@ namespace Rooting.Rules.UnitTests
         {
             var sut = new GameStatistics(_factory, _engine);
             Assert.IsNotNull(sut);
+        }
+
+        [TestMethod]
+        public void GameStatisticsHasWorldDefinitione()
+        {
+            var sut = new GameStatistics(_factory, _engine);
+            var world = sut.WorldMap;
+            Assert.IsNotNull(world);
+            Console.WriteLine(JsonConvert.SerializeObject(world, Formatting.Indented));
         }
 
         [TestMethod]

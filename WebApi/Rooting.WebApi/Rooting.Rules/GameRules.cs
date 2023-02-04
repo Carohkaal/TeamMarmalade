@@ -146,7 +146,7 @@ namespace Rooting.Rules
             AutoStartTime = DateTime.Now.AddMinutes(20);
             gameLog = new();
             gameSetup = gameDefinitionFactory.NewGame(1);
-            this.WorldMap.Cols = gameSetup.ColCount
+            WorldMap.InitWorld(gameSetup.MapRows(), gameSetup.MapColums(), gameSetup.Tiles());
         }
 
         public Player? Player(Guid playerId)
@@ -364,9 +364,6 @@ namespace Rooting.Rules
 
         public GameLog OpenGameLog() => gameLog;
 
-        public WorldMap GetWorldMap(Player player, long gameId)
-        {
-            throw new NotImplementedException();
-        }
+        public WorldMap GetWorldMap(Player player, long gameId) => WorldMap;
     }
 }

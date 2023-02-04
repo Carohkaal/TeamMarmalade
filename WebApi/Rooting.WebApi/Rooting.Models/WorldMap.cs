@@ -15,14 +15,26 @@
             Tiles = new TileBase[0, 0];
         }
 
-        public void InitWorld(int rows, int cols)
+        public void InitWorld(int rows, int cols, IEnumerable<TileBase> tiles)
         {
             Rows = rows; Cols = cols;
             Tiles = new TileBase[cols, rows];
             for (var r = 0; r < Rows; r++)
                 for (var c = 0; c < Cols; c++)
                 {
-                    Tiles[c, r] = EmptyTile;
+                    TileBase newTile;
+                    var tile = tiles.FirstOrDefault(t => t.Row == r && t.Col == c);
+                    if (tile != null)
+                        newTile = tile;
+                    else
+                        newTile = (TileBase)EmptyTile.Clone();
+
+                    newTile.Uuid = Guid.NewGuid();
+                    newTile.Col = c;
+                    newTile.Row = r;
+                    newTile.Name = newTile.FamilyType.ToString();
+
+                    Tiles[c, r] = newTile;
                 }
         }
     }

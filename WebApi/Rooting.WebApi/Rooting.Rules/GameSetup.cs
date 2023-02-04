@@ -29,6 +29,8 @@ namespace Rooting.Rules
 
         public int MapRows() => map.Values.Select(m => m.Row).OrderByDescending(m => m).First();
 
+        public IEnumerable<TileBase> Tiles() => map.Values;
+
         public TileBase Tile(int row, int col)
         {
             var key = row << 8 + col;
