@@ -71,9 +71,9 @@ namespace Rooting.Rules.UnitTests
                 Name = "Foo-Action",
                 Scores = new Score[]
                 {
-                    new Score { FamilyTypes= FamilyTypes.Animal, ScoreType = ScoreType.Mission, ScoreValue = 2 },
-                    new Score { FamilyTypes= FamilyTypes.Fungi, ScoreType = ScoreType.Capture, ScoreValue = -2 },
-                    new Score { FamilyTypes= FamilyTypes.Plant, ScoreType = ScoreType.Distance, ScoreValue = 5 },
+                    new Score { FamilyTypes= FamilyTypes.Animal, ScoreType = ScoreType.Mission, ScoreValue = "2" },
+                    new Score { FamilyTypes= FamilyTypes.Fungi, ScoreType = ScoreType.Capture, ScoreValue = "-2" },
+                    new Score { FamilyTypes= FamilyTypes.Plant, ScoreType = ScoreType.Distance, ScoreValue ="5" },
                 }
             };
             model.Actions.Add("FOO-ACTION", act1);
@@ -84,9 +84,9 @@ namespace Rooting.Rules.UnitTests
                 Name = "Bar-Action",
                 Scores = new Score[]
     {
-                    new Score { FamilyTypes= FamilyTypes.Animal, ScoreType = ScoreType.Mission, ScoreValue = -1 },
-                    new Score { FamilyTypes= FamilyTypes.Fungi, ScoreType = ScoreType.Capture, ScoreValue = 5 },
-                    new Score { FamilyTypes= FamilyTypes.Plant, ScoreType = ScoreType.Distance, ScoreValue = 2 },
+                    new Score { FamilyTypes= FamilyTypes.Animal, ScoreType = ScoreType.Mission, ScoreValue = "Func1" },
+                    new Score { FamilyTypes= FamilyTypes.Fungi, ScoreType = ScoreType.Capture, ScoreValue = "54" },
+                    new Score { FamilyTypes= FamilyTypes.Plant, ScoreType = ScoreType.Distance, ScoreValue = "2" },
     }
             };
             model.Actions.Add("BAR-ACTION", act2);
@@ -144,7 +144,7 @@ namespace Rooting.Rules.UnitTests
       ""Name"": ""Foo"",
       ""Description"": ""Foo description"",
       ""RequireTier"": 1,
-      ""RequireFamily"": ""Tree"",
+      ""RequireFamily"": ""Plant"",
       ""RequireTileControl"": true,
       ""RequireTileDistance"": 1
     },
@@ -173,17 +173,17 @@ namespace Rooting.Rules.UnitTests
         {
           ""FamilyType"": ""Animal"",
           ""ScoreType"": ""Mission"",
-          ""Score"": 2
+          ""Score"": ""2""
         },
         {
           ""FamilyType"": ""Fungi"",
           ""ScoreType"": ""Capture"",
-          ""Score"": -2
+          ""Score"": ""-2""
         },
         {
-          ""FamilyType"": ""Tree"",
+          ""FamilyType"": ""Plant"",
           ""ScoreType"": ""Distance"",
-          ""Score"": 5
+          ""Score"": ""5""
         }
       ]
     },
@@ -194,17 +194,17 @@ namespace Rooting.Rules.UnitTests
         {
           ""FamilyType"": ""Animal"",
           ""ScoreType"": ""Mission"",
-          ""Score"": 2
+          ""Score"": ""Func""
         },
         {
           ""FamilyType"": ""Fungi"",
           ""ScoreType"": ""Capture"",
-          ""Score"": -2
+          ""Score"": ""-2""
         },
         {
-          ""FamilyType"": ""Tree"",
+          ""FamilyType"": ""Plant"",
           ""ScoreType"": ""Distance"",
-          ""Score"": 5
+          ""Score"": ""5""
         }
       ]
     }

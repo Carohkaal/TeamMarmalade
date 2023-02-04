@@ -4,6 +4,6 @@
     {
         public string FamilyType { get; set; } = string.Empty;
         public string ScoreType { get; set; } = string.Empty;
-        public int Score { get; set; }
+        public string Score { get; set; } = string.Empty;
     }
 }

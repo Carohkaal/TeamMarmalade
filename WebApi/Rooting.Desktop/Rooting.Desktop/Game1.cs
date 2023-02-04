@@ -6,6 +6,7 @@ using System.Text;
 using System.Linq;
 using System.Net.Http;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Rooting.Desktop
 {
@@ -21,16 +22,15 @@ namespace Rooting.Desktop
         private readonly Lazy<PlayerModel[]> _currentPlayers;
         private CardModel[] _cards;
         private PlayerModel[] _players;
+        private PlayerModel CurrentPLayer = new();
 
         /// <summary>
         ///  My cards
         /// </summary>
-        /// 
-        Texture2D textBoxTexture;
-        //private Dictionary<string, Texture2D> cardTexture;
+        private Dictionary<string, Texture2D> cardTexture;
 
-        private CardModel[] cardsInHand = Array.Empty<CardModel>();
-
+        private PlayingCard[] cardsInHand = Array.Empty<PlayingCard>();
+        private Texture2D _defaultCard;
         public static GameWindow gw;
         public static MouseState mouseState;
         private bool myBoxHasFocus = true;
@@ -42,7 +42,8 @@ namespace Rooting.Desktop
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
-
+            //_graphics.IsFullScreen = true;
+            _graphics.ApplyChanges();
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             _httpClient.BaseAddress = serverUri;
@@ -60,6 +61,25 @@ namespace Rooting.Desktop
             });
         }
 
+        private async Task ClaimPLayer(string myName, string myAvatar, FamilyTypes myFamily)
+        {
+            CurrentPLayer.Avatar = myAvatar;
+            CurrentPLayer.FamilyType = myFamily;
+            CurrentPLayer.Name = myName;
+            CurrentPLayer = await _webApiClient.ClaimFamilyAsync(CurrentPLayer);
+        }
+
+        private async Task LoadCurrentHand()
+        {
+            var myCards = await _webApiClient.CardsToPlayAsync(CurrentPLayer.Uuid.ToString());
+            cardsInHand = myCards.ToArray();
+        }
+
+        private CardModel? GetCardDefinition(PlayingCard card)
+        {
+            return _cardDefinitions.Value.Where(m => m.Name == card.Name).FirstOrDefault();
+        }
+
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
@@ -74,26 +94,16 @@ namespace Rooting.Desktop
             gw = Window;
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _currentFont = Content.Load<SpriteFont>("Fonts/NeueKabel-Regular12");
-            try
-            {
-                textBoxTexture = Content.Load<Texture2D>("TextBoxBackgroundTEMP");
-            }
-            catch
-            { 
-      
-            }
             var textures = new Dictionary<string, Texture2D>();
             foreach (var card in cardsInHand)
             {
                 try
                 {
-                    var texture = Content.Load<Texture2D>(card.Art);
-                    textures.Add(card.Name, texture);
+                    var cardTexture = Content.Load<Texture2D>(c.Art);
+                    if (cardTexture != null)
+                        cardTextures.Add(c.Name, cardTexture);
                 }
-                catch
-                {
-                    // no texture
-                }
+                catch { }
             }
 
             // TODO: use this.Content to load your game content here
