@@ -24,9 +24,16 @@ namespace Rooting.WebApi.Controllers
         }
 
         [HttpGet("CardDefinitions")]
-        public CardModel[] CardDefinitions()
-        {
-            return gameStatistics.Cards();
-        }
+        public CardModel[] CardDefinitions() => gameStatistics.Cards();
+
+        [HttpGet("GameStatus")]
+        public GameStatus GameStatus() => gameStatistics.GameStatus();
+
+        /// <summary>
+        /// Start the game, return the time the current turn will end.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("StartGame")]
+        public GameGeneration StartCurrentGame() => gameStatistics.StartGame();
     }
 }

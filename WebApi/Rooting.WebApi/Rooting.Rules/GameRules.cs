@@ -1,12 +1,14 @@
-﻿using Rooting.Models;
-using Rooting.Models.ResponseModels;
-using Rooting.Rules;
+﻿using Rooting.Models.ResponseModels;
+using Rooting.Models;
+using System;
 using System.Collections.Concurrent;
-using System.Net.Sockets;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
-namespace Rooting.WebApi.Controllers
+namespace Rooting.Rules
 {
     public interface IGameEngine
     {
@@ -52,6 +54,30 @@ namespace Rooting.WebApi.Controllers
                 }
             }
         }
+    }
+
+    public interface IGameDefinitionFactory
+    {
+        GameSetup NewGame(int gameId);
+    }
+
+    public interface IGameStatistics
+    {
+        Guid GameId { get; }
+        bool GameStarted { get; }
+        int Generation { get; set; }
+        IEnumerable<Player> Players { get; }
+        DateTime TimeStarted { get; }
+
+        PlayingCard[] CurrentInHand(FamilyTypes familyType);
+
+        PlayingCard[] NotPlayedCards(FamilyTypes familyType);
+
+        bool IsPlayerPlaying(FamilyTypes familyType);
+
+        void PlayerIsPlaying(FamilyTypes familyType, bool playingStatus);
+
+        void TakeCardInHand(FamilyTypes familyType, int cardId);
     }
 
     public class GameStatistics : IGameStatistics
@@ -125,7 +151,7 @@ namespace Rooting.WebApi.Controllers
             gameSetup = gameDefinitionFactory.NewGame(1);
         }
 
-        internal Player? Player(Guid playerId)
+        public Player? Player(Guid playerId)
         {
             return activePlayers.Values.FirstOrDefault(m => m.Uuid == playerId);
         }
@@ -139,7 +165,7 @@ namespace Rooting.WebApi.Controllers
             activePlayers.TryUpdate(family, player, player);
         }
 
-        internal CardModel[] Cards() => gameSetup.Cards.Values.Select(m => new CardModel
+        public CardModel[] Cards() => gameSetup.Cards.Values.Select(m => new CardModel
         {
             Art = m.Art,
             Cost = m.TotalCost,
@@ -182,6 +208,11 @@ namespace Rooting.WebApi.Controllers
                 throw new ArgumentException();
             }
             card.PlayingState = PlayingState.InHand;
+        }
+
+        internal GameStatus GameStatus()
+        {
+            throw new NotImplementedException();
         }
     }
 }
