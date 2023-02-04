@@ -5,45 +5,6 @@
     "version": "1.0"
   },
   "paths": {
-    "/Player/Statistics": {
-      "get": {
-        "tags": [
-          "Player"
-        ],
-        "parameters": [
-          {
-            "name": "gameId",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/GameStatistics"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GameStatistics"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GameStatistics"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/Player/CurrentPlayers": {
       "get": {
         "tags": [
@@ -57,7 +18,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Player"
+                    "$ref": "#/components/schemas/PlayerModel"
                   }
                 }
               },
@@ -65,7 +26,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Player"
+                    "$ref": "#/components/schemas/PlayerModel"
                   }
                 }
               },
@@ -73,7 +34,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Player"
+                    "$ref": "#/components/schemas/PlayerModel"
                   }
                 }
               }
@@ -91,17 +52,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Player"
+                "$ref": "#/components/schemas/PlayerModel"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/Player"
+                "$ref": "#/components/schemas/PlayerModel"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/Player"
+                "$ref": "#/components/schemas/PlayerModel"
               }
             }
           }
@@ -112,17 +73,75 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/Player"
+                  "$ref": "#/components/schemas/PlayerModel"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Player"
+                  "$ref": "#/components/schemas/PlayerModel"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Player"
+                  "$ref": "#/components/schemas/PlayerModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Player/Player/{id}": {
+      "put": {
+        "tags": [
+          "Player"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlayerModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlayerModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlayerModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerModel"
                 }
               }
             }
@@ -170,45 +189,13 @@
           0,
           1,
           2,
-          4
+          4,
+          255
         ],
         "type": "integer",
         "format": "int32"
       },
-      "GameStatistics": {
-        "type": "object",
-        "properties": {
-          "gameId": {
-            "type": "string",
-            "format": "uuid",
-            "readOnly": true
-          },
-          "generation": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "timeStarted": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          },
-          "gameStarted": {
-            "type": "boolean",
-            "readOnly": true
-          },
-          "players": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Player"
-            },
-            "nullable": true,
-            "readOnly": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "Player": {
+      "PlayerModel": {
         "type": "object",
         "properties": {
           "uuid": {
@@ -226,78 +213,9 @@
             "type": "string",
             "nullable": true
           },
-          "score": {
-            "$ref": "#/components/schemas/Score"
-          },
-          "currentEnergy": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "maxEnergy": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "cardsStock": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PlayingCard"
-            },
-            "nullable": true
-          },
-          "cardsPlayed": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PlayingCard"
-            },
-            "nullable": true
-          },
           "message": {
             "type": "string",
             "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "PlayingCard": {
-        "type": "object",
-        "properties": {
-          "uuid": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "Score": {
-        "type": "object",
-        "properties": {
-          "uuid": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "distance": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "captures": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "areaControl": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "missions": {
-            "type": "integer",
-            "format": "int32"
           }
         },
         "additionalProperties": false

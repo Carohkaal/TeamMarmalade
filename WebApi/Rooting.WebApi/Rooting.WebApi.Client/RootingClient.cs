@@ -1,24 +1,36 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using OpenAPIDateConverter = Rooting.WebApi.Client.Client.OpenAPIDateConverter;
 using Polly;
 using RestSharp;
 using RestSharp.Serializers;
+using RestSharpMethod = RestSharp.Method;
 using Rooting.WebApi.Client.Client;
 using Rooting.WebApi.Client.Model;
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Mime;
+using System.Reflection;
 using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
-using RestSharpMethod = RestSharp.Method;
+using System.Threading;
+using System.Threading.Tasks;
 
 #pragma warning disable
-
 /*
  * Rooting.WebApi
  *
@@ -39,10 +51,10 @@ namespace Rooting.WebApi.Client.Api
         ///
         /// </summary>
         /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="player"> (optional)</param>
+        /// <param name="playerModel"> (optional)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>Player</returns>
-        Player PlayerClaimFamilyPost(Player player = default(Player), int operationIndex = 0);
+        /// <returns>PlayerModel</returns>
+        PlayerModel PlayerClaimFamilyPost(PlayerModel playerModel = default(PlayerModel), int operationIndex = 0);
 
         /// <summary>
         ///
@@ -51,18 +63,18 @@ namespace Rooting.WebApi.Client.Api
         ///
         /// </remarks>
         /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="player"> (optional)</param>
+        /// <param name="playerModel"> (optional)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>ApiResponse of Player</returns>
-        ApiResponse<Player> PlayerClaimFamilyPostWithHttpInfo(Player player = default(Player), int operationIndex = 0);
+        /// <returns>ApiResponse of PlayerModel</returns>
+        ApiResponse<PlayerModel> PlayerClaimFamilyPostWithHttpInfo(PlayerModel playerModel = default(PlayerModel), int operationIndex = 0);
 
         /// <summary>
         ///
         /// </summary>
         /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>List&lt;Player&gt;</returns>
-        List<Player> PlayerCurrentPlayersGet(int operationIndex = 0);
+        /// <returns>List&lt;PlayerModel&gt;</returns>
+        List<PlayerModel> PlayerCurrentPlayersGet(int operationIndex = 0);
 
         /// <summary>
         ///
@@ -72,8 +84,31 @@ namespace Rooting.WebApi.Client.Api
         /// </remarks>
         /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>ApiResponse of List&lt;Player&gt;</returns>
-        ApiResponse<List<Player>> PlayerCurrentPlayersGetWithHttpInfo(int operationIndex = 0);
+        /// <returns>ApiResponse of List&lt;PlayerModel&gt;</returns>
+        ApiResponse<List<PlayerModel>> PlayerCurrentPlayersGetWithHttpInfo(int operationIndex = 0);
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="id"></param>
+        /// <param name="playerModel"> (optional)</param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>PlayerModel</returns>
+        PlayerModel PlayerPlayerIdPut(string id, PlayerModel playerModel = default(PlayerModel), int operationIndex = 0);
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <remarks>
+        ///
+        /// </remarks>
+        /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="id"></param>
+        /// <param name="playerModel"> (optional)</param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ApiResponse of PlayerModel</returns>
+        ApiResponse<PlayerModel> PlayerPlayerIdPutWithHttpInfo(string id, PlayerModel playerModel = default(PlayerModel), int operationIndex = 0);
 
         /// <summary>
         ///
@@ -93,27 +128,6 @@ namespace Rooting.WebApi.Client.Api
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <returns>ApiResponse of Guid</returns>
         ApiResponse<Guid> PlayerResetGamePostWithHttpInfo(int operationIndex = 0);
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="gameId"> (optional)</param>
-        /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>GameStatistics</returns>
-        GameStatistics PlayerStatisticsGet(Guid? gameId = default(Guid?), int operationIndex = 0);
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <remarks>
-        ///
-        /// </remarks>
-        /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="gameId"> (optional)</param>
-        /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>ApiResponse of GameStatistics</returns>
-        ApiResponse<GameStatistics> PlayerStatisticsGetWithHttpInfo(Guid? gameId = default(Guid?), int operationIndex = 0);
     }
 
     /// <summary>
@@ -128,11 +142,11 @@ namespace Rooting.WebApi.Client.Api
         ///
         /// </remarks>
         /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="player"> (optional)</param>
+        /// <param name="playerModel"> (optional)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of Player</returns>
-        System.Threading.Tasks.Task<Player> PlayerClaimFamilyPostAsync(Player player = default(Player), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <returns>Task of PlayerModel</returns>
+        System.Threading.Tasks.Task<PlayerModel> PlayerClaimFamilyPostAsync(PlayerModel playerModel = default(PlayerModel), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <summary>
         ///
@@ -141,23 +155,11 @@ namespace Rooting.WebApi.Client.Api
         ///
         /// </remarks>
         /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="player"> (optional)</param>
+        /// <param name="playerModel"> (optional)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ApiResponse (Player)</returns>
-        System.Threading.Tasks.Task<ApiResponse<Player>> PlayerClaimFamilyPostWithHttpInfoAsync(Player player = default(Player), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <remarks>
-        ///
-        /// </remarks>
-        /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of List&lt;Player&gt;</returns>
-        System.Threading.Tasks.Task<List<Player>> PlayerCurrentPlayersGetAsync(int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <returns>Task of ApiResponse (PlayerModel)</returns>
+        System.Threading.Tasks.Task<ApiResponse<PlayerModel>> PlayerClaimFamilyPostWithHttpInfoAsync(PlayerModel playerModel = default(PlayerModel), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <summary>
         ///
@@ -168,8 +170,48 @@ namespace Rooting.WebApi.Client.Api
         /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ApiResponse (List&lt;Player&gt;)</returns>
-        System.Threading.Tasks.Task<ApiResponse<List<Player>>> PlayerCurrentPlayersGetWithHttpInfoAsync(int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        /// <returns>Task of List&lt;PlayerModel&gt;</returns>
+        System.Threading.Tasks.Task<List<PlayerModel>> PlayerCurrentPlayersGetAsync(int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <remarks>
+        ///
+        /// </remarks>
+        /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse (List&lt;PlayerModel&gt;)</returns>
+        System.Threading.Tasks.Task<ApiResponse<List<PlayerModel>>> PlayerCurrentPlayersGetWithHttpInfoAsync(int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <remarks>
+        ///
+        /// </remarks>
+        /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="id"></param>
+        /// <param name="playerModel"> (optional)</param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of PlayerModel</returns>
+        System.Threading.Tasks.Task<PlayerModel> PlayerPlayerIdPutAsync(string id, PlayerModel playerModel = default(PlayerModel), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <remarks>
+        ///
+        /// </remarks>
+        /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="id"></param>
+        /// <param name="playerModel"> (optional)</param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse (PlayerModel)</returns>
+        System.Threading.Tasks.Task<ApiResponse<PlayerModel>> PlayerPlayerIdPutWithHttpInfoAsync(string id, PlayerModel playerModel = default(PlayerModel), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <summary>
         ///
@@ -194,32 +236,6 @@ namespace Rooting.WebApi.Client.Api
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns>Task of ApiResponse (Guid)</returns>
         System.Threading.Tasks.Task<ApiResponse<Guid>> PlayerResetGamePostWithHttpInfoAsync(int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <remarks>
-        ///
-        /// </remarks>
-        /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="gameId"> (optional)</param>
-        /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of GameStatistics</returns>
-        System.Threading.Tasks.Task<GameStatistics> PlayerStatisticsGetAsync(Guid? gameId = default(Guid?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <remarks>
-        ///
-        /// </remarks>
-        /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="gameId"> (optional)</param>
-        /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ApiResponse (GameStatistics)</returns>
-        System.Threading.Tasks.Task<ApiResponse<GameStatistics>> PlayerStatisticsGetWithHttpInfoAsync(Guid? gameId = default(Guid?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     }
 
     /// <summary>
@@ -343,12 +359,12 @@ namespace Rooting.WebApi.Client.Api
         ///
         /// </summary>
         /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="player"> (optional)</param>
+        /// <param name="playerModel"> (optional)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>Player</returns>
-        public Player PlayerClaimFamilyPost(Player player = default(Player), int operationIndex = 0)
+        /// <returns>PlayerModel</returns>
+        public PlayerModel PlayerClaimFamilyPost(PlayerModel playerModel = default(PlayerModel), int operationIndex = 0)
         {
-            Rooting.WebApi.Client.Client.ApiResponse<Player> localVarResponse = PlayerClaimFamilyPostWithHttpInfo(player);
+            Rooting.WebApi.Client.Client.ApiResponse<PlayerModel> localVarResponse = PlayerClaimFamilyPostWithHttpInfo(playerModel);
             return localVarResponse.Data;
         }
 
@@ -356,10 +372,10 @@ namespace Rooting.WebApi.Client.Api
         ///
         /// </summary>
         /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="player"> (optional)</param>
+        /// <param name="playerModel"> (optional)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>ApiResponse of Player</returns>
-        public Rooting.WebApi.Client.Client.ApiResponse<Player> PlayerClaimFamilyPostWithHttpInfo(Player player = default(Player), int operationIndex = 0)
+        /// <returns>ApiResponse of PlayerModel</returns>
+        public Rooting.WebApi.Client.Client.ApiResponse<PlayerModel> PlayerClaimFamilyPostWithHttpInfo(PlayerModel playerModel = default(PlayerModel), int operationIndex = 0)
         {
             Rooting.WebApi.Client.Client.RequestOptions localVarRequestOptions = new Rooting.WebApi.Client.Client.RequestOptions();
             string[] _contentTypes = new string[] {
@@ -383,11 +399,11 @@ namespace Rooting.WebApi.Client.Api
             {
                 localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
             }
-            localVarRequestOptions.Data = player;
+            localVarRequestOptions.Data = playerModel;
             localVarRequestOptions.Operation = "PlayerApi.PlayerClaimFamilyPost";
             localVarRequestOptions.OperationIndex = operationIndex;
             // make the HTTP request
-            var localVarResponse = this.Client.Post<Player>("/Player/ClaimFamily", localVarRequestOptions, this.Configuration);
+            var localVarResponse = this.Client.Post<PlayerModel>("/Player/ClaimFamily", localVarRequestOptions, this.Configuration);
             if (this.ExceptionFactory != null)
             {
                 Exception _exception = this.ExceptionFactory("PlayerClaimFamilyPost", localVarResponse);
@@ -403,13 +419,13 @@ namespace Rooting.WebApi.Client.Api
         ///
         /// </summary>
         /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="player"> (optional)</param>
+        /// <param name="playerModel"> (optional)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of Player</returns>
-        public async System.Threading.Tasks.Task<Player> PlayerClaimFamilyPostAsync(Player player = default(Player), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <returns>Task of PlayerModel</returns>
+        public async System.Threading.Tasks.Task<PlayerModel> PlayerClaimFamilyPostAsync(PlayerModel playerModel = default(PlayerModel), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
-            Rooting.WebApi.Client.Client.ApiResponse<Player> localVarResponse = await PlayerClaimFamilyPostWithHttpInfoAsync(player, operationIndex, cancellationToken).ConfigureAwait(false);
+            Rooting.WebApi.Client.Client.ApiResponse<PlayerModel> localVarResponse = await PlayerClaimFamilyPostWithHttpInfoAsync(playerModel, operationIndex, cancellationToken).ConfigureAwait(false);
             return localVarResponse.Data;
         }
 
@@ -417,11 +433,11 @@ namespace Rooting.WebApi.Client.Api
         ///
         /// </summary>
         /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="player"> (optional)</param>
+        /// <param name="playerModel"> (optional)</param>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ApiResponse (Player)</returns>
-        public async System.Threading.Tasks.Task<Rooting.WebApi.Client.Client.ApiResponse<Player>> PlayerClaimFamilyPostWithHttpInfoAsync(Player player = default(Player), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <returns>Task of ApiResponse (PlayerModel)</returns>
+        public async System.Threading.Tasks.Task<Rooting.WebApi.Client.Client.ApiResponse<PlayerModel>> PlayerClaimFamilyPostWithHttpInfoAsync(PlayerModel playerModel = default(PlayerModel), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             Rooting.WebApi.Client.Client.RequestOptions localVarRequestOptions = new Rooting.WebApi.Client.Client.RequestOptions();
             string[] _contentTypes = new string[] {
@@ -445,11 +461,11 @@ namespace Rooting.WebApi.Client.Api
             {
                 localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
             }
-            localVarRequestOptions.Data = player;
+            localVarRequestOptions.Data = playerModel;
             localVarRequestOptions.Operation = "PlayerApi.PlayerClaimFamilyPost";
             localVarRequestOptions.OperationIndex = operationIndex;
             // make the HTTP request
-            var localVarResponse = await this.AsynchronousClient.PostAsync<Player>("/Player/ClaimFamily", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+            var localVarResponse = await this.AsynchronousClient.PostAsync<PlayerModel>("/Player/ClaimFamily", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
             if (this.ExceptionFactory != null)
             {
                 Exception _exception = this.ExceptionFactory("PlayerClaimFamilyPost", localVarResponse);
@@ -466,10 +482,10 @@ namespace Rooting.WebApi.Client.Api
         /// </summary>
         /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>List&lt;Player&gt;</returns>
-        public List<Player> PlayerCurrentPlayersGet(int operationIndex = 0)
+        /// <returns>List&lt;PlayerModel&gt;</returns>
+        public List<PlayerModel> PlayerCurrentPlayersGet(int operationIndex = 0)
         {
-            Rooting.WebApi.Client.Client.ApiResponse<List<Player>> localVarResponse = PlayerCurrentPlayersGetWithHttpInfo();
+            Rooting.WebApi.Client.Client.ApiResponse<List<PlayerModel>> localVarResponse = PlayerCurrentPlayersGetWithHttpInfo();
             return localVarResponse.Data;
         }
 
@@ -478,8 +494,8 @@ namespace Rooting.WebApi.Client.Api
         /// </summary>
         /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>ApiResponse of List&lt;Player&gt;</returns>
-        public Rooting.WebApi.Client.Client.ApiResponse<List<Player>> PlayerCurrentPlayersGetWithHttpInfo(int operationIndex = 0)
+        /// <returns>ApiResponse of List&lt;PlayerModel&gt;</returns>
+        public Rooting.WebApi.Client.Client.ApiResponse<List<PlayerModel>> PlayerCurrentPlayersGetWithHttpInfo(int operationIndex = 0)
         {
             Rooting.WebApi.Client.Client.RequestOptions localVarRequestOptions = new Rooting.WebApi.Client.Client.RequestOptions();
             string[] _contentTypes = new string[] {
@@ -503,7 +519,7 @@ namespace Rooting.WebApi.Client.Api
             localVarRequestOptions.Operation = "PlayerApi.PlayerCurrentPlayersGet";
             localVarRequestOptions.OperationIndex = operationIndex;
             // make the HTTP request
-            var localVarResponse = this.Client.Get<List<Player>>("/Player/CurrentPlayers", localVarRequestOptions, this.Configuration);
+            var localVarResponse = this.Client.Get<List<PlayerModel>>("/Player/CurrentPlayers", localVarRequestOptions, this.Configuration);
             if (this.ExceptionFactory != null)
             {
                 Exception _exception = this.ExceptionFactory("PlayerCurrentPlayersGet", localVarResponse);
@@ -521,10 +537,10 @@ namespace Rooting.WebApi.Client.Api
         /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of List&lt;Player&gt;</returns>
-        public async System.Threading.Tasks.Task<List<Player>> PlayerCurrentPlayersGetAsync(int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <returns>Task of List&lt;PlayerModel&gt;</returns>
+        public async System.Threading.Tasks.Task<List<PlayerModel>> PlayerCurrentPlayersGetAsync(int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
-            Rooting.WebApi.Client.Client.ApiResponse<List<Player>> localVarResponse = await PlayerCurrentPlayersGetWithHttpInfoAsync(operationIndex, cancellationToken).ConfigureAwait(false);
+            Rooting.WebApi.Client.Client.ApiResponse<List<PlayerModel>> localVarResponse = await PlayerCurrentPlayersGetWithHttpInfoAsync(operationIndex, cancellationToken).ConfigureAwait(false);
             return localVarResponse.Data;
         }
 
@@ -534,8 +550,8 @@ namespace Rooting.WebApi.Client.Api
         /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="operationIndex">Index associated with the operation.</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ApiResponse (List&lt;Player&gt;)</returns>
-        public async System.Threading.Tasks.Task<Rooting.WebApi.Client.Client.ApiResponse<List<Player>>> PlayerCurrentPlayersGetWithHttpInfoAsync(int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        /// <returns>Task of ApiResponse (List&lt;PlayerModel&gt;)</returns>
+        public async System.Threading.Tasks.Task<Rooting.WebApi.Client.Client.ApiResponse<List<PlayerModel>>> PlayerCurrentPlayersGetWithHttpInfoAsync(int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             Rooting.WebApi.Client.Client.RequestOptions localVarRequestOptions = new Rooting.WebApi.Client.Client.RequestOptions();
             string[] _contentTypes = new string[] {
@@ -559,10 +575,148 @@ namespace Rooting.WebApi.Client.Api
             localVarRequestOptions.Operation = "PlayerApi.PlayerCurrentPlayersGet";
             localVarRequestOptions.OperationIndex = operationIndex;
             // make the HTTP request
-            var localVarResponse = await this.AsynchronousClient.GetAsync<List<Player>>("/Player/CurrentPlayers", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+            var localVarResponse = await this.AsynchronousClient.GetAsync<List<PlayerModel>>("/Player/CurrentPlayers", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
             if (this.ExceptionFactory != null)
             {
                 Exception _exception = this.ExceptionFactory("PlayerCurrentPlayersGet", localVarResponse);
+                if (_exception != null)
+                {
+                    throw _exception;
+                }
+            }
+            return localVarResponse;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="id"></param>
+        /// <param name="playerModel"> (optional)</param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>PlayerModel</returns>
+        public PlayerModel PlayerPlayerIdPut(string id, PlayerModel playerModel = default(PlayerModel), int operationIndex = 0)
+        {
+            Rooting.WebApi.Client.Client.ApiResponse<PlayerModel> localVarResponse = PlayerPlayerIdPutWithHttpInfo(id, playerModel);
+            return localVarResponse.Data;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="id"></param>
+        /// <param name="playerModel"> (optional)</param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <returns>ApiResponse of PlayerModel</returns>
+        public Rooting.WebApi.Client.Client.ApiResponse<PlayerModel> PlayerPlayerIdPutWithHttpInfo(string id, PlayerModel playerModel = default(PlayerModel), int operationIndex = 0)
+        {
+            // verify the required parameter 'id' is set
+            if (id == null)
+            {
+                throw new Rooting.WebApi.Client.Client.ApiException(400, "Missing required parameter 'id' when calling PlayerApi->PlayerPlayerIdPut");
+            }
+            Rooting.WebApi.Client.Client.RequestOptions localVarRequestOptions = new Rooting.WebApi.Client.Client.RequestOptions();
+            string[] _contentTypes = new string[] {
+                "application/json",
+                "text/json",
+                "application/*+json"
+            };
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "text/plain",
+                "application/json",
+                "text/json"
+            };
+            var localVarContentType = Rooting.WebApi.Client.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+            }
+            var localVarAccept = Rooting.WebApi.Client.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+            }
+            localVarRequestOptions.PathParameters.Add("id", Rooting.WebApi.Client.Client.ClientUtils.ParameterToString(id)); // path parameter
+            localVarRequestOptions.Data = playerModel;
+            localVarRequestOptions.Operation = "PlayerApi.PlayerPlayerIdPut";
+            localVarRequestOptions.OperationIndex = operationIndex;
+            // make the HTTP request
+            var localVarResponse = this.Client.Put<PlayerModel>("/Player/Player/{id}", localVarRequestOptions, this.Configuration);
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("PlayerPlayerIdPut", localVarResponse);
+                if (_exception != null)
+                {
+                    throw _exception;
+                }
+            }
+            return localVarResponse;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="id"></param>
+        /// <param name="playerModel"> (optional)</param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of PlayerModel</returns>
+        public async System.Threading.Tasks.Task<PlayerModel> PlayerPlayerIdPutAsync(string id, PlayerModel playerModel = default(PlayerModel), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            Rooting.WebApi.Client.Client.ApiResponse<PlayerModel> localVarResponse = await PlayerPlayerIdPutWithHttpInfoAsync(id, playerModel, operationIndex, cancellationToken).ConfigureAwait(false);
+            return localVarResponse.Data;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="id"></param>
+        /// <param name="playerModel"> (optional)</param>
+        /// <param name="operationIndex">Index associated with the operation.</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns>Task of ApiResponse (PlayerModel)</returns>
+        public async System.Threading.Tasks.Task<Rooting.WebApi.Client.Client.ApiResponse<PlayerModel>> PlayerPlayerIdPutWithHttpInfoAsync(string id, PlayerModel playerModel = default(PlayerModel), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            // verify the required parameter 'id' is set
+            if (id == null)
+            {
+                throw new Rooting.WebApi.Client.Client.ApiException(400, "Missing required parameter 'id' when calling PlayerApi->PlayerPlayerIdPut");
+            }
+            Rooting.WebApi.Client.Client.RequestOptions localVarRequestOptions = new Rooting.WebApi.Client.Client.RequestOptions();
+            string[] _contentTypes = new string[] {
+                "application/json",
+                "text/json",
+                "application/*+json"
+            };
+            // to determine the Accept header
+            string[] _accepts = new string[] {
+                "text/plain",
+                "application/json",
+                "text/json"
+            };
+            var localVarContentType = Rooting.WebApi.Client.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
+            if (localVarContentType != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
+            }
+            var localVarAccept = Rooting.WebApi.Client.Client.ClientUtils.SelectHeaderAccept(_accepts);
+            if (localVarAccept != null)
+            {
+                localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
+            }
+            localVarRequestOptions.PathParameters.Add("id", Rooting.WebApi.Client.Client.ClientUtils.ParameterToString(id)); // path parameter
+            localVarRequestOptions.Data = playerModel;
+            localVarRequestOptions.Operation = "PlayerApi.PlayerPlayerIdPut";
+            localVarRequestOptions.OperationIndex = operationIndex;
+            // make the HTTP request
+            var localVarResponse = await this.AsynchronousClient.PutAsync<PlayerModel>("/Player/Player/{id}", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
+            if (this.ExceptionFactory != null)
+            {
+                Exception _exception = this.ExceptionFactory("PlayerPlayerIdPut", localVarResponse);
                 if (_exception != null)
                 {
                     throw _exception;
@@ -673,128 +827,6 @@ namespace Rooting.WebApi.Client.Api
             if (this.ExceptionFactory != null)
             {
                 Exception _exception = this.ExceptionFactory("PlayerResetGamePost", localVarResponse);
-                if (_exception != null)
-                {
-                    throw _exception;
-                }
-            }
-            return localVarResponse;
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="gameId"> (optional)</param>
-        /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>GameStatistics</returns>
-        public GameStatistics PlayerStatisticsGet(Guid? gameId = default(Guid?), int operationIndex = 0)
-        {
-            Rooting.WebApi.Client.Client.ApiResponse<GameStatistics> localVarResponse = PlayerStatisticsGetWithHttpInfo(gameId);
-            return localVarResponse.Data;
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="gameId"> (optional)</param>
-        /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <returns>ApiResponse of GameStatistics</returns>
-        public Rooting.WebApi.Client.Client.ApiResponse<GameStatistics> PlayerStatisticsGetWithHttpInfo(Guid? gameId = default(Guid?), int operationIndex = 0)
-        {
-            Rooting.WebApi.Client.Client.RequestOptions localVarRequestOptions = new Rooting.WebApi.Client.Client.RequestOptions();
-            string[] _contentTypes = new string[] {
-            };
-            // to determine the Accept header
-            string[] _accepts = new string[] {
-                "text/plain",
-                "application/json",
-                "text/json"
-            };
-            var localVarContentType = Rooting.WebApi.Client.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
-            if (localVarContentType != null)
-            {
-                localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
-            }
-            var localVarAccept = Rooting.WebApi.Client.Client.ClientUtils.SelectHeaderAccept(_accepts);
-            if (localVarAccept != null)
-            {
-                localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
-            }
-            if (gameId != null)
-            {
-                localVarRequestOptions.QueryParameters.Add(Rooting.WebApi.Client.Client.ClientUtils.ParameterToMultiMap("", "gameId", gameId));
-            }
-            localVarRequestOptions.Operation = "PlayerApi.PlayerStatisticsGet";
-            localVarRequestOptions.OperationIndex = operationIndex;
-            // make the HTTP request
-            var localVarResponse = this.Client.Get<GameStatistics>("/Player/Statistics", localVarRequestOptions, this.Configuration);
-            if (this.ExceptionFactory != null)
-            {
-                Exception _exception = this.ExceptionFactory("PlayerStatisticsGet", localVarResponse);
-                if (_exception != null)
-                {
-                    throw _exception;
-                }
-            }
-            return localVarResponse;
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="gameId"> (optional)</param>
-        /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of GameStatistics</returns>
-        public async System.Threading.Tasks.Task<GameStatistics> PlayerStatisticsGetAsync(Guid? gameId = default(Guid?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
-        {
-            Rooting.WebApi.Client.Client.ApiResponse<GameStatistics> localVarResponse = await PlayerStatisticsGetWithHttpInfoAsync(gameId, operationIndex, cancellationToken).ConfigureAwait(false);
-            return localVarResponse.Data;
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <exception cref="Rooting.WebApi.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="gameId"> (optional)</param>
-        /// <param name="operationIndex">Index associated with the operation.</param>
-        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns>Task of ApiResponse (GameStatistics)</returns>
-        public async System.Threading.Tasks.Task<Rooting.WebApi.Client.Client.ApiResponse<GameStatistics>> PlayerStatisticsGetWithHttpInfoAsync(Guid? gameId = default(Guid?), int operationIndex = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
-        {
-            Rooting.WebApi.Client.Client.RequestOptions localVarRequestOptions = new Rooting.WebApi.Client.Client.RequestOptions();
-            string[] _contentTypes = new string[] {
-            };
-            // to determine the Accept header
-            string[] _accepts = new string[] {
-                "text/plain",
-                "application/json",
-                "text/json"
-            };
-            var localVarContentType = Rooting.WebApi.Client.Client.ClientUtils.SelectHeaderContentType(_contentTypes);
-            if (localVarContentType != null)
-            {
-                localVarRequestOptions.HeaderParameters.Add("Content-Type", localVarContentType);
-            }
-            var localVarAccept = Rooting.WebApi.Client.Client.ClientUtils.SelectHeaderAccept(_accepts);
-            if (localVarAccept != null)
-            {
-                localVarRequestOptions.HeaderParameters.Add("Accept", localVarAccept);
-            }
-            if (gameId != null)
-            {
-                localVarRequestOptions.QueryParameters.Add(Rooting.WebApi.Client.Client.ClientUtils.ParameterToMultiMap("", "gameId", gameId));
-            }
-            localVarRequestOptions.Operation = "PlayerApi.PlayerStatisticsGet";
-            localVarRequestOptions.OperationIndex = operationIndex;
-            // make the HTTP request
-            var localVarResponse = await this.AsynchronousClient.GetAsync<GameStatistics>("/Player/Statistics", localVarRequestOptions, this.Configuration, cancellationToken).ConfigureAwait(false);
-            if (this.ExceptionFactory != null)
-            {
-                Exception _exception = this.ExceptionFactory("PlayerStatisticsGet", localVarResponse);
                 if (_exception != null)
                 {
                     throw _exception;
@@ -949,7 +981,7 @@ namespace Rooting.WebApi.Client.Client
     /// Provides a default implementation of an Api client (both synchronous and asynchronous implementations),
     /// encapsulating general REST accessor use cases.
     /// </summary>
-    public partial class ApiClient : ISynchronousClient, IAsynchronousClient
+    public class ApiClient : ISynchronousClient, IAsynchronousClient
     {
         private readonly string _baseUrl;
 
@@ -974,7 +1006,7 @@ namespace Rooting.WebApi.Client.Client
         /// Allows for extending request processing for <see cref="ApiClient"/> generated code.
         /// </summary>
         /// <param name="request">The RestSharp request object</param>
-        public virtual void InterceptRequest(RestRequest request)
+        protected virtual void InterceptRequest(RestRequest request)
         {
         }
 
@@ -983,7 +1015,7 @@ namespace Rooting.WebApi.Client.Client
         /// </summary>
         /// <param name="request">The RestSharp request object</param>
         /// <param name="response">The RestSharp response object</param>
-        public virtual void InterceptResponse(RestRequest request, RestResponse response)
+        protected virtual void InterceptResponse(RestRequest request, RestResponse response)
         {
         }
 
@@ -3557,7 +3589,12 @@ namespace Rooting.WebApi.Client.Model
         /// <summary>
         /// Enum NUMBER_4 for value: 4
         /// </summary>
-        NUMBER_4 = 4
+        NUMBER_4 = 4,
+
+        /// <summary>
+        /// Enum NUMBER_255 for value: 255
+        /// </summary>
+        NUMBER_255 = 255
     }
 }
 
@@ -3573,223 +3610,10 @@ namespace Rooting.WebApi.Client.Model
 namespace Rooting.WebApi.Client.Model
 {
     /// <summary>
-    /// GameStatistics
+    /// PlayerModel
     /// </summary>
-    [DataContract(Name = "GameStatistics")]
-    public partial class GameStatistics : IEquatable<GameStatistics>, IValidatableObject
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GameStatistics" /> class.
-        /// </summary>
-        [JsonConstructorAttribute]
-        public GameStatistics()
-        {
-        }
-
-        /// <summary>
-        /// Gets or Sets GameId
-        /// </summary>
-        [DataMember(Name = "gameId", EmitDefaultValue = true)]
-        public Guid GameId { get; private set; }
-
-        /// <summary>
-        /// Returns false as GameId should not be serialized given that it's read-only.
-        /// </summary>
-        /// <returns>false (boolean)</returns>
-        public bool ShouldSerializeGameId()
-        {
-            return false;
-        }
-
-        /// <summary>
-        /// Gets or Sets Generation
-        /// </summary>
-        [DataMember(Name = "generation", EmitDefaultValue = true)]
-        public int Generation { get; private set; }
-
-        /// <summary>
-        /// Returns false as Generation should not be serialized given that it's read-only.
-        /// </summary>
-        /// <returns>false (boolean)</returns>
-        public bool ShouldSerializeGeneration()
-        {
-            return false;
-        }
-
-        /// <summary>
-        /// Gets or Sets TimeStarted
-        /// </summary>
-        [DataMember(Name = "timeStarted", EmitDefaultValue = true)]
-        public DateTime TimeStarted { get; private set; }
-
-        /// <summary>
-        /// Returns false as TimeStarted should not be serialized given that it's read-only.
-        /// </summary>
-        /// <returns>false (boolean)</returns>
-        public bool ShouldSerializeTimeStarted()
-        {
-            return false;
-        }
-
-        /// <summary>
-        /// Gets or Sets GameStarted
-        /// </summary>
-        [DataMember(Name = "gameStarted", EmitDefaultValue = true)]
-        public bool GameStarted { get; private set; }
-
-        /// <summary>
-        /// Returns false as GameStarted should not be serialized given that it's read-only.
-        /// </summary>
-        /// <returns>false (boolean)</returns>
-        public bool ShouldSerializeGameStarted()
-        {
-            return false;
-        }
-
-        /// <summary>
-        /// Gets or Sets Players
-        /// </summary>
-        [DataMember(Name = "players", EmitDefaultValue = true)]
-        public List<Player> Players { get; private set; }
-
-        /// <summary>
-        /// Returns false as Players should not be serialized given that it's read-only.
-        /// </summary>
-        /// <returns>false (boolean)</returns>
-        public bool ShouldSerializePlayers()
-        {
-            return false;
-        }
-
-        /// <summary>
-        /// Returns the string presentation of the object
-        /// </summary>
-        /// <returns>String presentation of the object</returns>
-        public override string ToString()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("class GameStatistics {\n");
-            sb.Append("  GameId: ").Append(GameId).Append("\n");
-            sb.Append("  Generation: ").Append(Generation).Append("\n");
-            sb.Append("  TimeStarted: ").Append(TimeStarted).Append("\n");
-            sb.Append("  GameStarted: ").Append(GameStarted).Append("\n");
-            sb.Append("  Players: ").Append(Players).Append("\n");
-            sb.Append("}\n");
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Returns the JSON string presentation of the object
-        /// </summary>
-        /// <returns>JSON string presentation of the object</returns>
-        public virtual string ToJson()
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this, Newtonsoft.Json.Formatting.Indented);
-        }
-
-        /// <summary>
-        /// Returns true if objects are equal
-        /// </summary>
-        /// <param name="input">Object to be compared</param>
-        /// <returns>Boolean</returns>
-        public override bool Equals(object input)
-        {
-            return this.Equals(input as GameStatistics);
-        }
-
-        /// <summary>
-        /// Returns true if GameStatistics instances are equal
-        /// </summary>
-        /// <param name="input">Instance of GameStatistics to be compared</param>
-        /// <returns>Boolean</returns>
-        public bool Equals(GameStatistics input)
-        {
-            if (input == null)
-            {
-                return false;
-            }
-            return
-                (
-                    this.GameId == input.GameId ||
-                    (this.GameId != null &&
-                    this.GameId.Equals(input.GameId))
-                ) &&
-                (
-                    this.Generation == input.Generation ||
-                    this.Generation.Equals(input.Generation)
-                ) &&
-                (
-                    this.TimeStarted == input.TimeStarted ||
-                    (this.TimeStarted != null &&
-                    this.TimeStarted.Equals(input.TimeStarted))
-                ) &&
-                (
-                    this.GameStarted == input.GameStarted ||
-                    this.GameStarted.Equals(input.GameStarted)
-                ) &&
-                (
-                    this.Players == input.Players ||
-                    this.Players != null &&
-                    input.Players != null &&
-                    this.Players.SequenceEqual(input.Players)
-                );
-        }
-
-        /// <summary>
-        /// Gets the hash code
-        /// </summary>
-        /// <returns>Hash code</returns>
-        public override int GetHashCode()
-        {
-            unchecked // Overflow is fine, just wrap
-            {
-                int hashCode = 41;
-                if (this.GameId != null)
-                {
-                    hashCode = (hashCode * 59) + this.GameId.GetHashCode();
-                }
-                hashCode = (hashCode * 59) + this.Generation.GetHashCode();
-                if (this.TimeStarted != null)
-                {
-                    hashCode = (hashCode * 59) + this.TimeStarted.GetHashCode();
-                }
-                hashCode = (hashCode * 59) + this.GameStarted.GetHashCode();
-                if (this.Players != null)
-                {
-                    hashCode = (hashCode * 59) + this.Players.GetHashCode();
-                }
-                return hashCode;
-            }
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        public IEnumerable<System.ComponentModel.DataAnnotations.ValidationResult> Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-}
-
-/*
- * Rooting.WebApi
- *
- * No description provided (generated by Openapi Generator https://github.com/openapitools/openapi-generator)
- *
- * The version of the OpenAPI document: 1.0
- * Generated by: https://github.com/openapitools/openapi-generator.git
- */
-
-namespace Rooting.WebApi.Client.Model
-{
-    /// <summary>
-    /// Player
-    /// </summary>
-    [DataContract(Name = "Player")]
-    public partial class Player : IEquatable<Player>, IValidatableObject
+    [DataContract(Name = "PlayerModel")]
+    public partial class PlayerModel : IEquatable<PlayerModel>, IValidatableObject
     {
         /// <summary>
         /// Gets or Sets FamilyType
@@ -3798,29 +3622,19 @@ namespace Rooting.WebApi.Client.Model
         public FamilyTypes? FamilyType { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Player" /> class.
+        /// Initializes a new instance of the <see cref="PlayerModel" /> class.
         /// </summary>
         /// <param name="uuid">uuid.</param>
         /// <param name="name">name.</param>
         /// <param name="familyType">familyType.</param>
         /// <param name="avatar">avatar.</param>
-        /// <param name="score">score.</param>
-        /// <param name="currentEnergy">currentEnergy.</param>
-        /// <param name="maxEnergy">maxEnergy.</param>
-        /// <param name="cardsStock">cardsStock.</param>
-        /// <param name="cardsPlayed">cardsPlayed.</param>
         /// <param name="message">message.</param>
-        public Player(Guid uuid = default(Guid), string name = default(string), FamilyTypes? familyType = default(FamilyTypes?), string avatar = default(string), Score score = default(Score), int currentEnergy = default(int), int maxEnergy = default(int), List<PlayingCard> cardsStock = default(List<PlayingCard>), List<PlayingCard> cardsPlayed = default(List<PlayingCard>), string message = default(string))
+        public PlayerModel(Guid uuid = default(Guid), string name = default(string), FamilyTypes? familyType = default(FamilyTypes?), string avatar = default(string), string message = default(string))
         {
             this.Uuid = uuid;
             this.Name = name;
             this.FamilyType = familyType;
             this.Avatar = avatar;
-            this.Score = score;
-            this.CurrentEnergy = currentEnergy;
-            this.MaxEnergy = maxEnergy;
-            this.CardsStock = cardsStock;
-            this.CardsPlayed = cardsPlayed;
             this.Message = message;
         }
 
@@ -3843,36 +3657,6 @@ namespace Rooting.WebApi.Client.Model
         public string Avatar { get; set; }
 
         /// <summary>
-        /// Gets or Sets Score
-        /// </summary>
-        [DataMember(Name = "score", EmitDefaultValue = true)]
-        public Score Score { get; set; }
-
-        /// <summary>
-        /// Gets or Sets CurrentEnergy
-        /// </summary>
-        [DataMember(Name = "currentEnergy", EmitDefaultValue = true)]
-        public int CurrentEnergy { get; set; }
-
-        /// <summary>
-        /// Gets or Sets MaxEnergy
-        /// </summary>
-        [DataMember(Name = "maxEnergy", EmitDefaultValue = true)]
-        public int MaxEnergy { get; set; }
-
-        /// <summary>
-        /// Gets or Sets CardsStock
-        /// </summary>
-        [DataMember(Name = "cardsStock", EmitDefaultValue = true)]
-        public List<PlayingCard> CardsStock { get; set; }
-
-        /// <summary>
-        /// Gets or Sets CardsPlayed
-        /// </summary>
-        [DataMember(Name = "cardsPlayed", EmitDefaultValue = true)]
-        public List<PlayingCard> CardsPlayed { get; set; }
-
-        /// <summary>
         /// Gets or Sets Message
         /// </summary>
         [DataMember(Name = "message", EmitDefaultValue = true)]
@@ -3885,16 +3669,11 @@ namespace Rooting.WebApi.Client.Model
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("class Player {\n");
+            sb.Append("class PlayerModel {\n");
             sb.Append("  Uuid: ").Append(Uuid).Append("\n");
             sb.Append("  Name: ").Append(Name).Append("\n");
             sb.Append("  FamilyType: ").Append(FamilyType).Append("\n");
             sb.Append("  Avatar: ").Append(Avatar).Append("\n");
-            sb.Append("  Score: ").Append(Score).Append("\n");
-            sb.Append("  CurrentEnergy: ").Append(CurrentEnergy).Append("\n");
-            sb.Append("  MaxEnergy: ").Append(MaxEnergy).Append("\n");
-            sb.Append("  CardsStock: ").Append(CardsStock).Append("\n");
-            sb.Append("  CardsPlayed: ").Append(CardsPlayed).Append("\n");
             sb.Append("  Message: ").Append(Message).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -3916,15 +3695,15 @@ namespace Rooting.WebApi.Client.Model
         /// <returns>Boolean</returns>
         public override bool Equals(object input)
         {
-            return this.Equals(input as Player);
+            return this.Equals(input as PlayerModel);
         }
 
         /// <summary>
-        /// Returns true if Player instances are equal
+        /// Returns true if PlayerModel instances are equal
         /// </summary>
-        /// <param name="input">Instance of Player to be compared</param>
+        /// <param name="input">Instance of PlayerModel to be compared</param>
         /// <returns>Boolean</returns>
-        public bool Equals(Player input)
+        public bool Equals(PlayerModel input)
         {
             if (input == null)
             {
@@ -3949,31 +3728,6 @@ namespace Rooting.WebApi.Client.Model
                     this.Avatar == input.Avatar ||
                     (this.Avatar != null &&
                     this.Avatar.Equals(input.Avatar))
-                ) &&
-                (
-                    this.Score == input.Score ||
-                    (this.Score != null &&
-                    this.Score.Equals(input.Score))
-                ) &&
-                (
-                    this.CurrentEnergy == input.CurrentEnergy ||
-                    this.CurrentEnergy.Equals(input.CurrentEnergy)
-                ) &&
-                (
-                    this.MaxEnergy == input.MaxEnergy ||
-                    this.MaxEnergy.Equals(input.MaxEnergy)
-                ) &&
-                (
-                    this.CardsStock == input.CardsStock ||
-                    this.CardsStock != null &&
-                    input.CardsStock != null &&
-                    this.CardsStock.SequenceEqual(input.CardsStock)
-                ) &&
-                (
-                    this.CardsPlayed == input.CardsPlayed ||
-                    this.CardsPlayed != null &&
-                    input.CardsPlayed != null &&
-                    this.CardsPlayed.SequenceEqual(input.CardsPlayed)
                 ) &&
                 (
                     this.Message == input.Message ||
@@ -4004,340 +3758,10 @@ namespace Rooting.WebApi.Client.Model
                 {
                     hashCode = (hashCode * 59) + this.Avatar.GetHashCode();
                 }
-                if (this.Score != null)
-                {
-                    hashCode = (hashCode * 59) + this.Score.GetHashCode();
-                }
-                hashCode = (hashCode * 59) + this.CurrentEnergy.GetHashCode();
-                hashCode = (hashCode * 59) + this.MaxEnergy.GetHashCode();
-                if (this.CardsStock != null)
-                {
-                    hashCode = (hashCode * 59) + this.CardsStock.GetHashCode();
-                }
-                if (this.CardsPlayed != null)
-                {
-                    hashCode = (hashCode * 59) + this.CardsPlayed.GetHashCode();
-                }
                 if (this.Message != null)
                 {
                     hashCode = (hashCode * 59) + this.Message.GetHashCode();
                 }
-                return hashCode;
-            }
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        public IEnumerable<System.ComponentModel.DataAnnotations.ValidationResult> Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-}
-
-/*
- * Rooting.WebApi
- *
- * No description provided (generated by Openapi Generator https://github.com/openapitools/openapi-generator)
- *
- * The version of the OpenAPI document: 1.0
- * Generated by: https://github.com/openapitools/openapi-generator.git
- */
-
-namespace Rooting.WebApi.Client.Model
-{
-    /// <summary>
-    /// PlayingCard
-    /// </summary>
-    [DataContract(Name = "PlayingCard")]
-    public partial class PlayingCard : IEquatable<PlayingCard>, IValidatableObject
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PlayingCard" /> class.
-        /// </summary>
-        /// <param name="uuid">uuid.</param>
-        /// <param name="name">name.</param>
-        public PlayingCard(Guid uuid = default(Guid), string name = default(string))
-        {
-            this.Uuid = uuid;
-            this.Name = name;
-        }
-
-        /// <summary>
-        /// Gets or Sets Uuid
-        /// </summary>
-        [DataMember(Name = "uuid", EmitDefaultValue = true)]
-        public Guid Uuid { get; set; }
-
-        /// <summary>
-        /// Gets or Sets Name
-        /// </summary>
-        [DataMember(Name = "name", EmitDefaultValue = true)]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Returns the string presentation of the object
-        /// </summary>
-        /// <returns>String presentation of the object</returns>
-        public override string ToString()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("class PlayingCard {\n");
-            sb.Append("  Uuid: ").Append(Uuid).Append("\n");
-            sb.Append("  Name: ").Append(Name).Append("\n");
-            sb.Append("}\n");
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Returns the JSON string presentation of the object
-        /// </summary>
-        /// <returns>JSON string presentation of the object</returns>
-        public virtual string ToJson()
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this, Newtonsoft.Json.Formatting.Indented);
-        }
-
-        /// <summary>
-        /// Returns true if objects are equal
-        /// </summary>
-        /// <param name="input">Object to be compared</param>
-        /// <returns>Boolean</returns>
-        public override bool Equals(object input)
-        {
-            return this.Equals(input as PlayingCard);
-        }
-
-        /// <summary>
-        /// Returns true if PlayingCard instances are equal
-        /// </summary>
-        /// <param name="input">Instance of PlayingCard to be compared</param>
-        /// <returns>Boolean</returns>
-        public bool Equals(PlayingCard input)
-        {
-            if (input == null)
-            {
-                return false;
-            }
-            return
-                (
-                    this.Uuid == input.Uuid ||
-                    (this.Uuid != null &&
-                    this.Uuid.Equals(input.Uuid))
-                ) &&
-                (
-                    this.Name == input.Name ||
-                    (this.Name != null &&
-                    this.Name.Equals(input.Name))
-                );
-        }
-
-        /// <summary>
-        /// Gets the hash code
-        /// </summary>
-        /// <returns>Hash code</returns>
-        public override int GetHashCode()
-        {
-            unchecked // Overflow is fine, just wrap
-            {
-                int hashCode = 41;
-                if (this.Uuid != null)
-                {
-                    hashCode = (hashCode * 59) + this.Uuid.GetHashCode();
-                }
-                if (this.Name != null)
-                {
-                    hashCode = (hashCode * 59) + this.Name.GetHashCode();
-                }
-                return hashCode;
-            }
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        public IEnumerable<System.ComponentModel.DataAnnotations.ValidationResult> Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-}
-
-/*
- * Rooting.WebApi
- *
- * No description provided (generated by Openapi Generator https://github.com/openapitools/openapi-generator)
- *
- * The version of the OpenAPI document: 1.0
- * Generated by: https://github.com/openapitools/openapi-generator.git
- */
-
-namespace Rooting.WebApi.Client.Model
-{
-    /// <summary>
-    /// Score
-    /// </summary>
-    [DataContract(Name = "Score")]
-    public partial class Score : IEquatable<Score>, IValidatableObject
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Score" /> class.
-        /// </summary>
-        /// <param name="uuid">uuid.</param>
-        /// <param name="name">name.</param>
-        /// <param name="distance">distance.</param>
-        /// <param name="captures">captures.</param>
-        /// <param name="areaControl">areaControl.</param>
-        /// <param name="missions">missions.</param>
-        public Score(Guid uuid = default(Guid), string name = default(string), int distance = default(int), int captures = default(int), int areaControl = default(int), int missions = default(int))
-        {
-            this.Uuid = uuid;
-            this.Name = name;
-            this.Distance = distance;
-            this.Captures = captures;
-            this.AreaControl = areaControl;
-            this.Missions = missions;
-        }
-
-        /// <summary>
-        /// Gets or Sets Uuid
-        /// </summary>
-        [DataMember(Name = "uuid", EmitDefaultValue = true)]
-        public Guid Uuid { get; set; }
-
-        /// <summary>
-        /// Gets or Sets Name
-        /// </summary>
-        [DataMember(Name = "name", EmitDefaultValue = true)]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Gets or Sets Distance
-        /// </summary>
-        [DataMember(Name = "distance", EmitDefaultValue = true)]
-        public int Distance { get; set; }
-
-        /// <summary>
-        /// Gets or Sets Captures
-        /// </summary>
-        [DataMember(Name = "captures", EmitDefaultValue = true)]
-        public int Captures { get; set; }
-
-        /// <summary>
-        /// Gets or Sets AreaControl
-        /// </summary>
-        [DataMember(Name = "areaControl", EmitDefaultValue = true)]
-        public int AreaControl { get; set; }
-
-        /// <summary>
-        /// Gets or Sets Missions
-        /// </summary>
-        [DataMember(Name = "missions", EmitDefaultValue = true)]
-        public int Missions { get; set; }
-
-        /// <summary>
-        /// Returns the string presentation of the object
-        /// </summary>
-        /// <returns>String presentation of the object</returns>
-        public override string ToString()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("class Score {\n");
-            sb.Append("  Uuid: ").Append(Uuid).Append("\n");
-            sb.Append("  Name: ").Append(Name).Append("\n");
-            sb.Append("  Distance: ").Append(Distance).Append("\n");
-            sb.Append("  Captures: ").Append(Captures).Append("\n");
-            sb.Append("  AreaControl: ").Append(AreaControl).Append("\n");
-            sb.Append("  Missions: ").Append(Missions).Append("\n");
-            sb.Append("}\n");
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Returns the JSON string presentation of the object
-        /// </summary>
-        /// <returns>JSON string presentation of the object</returns>
-        public virtual string ToJson()
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this, Newtonsoft.Json.Formatting.Indented);
-        }
-
-        /// <summary>
-        /// Returns true if objects are equal
-        /// </summary>
-        /// <param name="input">Object to be compared</param>
-        /// <returns>Boolean</returns>
-        public override bool Equals(object input)
-        {
-            return this.Equals(input as Score);
-        }
-
-        /// <summary>
-        /// Returns true if Score instances are equal
-        /// </summary>
-        /// <param name="input">Instance of Score to be compared</param>
-        /// <returns>Boolean</returns>
-        public bool Equals(Score input)
-        {
-            if (input == null)
-            {
-                return false;
-            }
-            return
-                (
-                    this.Uuid == input.Uuid ||
-                    (this.Uuid != null &&
-                    this.Uuid.Equals(input.Uuid))
-                ) &&
-                (
-                    this.Name == input.Name ||
-                    (this.Name != null &&
-                    this.Name.Equals(input.Name))
-                ) &&
-                (
-                    this.Distance == input.Distance ||
-                    this.Distance.Equals(input.Distance)
-                ) &&
-                (
-                    this.Captures == input.Captures ||
-                    this.Captures.Equals(input.Captures)
-                ) &&
-                (
-                    this.AreaControl == input.AreaControl ||
-                    this.AreaControl.Equals(input.AreaControl)
-                ) &&
-                (
-                    this.Missions == input.Missions ||
-                    this.Missions.Equals(input.Missions)
-                );
-        }
-
-        /// <summary>
-        /// Gets the hash code
-        /// </summary>
-        /// <returns>Hash code</returns>
-        public override int GetHashCode()
-        {
-            unchecked // Overflow is fine, just wrap
-            {
-                int hashCode = 41;
-                if (this.Uuid != null)
-                {
-                    hashCode = (hashCode * 59) + this.Uuid.GetHashCode();
-                }
-                if (this.Name != null)
-                {
-                    hashCode = (hashCode * 59) + this.Name.GetHashCode();
-                }
-                hashCode = (hashCode * 59) + this.Distance.GetHashCode();
-                hashCode = (hashCode * 59) + this.Captures.GetHashCode();
-                hashCode = (hashCode * 59) + this.AreaControl.GetHashCode();
-                hashCode = (hashCode * 59) + this.Missions.GetHashCode();
                 return hashCode;
             }
         }

@@ -11,7 +11,7 @@ namespace Rooting.WebApi.Client
         {
         }
 
-        public async Task<Player[]> CurrentPlayersAsync()
+        public async Task<PlayerModel[]> CurrentPlayersAsync()
         {
             var fc = await _apiClient.PlayerCurrentPlayersGetAsync();
             return fc.ToArray();
