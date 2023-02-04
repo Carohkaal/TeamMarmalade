@@ -17,7 +17,7 @@ namespace Rooting.WebApi.Client.UnitTests
         public async Task ClientCanReadData()
         {
             var c = new UseClient();
-            var data = await c.CurrentForecastAsync();
+            var data = await c.CurrentPlayersAsync();
             Assert.IsNotNull(data);
             Console.WriteLine(JsonConvert.SerializeObject(data, Formatting.Indented));
         }

@@ -5,12 +5,50 @@
     "version": "1.0"
   },
   "paths": {
-    "/WeatherForecast": {
+    "/Player/Statistics": {
       "get": {
         "tags": [
-          "WeatherForecast"
+          "Player"
         ],
-        "operationId": "GetWeatherForecast",
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameStatistics"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameStatistics"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameStatistics"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Player/CurrentPlayers": {
+      "get": {
+        "tags": [
+          "Player"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -19,7 +57,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/WeatherForecast"
+                    "$ref": "#/components/schemas/Player"
                   }
                 }
               },
@@ -27,7 +65,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/WeatherForecast"
+                    "$ref": "#/components/schemas/Player"
                   }
                 }
               },
@@ -35,8 +73,88 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/WeatherForecast"
+                    "$ref": "#/components/schemas/Player"
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Player/ClaimFamily": {
+      "post": {
+        "tags": [
+          "Player"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Player"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Player"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Player"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Player"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Player"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Player"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Player/ResetGame": {
+      "post": {
+        "tags": [
+          "Player"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
                 }
               }
             }
@@ -47,25 +165,139 @@
   },
   "components": {
     "schemas": {
-      "WeatherForecast": {
+      "FamilyTypes": {
+        "enum": [
+          0,
+          1,
+          2,
+          4
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "GameStatistics": {
         "type": "object",
         "properties": {
-          "date": {
+          "gameId": {
             "type": "string",
-            "format": "date-time"
+            "format": "uuid",
+            "readOnly": true
           },
-          "temperatureC": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "temperatureF": {
+          "generation": {
             "type": "integer",
             "format": "int32",
             "readOnly": true
           },
-          "summary": {
+          "timeStarted": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "gameStarted": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "players": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Player"
+            },
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Player": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
             "type": "string",
             "nullable": true
+          },
+          "familyType": {
+            "$ref": "#/components/schemas/FamilyTypes"
+          },
+          "avatar": {
+            "type": "string",
+            "nullable": true
+          },
+          "score": {
+            "$ref": "#/components/schemas/Score"
+          },
+          "currentEnergy": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxEnergy": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cardsStock": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlayingCard"
+            },
+            "nullable": true
+          },
+          "cardsPlayed": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlayingCard"
+            },
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PlayingCard": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Score": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "distance": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "captures": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "areaControl": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "missions": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false

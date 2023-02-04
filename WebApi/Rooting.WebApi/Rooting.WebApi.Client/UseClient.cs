@@ -5,15 +5,15 @@ namespace Rooting.WebApi.Client
 {
     public class UseClient
     {
-        private readonly WeatherForecastApi _apiClient = new WeatherForecastApi("https://rootingwebapi.azurewebsites.net/");
+        private readonly PlayerApi _apiClient = new PlayerApi("https://rootingwebapi.azurewebsites.net/");
 
         public UseClient()
         {
         }
 
-        public async Task<WeatherForecast[]> CurrentForecastAsync()
+        public async Task<Player[]> CurrentPlayersAsync()
         {
-            var fc = await _apiClient.GetWeatherForecastAsync();
+            var fc = await _apiClient.PlayerCurrentPlayersGetAsync();
             return fc.ToArray();
         }
     }

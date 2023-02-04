@@ -1,3 +1,5 @@
+using Rooting.WebApi.Controllers;
+
 namespace Rooting.WebApi
 {
     public class Program
@@ -12,6 +14,9 @@ namespace Rooting.WebApi
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            // Setup configuration
+            builder.Services.AddSingleton(new GameStatistics());
 
             var app = builder.Build();
 
