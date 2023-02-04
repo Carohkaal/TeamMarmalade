@@ -1,47 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
 using Rooting.Models;
-using System.Collections.Concurrent;
 
 namespace Rooting.WebApi.Controllers
 {
-    public static class Constants
+    [ApiController]
+    [Route("[controller]")]
+    public class GameController : ControllerBase
     {
-        public static Guid Player1 => new Guid("AFCAE5C4-278F-4411-B4F2-6C0785E11E0A");
-        public static Guid Player2 => new Guid("BFCAE5C4-278F-4411-B4F2-6C0785E11E0B");
-        public static Guid Player3 => new Guid("CFCAE5C4-278F-4411-B4F2-6C0785E11E0C");
-    }
+        private readonly ILogger<GameController> logger;
+        private readonly GameStatistics gameStatistics;
 
-    public class GameStatistics : IGameStatistics
-    {
-        private Guid gameId = Guid.NewGuid();
-        private readonly ConcurrentDictionary<FamilyTypes, Player> activePlayers = new();
-        public Guid GameId => gameId;
-        public int Generation { get; private set; }
-        public DateTime TimeStarted { get; private set; }
-        public bool GameStarted { get; private set; }
-        public IEnumerable<Player> Players => activePlayers.Values;
-
-        public Player ClaimPlayer(Player player)
+        public GameController(ILogger<GameController> logger, GameStatistics gameStatistics)
         {
-            if (activePlayers.TryAdd(player.FamilyType, player))
-            {
-                player.Message = $"Claimed {player.FamilyType}";
-            }
-            else
-            {
-                player.Uuid = Guid.Empty;
-                player.Message = $"Someone already claimed {player.FamilyType}";
-            }
-            return player;
-        }
-
-        public void ResetGame()
-        {
-            gameId = Guid.NewGuid();
-            Generation = 0;
-            TimeStarted = DateTime.MinValue;
-            GameStarted = false;
-            activePlayers.Clear();
+            this.logger = logger;
+            this.gameStatistics = gameStatistics;
         }
     }
 
@@ -58,26 +30,49 @@ namespace Rooting.WebApi.Controllers
             this.gameStatistics = gameStatistics;
         }
 
-        [HttpGet("Statistics")]
-        public ActionResult<GameStatistics> GameStatistics(Guid gameId)
-        {
-            if (gameId == gameStatistics.GameId) return gameStatistics;
-            logger.LogWarning("Invalid game id requested");
-            return NotFound();
-        }
-
         [HttpGet("CurrentPlayers")]
-        public IEnumerable<Player> Get()
+        public IEnumerable<PlayerModel> Get()
         {
-            return gameStatistics.Players;
+            return gameStatistics.Players.Select(m => new PlayerModel
+            {
+                Uuid = m.Uuid,
+                Name = m.Name,
+                Avatar = m.Avatar,
+                FamilyType = m.FamilyType
+            });
         }
 
         [HttpPost("ClaimFamily")]
-        public Player ClaimPlayer(Player player)
+        public PlayerModel ClaimPlayer(PlayerModel player)
         {
-            var id = GetPLayerId(player.FamilyType);
+            var client = Request.HttpContext.Connection.RemotePort.ToString() ?? "0";
+            var id = GetPlayerId(player.FamilyType);
             player.Uuid = id;
-            return gameStatistics.ClaimPlayer(player);
+            return gameStatistics.ClaimPlayer(player, client);
+        }
+
+        [HttpPut("Player/{id}")]
+        public ActionResult<PlayerModel> UpdatePlayer(string id, [FromBody] PlayerModel player)
+        {
+            var client = Request.HttpContext.Connection.RemotePort.ToString() ?? "0";
+            if (!Guid.TryParse(id, out var playerId))
+            {
+                logger.LogWarning($"Invalid id used in UpdatePlayer: '{id}'");
+                return BadRequest("id is not a valid player id");
+            }
+            var playerData = gameStatistics.Player(playerId);
+            if (playerData == null)
+            {
+                return NotFound();
+            }
+            if (playerData.RemoteIp != client)
+            {
+                logger.LogError($"Client '{client}' tried to access user: '{id}'.");
+                return Forbid("Detected invalid access.");
+            }
+
+            gameStatistics.UpdatePlayer(playerData.FamilyType, player.Name, player.Avatar);
+            return player;
         }
 
         [HttpPost("ResetGame")]
@@ -87,7 +82,7 @@ namespace Rooting.WebApi.Controllers
             return gameStatistics.GameId;
         }
 
-        private static Guid GetPLayerId(FamilyTypes type) => type switch
+        private static Guid GetPlayerId(FamilyTypes type) => type switch
         {
             FamilyTypes.Tree => Constants.Player1,
             FamilyTypes.Animal => Constants.Player2,
