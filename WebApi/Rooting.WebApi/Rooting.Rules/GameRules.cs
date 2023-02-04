@@ -67,6 +67,7 @@ namespace Rooting.Rules
         public GameLog gameLog = new();
         public DateTime NextTurn { get; private set; }
         public WorldMap WorldMap { get; private set; } = new WorldMap();
+        public string Shout { get; private set; }
 
         private readonly Player System = new Player
         {
@@ -80,6 +81,7 @@ namespace Rooting.Rules
             this.gameDefinitionFactory = gameDefinitionFactory;
             this.gameEngine = gameEngine;
             gameSetup = new GameSetup();
+            Shout = "Initializing...";
             ResetGame();
         }
 
@@ -120,6 +122,7 @@ namespace Rooting.Rules
             if (activePlayers.TryAdd(player.FamilyType, player))
             {
                 message = $"Claimed {player.FamilyType}";
+                Shout = $"Player {player.Name} claimed {player.FamilyType}";
             }
             else
             {
@@ -209,19 +212,28 @@ namespace Rooting.Rules
             card.PlayingState = PlayingState.InHand;
         }
 
-        public GameStatus ReadGameStatus() => CurrentGameStatus;
+        public GameGeneration ReadGameStatus() => new GameGeneration
+        {
+            CurrentTime = DateTime.Now,
+            GameStatus = this.CurrentGameStatus.ToString(),
+            Id = Generation,
+            NextTurn = NextTurn,
+            Shout = Shout
+        };
 
         public GameGeneration StartGame(Player player, bool force)
         {
             if (!Players.Any(p => p.Uuid == player.Uuid)) throw new GameException("Invalid player");
             if (Players.Count() == 0) throw new GameException("No players");
 
+            Shout = "Waiting for players";
             var r = new GameGeneration
             {
-                GameStatus = CurrentGameStatus,
+                GameStatus = CurrentGameStatus.ToString(),
                 CurrentTime = DateTime.Now,
                 Id = GameId,
                 NextTurn = NextTurn,
+                Shout = Shout
             };
 
             if (CurrentGameStatus == GameStatus.WaitingForPlayers)
@@ -232,9 +244,10 @@ namespace Rooting.Rules
                     CurrentGameStatus = GameStatus.GameWaitingForEndOfTurn;
                     gameLog.StartedAtTime = DateTime.Now;
                     NextTurn = DateTime.Now.Add(gameLoopTime);
-                    r.GameStatus = GameStatus.GameWaitingForEndOfTurn;
+                    Shout = "Game Started";
+                    r.GameStatus = GameStatus.GameWaitingForEndOfTurn.ToString();
                     r.NextTurn = NextTurn;
-                    r.Shout = "Game Started";
+                    r.Shout = Shout;
 
                     foreach (var p in Players) player.IsPlaying = true;
                 }
@@ -249,9 +262,10 @@ namespace Rooting.Rules
                 CurrentGameStatus = GameStatus.GameWaitingForEndOfTurn;
                 gameLog.StartedAtTime = DateTime.Now;
                 NextTurn = DateTime.Now.Add(gameLoopTime);
-                r.GameStatus = GameStatus.GameWaitingForEndOfTurn;
+                Shout = "Game Started";
+                r.GameStatus = GameStatus.GameWaitingForEndOfTurn.ToString();
                 r.NextTurn = NextTurn;
-                r.Shout = "Game Started";
+                r.Shout = Shout;
 
                 foreach (var p in Players) player.IsPlaying = true;
             }
@@ -281,13 +295,14 @@ namespace Rooting.Rules
             {
                 CurrentGameStatus = GameStatus.GamePaused;
                 AddGameLog(player, LogLevel.Information, "Game paused");
+                Shout = "Game is paused.";
                 return new GameGeneration
                 {
                     CurrentTime = DateTime.Now,
-                    GameStatus = CurrentGameStatus,
+                    GameStatus = CurrentGameStatus.ToString(),
                     NextTurn = NextTurn,
                     Id = gameId,
-                    Shout = "Game is paused."
+                    Shout = Shout
                 };
             }
 
@@ -296,13 +311,14 @@ namespace Rooting.Rules
                 CurrentGameStatus = GameStatus.GameWaitingForEndOfTurn;
                 NextTurn = DateTime.Now.Add(gameLoopTime);
                 AddGameLog(player, LogLevel.Information, "Game resumed");
+                Shout = "Game resuming.";
                 return new GameGeneration
                 {
                     CurrentTime = DateTime.Now,
-                    GameStatus = CurrentGameStatus,
+                    GameStatus = CurrentGameStatus.ToString(),
                     NextTurn = NextTurn,
                     Id = gameId,
-                    Shout = "Game resuming."
+                    Shout = Shout
                 };
             }
 
@@ -310,25 +326,27 @@ namespace Rooting.Rules
             {
                 CurrentGameStatus = GameStatus.GameStopped;
                 AddGameLog(player, LogLevel.Information, "Game stopped");
+                Shout = "Game stopped.";
                 return new GameGeneration
                 {
                     CurrentTime = DateTime.Now,
-                    GameStatus = CurrentGameStatus,
+                    GameStatus = CurrentGameStatus.ToString(),
                     NextTurn = DateTime.MaxValue,
                     Id = gameId,
-                    Shout = "Game terminated."
+                    Shout = Shout
                 };
             }
             else
             {
                 AddGameLog(player, LogLevel.Warning, $"Modify state from {CurrentGameStatus} to {gameStatus} failed.");
+                Shout = "Game status canot be modified.";
                 return new GameGeneration
                 {
                     CurrentTime = DateTime.Now,
-                    GameStatus = CurrentGameStatus,
+                    GameStatus = CurrentGameStatus.ToString(),
                     NextTurn = NextTurn,
                     Id = gameId,
-                    Shout = "Game status canot be modified."
+                    Shout = Shout
                 };
             }
         }

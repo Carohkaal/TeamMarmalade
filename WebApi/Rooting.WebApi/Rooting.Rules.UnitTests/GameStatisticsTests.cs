@@ -72,7 +72,7 @@ namespace Rooting.Rules.UnitTests
             var player = sut.ClaimPlayer(_fakePlayerModel, "REMOTE");
             Assert.IsNotNull(player);
             Assert.AreNotEqual(Guid.Empty, player.Uuid);
-            Assert.AreEqual("Claimed Fungi", player.Message);
+            Assert.AreEqual("Claimed Plant", player.Message);
         }
 
         [TestMethod]
