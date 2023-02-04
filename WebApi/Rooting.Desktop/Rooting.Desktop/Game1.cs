@@ -78,7 +78,7 @@ namespace Rooting.Desktop
                 try
                 {
                     var texture = Content.Load<Texture2D>(card.Art);
-                    textures.Add(card.Art, texture);
+                    textures.Add(card.Name, texture);
                 }
                 catch
                 {
