@@ -33,6 +33,7 @@ namespace Rooting.Rules
                     var cardId = r.Next(cardsLeft.Length);
                     var card = cardsLeft[cardId];
                     gameStatistics.TakeCardInHand(fam, card.Id);
+                    currentCards = gameStatistics.CurrentInHand(fam);
                 }
                 if (currentCards.Length == 0) gameStatistics.PlayerIsPlaying(fam, false);
             }

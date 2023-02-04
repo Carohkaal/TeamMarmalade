@@ -6,19 +6,19 @@
         public int Cols { get; private set; }
 
         public int Generation { get; set; }
-        public TileBase[,] Tiles { get; set; }
+        public IEnumerable<TileBase> Tiles => tiles;
+        private readonly List<TileBase> tiles = new();
 
         private static readonly TileBase EmptyTile = new TileBase();
 
         public WorldMap()
         {
-            Tiles = new TileBase[0, 0];
         }
 
-        public void InitWorld(int rows, int cols, IEnumerable<TileBase> tiles)
+        public void InitWorld(int rows, int cols, IEnumerable<TileBase> tileMap)
         {
+            tiles.Clear();
             Rows = rows; Cols = cols;
-            Tiles = new TileBase[cols, rows];
             for (var r = 0; r < Rows; r++)
                 for (var c = 0; c < Cols; c++)
                 {
@@ -34,7 +34,7 @@
                     newTile.Row = r;
                     newTile.Name = newTile.FamilyType.ToString();
 
-                    Tiles[c, r] = newTile;
+                    tiles.Add(newTile);
                 }
         }
     }
