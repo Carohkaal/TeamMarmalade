@@ -1,7 +1,6 @@
-﻿using Rooting.WebApi.Controllers;
-using System.Reflection;
+﻿using System.Reflection;
 
-namespace Rooting.WebApi.MapResource
+namespace Rooting.Rules
 {
     public static class ResourceHelper
     {

@@ -1,4 +1,4 @@
-﻿namespace Rooting.WebApi.Controllers
+﻿namespace Rooting.Rules
 {
     public static class Constants
     {

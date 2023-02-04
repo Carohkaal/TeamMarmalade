@@ -294,8 +294,9 @@ namespace Rooting.Rules
             }
         }
 
-        public PlayingCard PlayCard(FamilyTypes familyType, PlayingCard playingCard)
+        public PlayingCard PlayCard(Player player, PlayingCard playingCard)
         {
+            var familyType = player.FamilyType;
             if (playingCard.FamilyType != familyType)
             {
                 AddGameLog(System, LogLevel.Error, $"Card {playingCard.Id} is not from {familyType}.");
@@ -307,6 +308,7 @@ namespace Rooting.Rules
             var card = CurrentInHand(familyType).FirstOrDefault(m => m.Id == playingCard.Id);
             if (card != null)
             {
+                player.IsPlaying = false;
                 card.PlayingState = PlayingState.Played;
                 card.PlayedAtTile = playingCard.PlayedAtTile;
                 card.Message = playingCard.Message ?? $"Played at {DateTime.Now:HH:mm}";

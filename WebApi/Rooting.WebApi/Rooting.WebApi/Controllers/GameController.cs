@@ -29,7 +29,7 @@ namespace Rooting.WebApi.Controllers
         {
             return ExecuteForUser(playerId, (player) =>
             {
-                return gameStatistics.PlayCard(player.FamilyType, playingCard);
+                return gameStatistics.PlayCard(player, playingCard);
             });
         }
 
