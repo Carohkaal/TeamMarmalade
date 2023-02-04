@@ -7,5 +7,6 @@
         Tree = 1,
         Fungi = 2,
         Animal = 4,
+        All = 255
     }
 }

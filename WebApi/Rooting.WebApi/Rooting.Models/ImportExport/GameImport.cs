@@ -6,5 +6,6 @@
         public IEnumerable<DefineAction> Actions { get; set; } = Array.Empty<DefineAction>();
         public IEnumerable<DefineCard> Cards { get; set; } = Array.Empty<DefineCard>();
         public IEnumerable<DefineDeck> Deck { get; set; } = Array.Empty<DefineDeck>();
+        public IEnumerable<string> Map { get; set; } = Array.Empty<string>();
     }
 }

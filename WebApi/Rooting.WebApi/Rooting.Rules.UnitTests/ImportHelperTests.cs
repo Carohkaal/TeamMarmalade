@@ -9,12 +9,27 @@ namespace Rooting.Rules.UnitTests
         [TestMethod]
         public async Task ImportHelperCanLoad()
         {
-            var m = new MemoryStream(Encoding.UTF8.GetBytes("[]"));
-            var importResult = await ImportHelper.ReadGameImport(m);
+            var m = new MemoryStream(Encoding.UTF8.GetBytes("{}"));
+            var importResult = await ImportHelper.ImportSetup(m);
             Assert.IsNotNull(importResult);
             Assert.IsNotNull(importResult.Requirements);
             Assert.IsNotNull(importResult.Actions);
             Assert.IsNotNull(importResult.Cards);
+            Assert.IsNotNull(importResult.Deck);
+        }
+
+        //SampleData
+
+        [TestMethod]
+        public async Task ImportHelperCanLoadJson()
+        {
+            var m = new MemoryStream(Encoding.UTF8.GetBytes(SampleData));
+            var importResult = await ImportHelper.ImportSetup(m);
+            Assert.IsNotNull(importResult);
+            Assert.AreEqual(3, importResult.Requirements.Count);
+            Assert.AreEqual(2, importResult.Actions.Count);
+            Assert.AreEqual(2, importResult.Cards.Count);
+            Assert.AreEqual(5, importResult.Deck.Count);
         }
 
         [TestMethod]
@@ -66,7 +81,7 @@ namespace Rooting.Rules.UnitTests
             var act2 = new ActionBase
             {
                 Cost = 2,
-                Name = "Foo-Action",
+                Name = "Bar-Action",
                 Scores = new Score[]
     {
                     new Score { FamilyTypes= FamilyTypes.Animal, ScoreType = ScoreType.Mission, ScoreValue = -1 },
@@ -74,7 +89,7 @@ namespace Rooting.Rules.UnitTests
                     new Score { FamilyTypes= FamilyTypes.Tree, ScoreType = ScoreType.Distance, ScoreValue = 2 },
     }
             };
-            model.Actions.Add("FOO-ACTION", act1);
+            model.Actions.Add("BAR-ACTION", act2);
 
             var pawn = new CardBase
             {
@@ -110,9 +125,151 @@ namespace Rooting.Rules.UnitTests
             model.Deck.Add(4, rook);
             model.Deck.Add(5, rook);
 
+            model.DefineMap(
+                "___########___" + Environment.NewLine +
+                "__##T#######__" + Environment.NewLine +
+                "_######A###___" + Environment.NewLine +
+                "____#F#######_" + Environment.NewLine +
+                "___########___" + Environment.NewLine +
+                "____######____");
+
             await ImportHelper.WriteExport(model, "c:\\tmp\\Game-Setup.json");
 
             Assert.IsTrue(true, "Export completed");
         }
+
+        private const string SampleData = @"{
+  ""Requirements"": [
+    {
+      ""Name"": ""Foo"",
+      ""Description"": ""Foo description"",
+      ""RequireTier"": 1,
+      ""RequireFamily"": ""Tree"",
+      ""RequireTileControl"": true,
+      ""RequireTileDistance"": 1
+    },
+    {
+      ""Name"": ""Bar"",
+      ""Description"": ""Bar description"",
+      ""RequireTier"": 0,
+      ""RequireFamily"": ""Fungi"",
+      ""RequireTileControl"": false,
+      ""RequireTileDistance"": 0
+    },
+    {
+      ""Name"": ""Alice"",
+      ""Description"": ""Alice description"",
+      ""RequireTier"": 0,
+      ""RequireFamily"": ""Animal"",
+      ""RequireTileControl"": false,
+      ""RequireTileDistance"": 0
+    }
+  ],
+  ""Actions"": [
+    {
+      ""Name"": ""Foo-Action"",
+      ""Cost"": 1,
+      ""Scores"": [
+        {
+          ""FamilyType"": ""Animal"",
+          ""ScoreType"": ""Mission"",
+          ""Score"": 2
+        },
+        {
+          ""FamilyType"": ""Fungi"",
+          ""ScoreType"": ""Capture"",
+          ""Score"": -2
+        },
+        {
+          ""FamilyType"": ""Tree"",
+          ""ScoreType"": ""Distance"",
+          ""Score"": 5
+        }
+      ]
+    },
+    {
+      ""Name"": ""Bar-Action"",
+      ""Cost"": 1,
+      ""Scores"": [
+        {
+          ""FamilyType"": ""Animal"",
+          ""ScoreType"": ""Mission"",
+          ""Score"": 2
+        },
+        {
+          ""FamilyType"": ""Fungi"",
+          ""ScoreType"": ""Capture"",
+          ""Score"": -2
+        },
+        {
+          ""FamilyType"": ""Tree"",
+          ""ScoreType"": ""Distance"",
+          ""Score"": 5
+        }
+      ]
+    }
+  ],
+  ""Cards"": [
+    {
+      ""Name"": ""Pawn"",
+      ""Tier"": 1,
+      ""FamilyType"": ""Fungi"",
+      ""Description"": ""Pawn for fungi"",
+      ""Art"": ""https://rootingwebapi.azurewebsites.net/art/pawn.jpg"",
+      ""PlayRange"": 1,
+      ""Actions"": [
+        ""Foo-Action""
+      ],
+      ""Requirements"": [
+        ""Foo"",
+        ""Bar""
+      ]
+    },
+    {
+      ""Name"": ""Rook"",
+      ""Tier"": 2,
+      ""FamilyType"": ""Fungi"",
+      ""Description"": ""Rook for fungi"",
+      ""Art"": ""https://rootingwebapi.azurewebsites.net/art/pawn.jpg"",
+      ""PlayRange"": 3,
+      ""Actions"": [
+        ""Foo-Action"",
+        ""Bar-Action""
+      ],
+      ""Requirements"": [
+        ""Alice""
+      ]
+    }
+  ],
+  ""Deck"": [
+    {
+      ""Id"": 1,
+      ""Name"": ""Pawn""
+    },
+    {
+      ""Id"": 2,
+      ""Name"": ""Pawn""
+    },
+    {
+      ""Id"": 3,
+      ""Name"": ""Pawn""
+    },
+    {
+      ""Id"": 4,
+      ""Name"": ""Rook""
+    },
+    {
+      ""Id"": 5,
+      ""Name"": ""Rook""
+    }
+  ],
+  ""Map"": [
+    ""############"",
+    ""..##T#######"",
+    "".##T########"",
+    ""....#F######"",
+    ""##T########.""
+  ]
+}";
     }
 }

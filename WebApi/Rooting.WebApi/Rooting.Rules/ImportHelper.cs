@@ -1,12 +1,38 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Rooting.Models;
 using Rooting.Models.ImportExport;
+using System.Runtime.CompilerServices;
 
 namespace Rooting.Rules
 {
     public static class ImportHelper
     {
-        public static async Task<GameImport?> ReadGameImport(Stream s)
+        public static char ToChar(this FamilyTypes value)
+        {
+            switch (value)
+            {
+                case FamilyTypes.Animal: return 'A';
+                case FamilyTypes.Tree: return 'T';
+                case FamilyTypes.Fungi: return 'F';
+                case FamilyTypes.All: return '#';
+                default: return '.';
+            }
+        }
+
+        public static FamilyTypes ToFamilyType(this char c)
+        {
+            switch (char.ToUpperInvariant(c))
+            {
+                case 'A': return FamilyTypes.Animal;
+                case 'T': return FamilyTypes.Tree;
+                case 'F': return FamilyTypes.Fungi;
+                case '#': return FamilyTypes.All;
+                default: return FamilyTypes.None;
+            }
+        }
+
+        private static async Task<GameImport?> ReadGameImport(Stream s)
         {
             var ts = new StreamReader(s);
             var content = await ts.ReadToEndAsync();
@@ -21,11 +47,33 @@ namespace Rooting.Rules
                 Actions = ExtractActions(setup),
                 Cards = ExtractCards(setup),
                 Deck = ExtractDeck(setup),
+                Map = ExtractMap(setup)
             };
 
-            var data = JsonConvert.SerializeObject(e);
+            var data = JsonConvert.SerializeObject(e, Formatting.Indented);
             using var sw = new StreamWriter(path);
             await sw.WriteAsync(data);
+        }
+
+        private static IEnumerable<string> ExtractMap(GameSetup setup)
+        {
+            var rows = 0;
+            var cols = 0;
+            foreach (var card in setup.Map)
+            {
+                if (card.Row > rows) rows = card.Row;
+                if (card.Col > cols) cols = card.Col;
+            }
+            for (var y = 0; y < rows; y++)
+            {
+                var rowString = new char[cols];
+                for (var x = 0; x < cols; x++)
+                {
+                    var type = setup.TileBaseType(y, x);
+                    rowString[x] = type.ToChar();
+                }
+                yield return new string(rowString);
+            }
         }
 
         private static List<DefineDeck> ExtractDeck(GameSetup setup)
@@ -112,7 +160,42 @@ namespace Rooting.Rules
             return er;
         }
 
-        public static void ImportDeck(GameSetup setup, GameImport m)
+        public static async Task<GameSetup> ImportSetup(Stream importStream)
+        {
+            var setup = new GameSetup();
+            var importFile = await ReadGameImport(importStream);
+            if (importFile == null) return setup;
+
+            ImportActions(setup, importFile);
+            ImportRequirements(setup, importFile);
+            ImportCards(setup, importFile);
+            ImportDeck(setup, importFile);
+            ImportMap(setup, importFile);
+
+            return setup;
+        }
+
+        private static void ImportMap(GameSetup setup, GameImport m)
+        {
+            var row = 0;
+            foreach (var item in m.Map)
+            {
+                var col = 0;
+                if (item == null) continue;
+                foreach (var c in item)
+                {
+                    var fam = c.ToFamilyType();
+                    if (fam != FamilyTypes.None)
+                    {
+                        setup.AddTile(row, col, fam);
+                    }
+                    col++;
+                }
+                row++;
+            }
+        }
+
+        private static void ImportDeck(GameSetup setup, GameImport m)
         {
             foreach (var item in m.Deck)
             {
@@ -140,10 +223,9 @@ namespace Rooting.Rules
 
                 var name = item.Name.ToUpperInvariant();
                 if (setup.Actions.ContainsKey(name))
-                {
-                    setup.Actions.Remove(name);
-                }
-                setup.Actions.Add(name, item);
+                    setup.Invalid(nameof(ActionBase), $"Duplicate key in actions {name}");
+                else
+                    setup.Actions.Add(name, item);
             }
         }
 
@@ -188,10 +270,9 @@ namespace Rooting.Rules
 
                 var name = item.Name.ToUpperInvariant();
                 if (setup.Requirements.ContainsKey(name))
-                {
-                    setup.Requirements.Remove(name);
-                }
-                setup.Requirements.Add(name, item);
+                    setup.Invalid(nameof(Requirement), $"Duplicate key in requirements {name}");
+                else
+                    setup.Requirements.Add(name, item);
             }
         }
 
@@ -225,10 +306,9 @@ namespace Rooting.Rules
 
                 var name = item.Name.ToUpperInvariant();
                 if (setup.Cards.ContainsKey(name))
-                {
-                    setup.Cards.Remove(name);
-                }
-                setup.Cards.Add(name, item);
+                    setup.Invalid(nameof(FamilyTypes), $"Duplicate key in cards {name}");
+                else
+                    setup.Cards.Add(name, item);
             }
         }
 
@@ -245,6 +325,7 @@ namespace Rooting.Rules
             };
 
             var cost = 0;
+            var actions = new List<ActionBase>();
             foreach (var a in data.Actions)
             {
                 var action = setup.Actions[a.ToUpperInvariant()];
@@ -253,11 +334,13 @@ namespace Rooting.Rules
                     setup.NotFound(nameof(ActionBase), $"Could not find action {a}");
                     continue;
                 }
-                c.Actions.Add(action);
+                actions.Add(action);
                 cost += action.Cost;
             }
+            c.Actions = actions;
             c.TotalCost = cost;
 
+            var requirements = new List<Requirement>();
             foreach (var r in data.Requirements)
             {
                 var requirement = setup.Requirements[r.ToUpperInvariant()];
@@ -266,8 +349,9 @@ namespace Rooting.Rules
                     setup.NotFound(nameof(Requirement), $"Could not find requirement {r}");
                     continue;
                 }
-                c.Requirements.Add(requirement);
+                requirements.Add(requirement);
             }
+            c.Requirements = requirements;
 
             return c;
         }
