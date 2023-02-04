@@ -1,3 +1,4 @@
+using Rooting.Rules;
 using Rooting.WebApi.Controllers;
 
 namespace Rooting.WebApi
@@ -19,7 +20,6 @@ namespace Rooting.WebApi
             builder.Services.AddSingleton<IGameEngine, GameRulesGGJ2023>();
             builder.Services.AddSingleton<IGameDefinitionFactory, GameDefinitionFactory>();
             builder.Services.AddSingleton<GameStatistics>();
-            
 
             var app = builder.Build();
 

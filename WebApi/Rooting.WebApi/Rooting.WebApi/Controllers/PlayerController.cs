@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Rooting.Models;
 using Rooting.Models.ResponseModels;
+using Rooting.Rules;
 
 namespace Rooting.WebApi.Controllers
 {
@@ -44,7 +45,7 @@ namespace Rooting.WebApi.Controllers
         }
 
         [HttpPost("ResetGame")]
-        public Guid ResetGame()
+        public long ResetGame()
         {
             gameStatistics.ResetGame();
             return gameStatistics.GameId;
@@ -52,7 +53,7 @@ namespace Rooting.WebApi.Controllers
 
         private static Guid GetPlayerId(FamilyTypes type) => type switch
         {
-            FamilyTypes.Tree => Constants.Player1,
+            FamilyTypes.Plant => Constants.Player1,
             FamilyTypes.Animal => Constants.Player2,
             FamilyTypes.Fungi => Constants.Player3,
             FamilyTypes.None => Guid.Empty,

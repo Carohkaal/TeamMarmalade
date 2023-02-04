@@ -1,6 +1,4 @@
-﻿using Rooting.Rules;
-
-namespace Rooting.WebApi.Controllers
+﻿namespace Rooting.Rules
 {
     public interface IGameDefinitionFactory
     {
