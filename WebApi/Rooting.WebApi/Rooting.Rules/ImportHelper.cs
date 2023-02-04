@@ -1,8 +1,6 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Rooting.Models;
 using Rooting.Models.ImportExport;
-using System.Runtime.CompilerServices;
 
 namespace Rooting.Rules
 {
@@ -74,6 +72,18 @@ namespace Rooting.Rules
                 }
                 yield return new string(rowString);
             }
+        }
+
+        public static PlayingCard AsNewPlayingCard(this CardBase item, int id)
+        {
+            if (item == null) throw new ArgumentNullException(nameof(item));
+            return new PlayingCard
+            {
+                Id = id,
+                FamilyType = item.FamilyTypes,
+                Name = item.Name,
+                PlayingState = PlayingState.InStock
+            };
         }
 
         private static List<DefineDeck> ExtractDeck(GameSetup setup)
@@ -160,9 +170,13 @@ namespace Rooting.Rules
             return er;
         }
 
-        public static async Task<GameSetup> ImportSetup(Stream importStream)
+        public static async Task<GameSetup> ImportSetup(Stream? importStream)
         {
             var setup = new GameSetup();
+            if (importStream == null)
+            {
+                return setup;
+            }
             var importFile = await ReadGameImport(importStream);
             if (importFile == null) return setup;
 
@@ -209,7 +223,14 @@ namespace Rooting.Rules
                 else
                 {
                     var card = setup.Cards[name];
-                    setup.Deck.Add(item.Id, card);
+                    var playingCard = new PlayingCard
+                    {
+                        Id = item.Id,
+                        Name = card.Name,
+                        FamilyType = card.FamilyTypes,
+                        PlayingState = PlayingState.InStock
+                    };
+                    setup.Deck.Add(item.Id, playingCard);
                 }
             }
         }

@@ -16,7 +16,9 @@ namespace Rooting.WebApi
             builder.Services.AddSwaggerGen();
 
             // Setup configuration
-            builder.Services.AddSingleton(new GameStatistics());
+            builder.Services.AddSingleton<IGameEngine, GameRulesGGJ2023>();
+            builder.Services.AddSingleton<IGameDefinitionFactory, GameDefinitionFactory>();
+            builder.Services.AddSingleton<GameStatistics>();
 
             var app = builder.Build();
 

@@ -119,11 +119,11 @@ namespace Rooting.Rules.UnitTests
             };
             model.Cards.Add("ROOK", rook);
 
-            model.Deck.Add(1, pawn);
-            model.Deck.Add(2, pawn);
-            model.Deck.Add(3, pawn);
-            model.Deck.Add(4, rook);
-            model.Deck.Add(5, rook);
+            model.Deck.Add(1, pawn.AsNewPlayingCard(1));
+            model.Deck.Add(2, pawn.AsNewPlayingCard(2));
+            model.Deck.Add(3, pawn.AsNewPlayingCard(3));
+            model.Deck.Add(4, rook.AsNewPlayingCard(4));
+            model.Deck.Add(5, rook.AsNewPlayingCard(5));
 
             model.DefineMap(
                 "___########___" + Environment.NewLine +

@@ -1,34 +1,21 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using OpenAPIDateConverter = Rooting.WebApi.Client.Client.OpenAPIDateConverter;
 using Polly;
 using RestSharp;
 using RestSharp.Serializers;
-using RestSharpMethod = RestSharp.Method;
 using Rooting.WebApi.Client.Client;
 using Rooting.WebApi.Client.Model;
-using System;
 using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Net.Mime;
-using System.Reflection;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
+using RestSharpMethod = RestSharp.Method;
 
 #pragma warning disable
 /*

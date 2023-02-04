@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Rooting.Rules
 {
-    public class GameSetup
+    public class GameSetup : ICloneable
     {
         public void Clear()
         {
@@ -23,7 +23,7 @@ namespace Rooting.Rules
         public Dictionary<string, Requirement> Requirements { get; } = new();
         public Dictionary<string, ActionBase> Actions { get; } = new();
         public Dictionary<string, CardBase> Cards { get; } = new();
-        public Dictionary<int, CardBase> Deck { get; } = new();
+        public Dictionary<int, PlayingCard> Deck { get; } = new();
         public int RowCount { get; } = 0;
         public int ColCount { get; } = 0;
 
@@ -75,6 +75,37 @@ namespace Rooting.Rules
                 }
                 row++;
             }
+        }
+
+        public object Clone()
+        {
+            var r = new GameSetup();
+            foreach (var item in Cards)
+            {
+                r.Cards.Add(item.Key, (CardBase)item.Value.Clone());
+            }
+
+            foreach (var item in Actions)
+            {
+                r.Actions.Add(item.Key, (ActionBase)item.Value.Clone());
+            }
+
+            foreach (var item in Requirements)
+            {
+                r.Requirements.Add(item.Key, (Requirement)item.Value.Clone());
+            }
+
+            foreach (var item in Deck)
+            {
+                r.Deck.Add(item.Key, (PlayingCard)item.Value.Clone());
+            }
+
+            foreach (var item in map)
+            {
+                r.map.Add(item.Key, (TileBase)item.Value.Clone());
+            }
+
+            return r;
         }
 
         public IEnumerable<TileBase> Map => map.Values;

@@ -1,33 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
 using Rooting.Models;
+using Rooting.Models.ResponseModels;
 
 namespace Rooting.WebApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class GameController : ControllerBase
+    public class PlayerController : MarmaladeController<PlayerController>
     {
-        private readonly ILogger<GameController> logger;
-        private readonly GameStatistics gameStatistics;
-
-        public GameController(ILogger<GameController> logger, GameStatistics gameStatistics)
+        public PlayerController(GameStatistics gameStatistics, ILogger<PlayerController> logger) : base(gameStatistics, logger)
         {
-            this.logger = logger;
-            this.gameStatistics = gameStatistics;
-        }
-    }
-
-    [ApiController]
-    [Route("[controller]")]
-    public class PlayerController : ControllerBase
-    {
-        private readonly ILogger<PlayerController> logger;
-        private readonly GameStatistics gameStatistics;
-
-        public PlayerController(ILogger<PlayerController> logger, GameStatistics gameStatistics)
-        {
-            this.logger = logger;
-            this.gameStatistics = gameStatistics;
         }
 
         [HttpGet("CurrentPlayers")]
@@ -54,25 +36,11 @@ namespace Rooting.WebApi.Controllers
         [HttpPut("Player/{id}")]
         public ActionResult<PlayerModel> UpdatePlayer(string id, [FromBody] PlayerModel player)
         {
-            var client = Request.HttpContext.Connection.RemotePort.ToString() ?? "0";
-            if (!Guid.TryParse(id, out var playerId))
+            return ExecuteForUser(id, (playerData) =>
             {
-                logger.LogWarning($"Invalid id used in UpdatePlayer: '{id}'");
-                return BadRequest("id is not a valid player id");
-            }
-            var playerData = gameStatistics.Player(playerId);
-            if (playerData == null)
-            {
-                return NotFound();
-            }
-            if (playerData.RemoteIp != client)
-            {
-                logger.LogError($"Client '{client}' tried to access user: '{id}'.");
-                return Forbid("Detected invalid access.");
-            }
-
-            gameStatistics.UpdatePlayer(playerData.FamilyType, player.Name, player.Avatar);
-            return player;
+                gameStatistics.UpdatePlayer(playerData.FamilyType, player.Name, player.Avatar);
+                return player;
+            });
         }
 
         [HttpPost("ResetGame")]

@@ -1,6 +1,6 @@
 ﻿namespace Rooting.Models
 {
-    public class TileBase : RootingModelBase
+    public class TileBase : RootingModelBase, ICloneable
     {
         public TileBase()
         {
@@ -16,6 +16,19 @@
         public int Col { get; set; }
         public FamilyTypes FamilyType { get; set; }
 
-        public ICollection<CardBase> CardsPlayed { get; set; } = Array.Empty<CardBase>();
+        public ICollection<CardBase> CardsPlayed => cardsPlayed;
+        private readonly List<CardBase> cardsPlayed = new List<CardBase>();
+
+        public object Clone()
+        {
+            return new TileBase
+            {
+                FamilyType = FamilyType,
+                Col = Col,
+                Name = Name,
+                Row = Row,
+                Uuid = Uuid,
+            };
+        }
     }
 }
