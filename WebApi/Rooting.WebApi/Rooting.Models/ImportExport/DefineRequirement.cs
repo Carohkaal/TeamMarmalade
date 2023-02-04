@@ -1,11 +1,12 @@
-﻿namespace Rooting.Models
+﻿namespace Rooting.Models.ImportExport
 {
-    public class Requirement : RootingModelBase
+    public class DefineRequirement
     {
+        public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public int RequireTier { get; set; }
+        public string RequireFamily { get; set; } = string.Empty;
         public bool RequireTileControl { get; set; }
         public int RequireTileDistance { get; set; }
-        public FamilyTypes RequireFamily { get; set; }
     }
 }

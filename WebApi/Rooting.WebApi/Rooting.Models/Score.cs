@@ -1,10 +1,9 @@
 ﻿namespace Rooting.Models
 {
-    public class Score : RootingModelBase
+    public class Score
     {
-        public int Distance { get; set; }
-        public int Captures { get; set; }
-        public int AreaControl { get; set; }
-        public int Missions { get; set; }
+        public int ScoreValue { get; set; }
+        public ScoreType ScoreType { get; set; }
+        public FamilyTypes FamilyTypes { get; set; }
     }
 }

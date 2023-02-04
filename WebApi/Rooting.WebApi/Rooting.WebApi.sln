@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rooting.WebApi.Client.UnitT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rooting.Models", "Rooting.Models\Rooting.Models.csproj", "{8CB8E9BA-4E25-4BA7-A9E3-426E2C8DB049}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rooting.Rules", "Rooting.Rules\Rooting.Rules.csproj", "{493E0AC0-F766-486A-8A04-D44F88FF3943}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rooting.Rules.UnitTests", "Rooting.Rules.UnitTests\Rooting.Rules.UnitTests.csproj", "{A5E01362-46F0-49F4-B039-B776F49C5C34}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{8CB8E9BA-4E25-4BA7-A9E3-426E2C8DB049}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8CB8E9BA-4E25-4BA7-A9E3-426E2C8DB049}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8CB8E9BA-4E25-4BA7-A9E3-426E2C8DB049}.Release|Any CPU.Build.0 = Release|Any CPU
+		{493E0AC0-F766-486A-8A04-D44F88FF3943}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{493E0AC0-F766-486A-8A04-D44F88FF3943}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{493E0AC0-F766-486A-8A04-D44F88FF3943}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{493E0AC0-F766-486A-8A04-D44F88FF3943}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5E01362-46F0-49F4-B039-B776F49C5C34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5E01362-46F0-49F4-B039-B776F49C5C34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5E01362-46F0-49F4-B039-B776F49C5C34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5E01362-46F0-49F4-B039-B776F49C5C34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
