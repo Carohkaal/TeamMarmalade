@@ -20,6 +20,13 @@
 /processorParam:TextureFormat=Compressed
 /build:Arial.spritefont
 
+#begin Arial.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Arial.spritefont
+
 #begin Card1.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -55,4 +62,11 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Card3.png
+
+#begin Fonts/NeueKabel-Regular12.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/NeueKabel-Regular12.spritefont
 
