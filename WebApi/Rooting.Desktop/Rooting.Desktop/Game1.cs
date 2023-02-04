@@ -93,7 +93,7 @@ namespace Rooting.Desktop
         {
             gw = Window;
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _currentFont = Content.Load<SpriteFont>("Arial");
+            _currentFont = Content.Load<SpriteFont>("Fonts/NeueKabel-Regular12");
             _defaultCard = Content.Load<Texture2D>("Card1");
 
             foreach (var c in _cardDefinitions.Value)
@@ -160,8 +160,8 @@ namespace Rooting.Desktop
 
             _spriteBatch.Begin();
             //_spriteBatch.Draw(cardTexture, new Vector2(0, 0), Color.White);
-            _spriteBatch.DrawString(_currentFont, myBoxHasFocus.ToString(), new Vector2(10, 50), Color.Yellow);
-            _spriteBatch.DrawString(_currentFont, myTextBoxDisplayCharacters, new Vector2(10, 100), Color.Red);
+            _spriteBatch.DrawString(_currentFont, myBoxHasFocus.ToString(), new Vector2(10, 50), Color.Black);
+            _spriteBatch.DrawString(_currentFont, myTextBoxDisplayCharacters, new Vector2(10, 100), Color.Black);
             _spriteBatch.End();
 
             // TODO: Add your drawing code here
