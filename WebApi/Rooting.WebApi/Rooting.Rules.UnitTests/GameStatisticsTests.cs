@@ -19,14 +19,14 @@ namespace Rooting.Rules.UnitTests
 
         private readonly PlayerModel _fakePlayerModel = new PlayerModel
         {
-            FamilyType = FamilyTypes.Fungi,
+            FamilyType = FamilyTypes.Plant,
             Name = "Fake",
             Uuid = Guid.NewGuid(),
         };
 
         private readonly Player _fakePlayer = new Player
         {
-            FamilyType = FamilyTypes.Fungi,
+            FamilyType = FamilyTypes.Plant,
             Name = "Fake",
             Uuid = Guid.NewGuid(),
         };

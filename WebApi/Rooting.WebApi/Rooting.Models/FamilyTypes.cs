@@ -3,7 +3,7 @@
     [Flags]
     public enum FamilyTypes
     {
-        None = 0,
+        Any = 0,
         Plant = 1,
         Fungi = 2,
         Animal = 4,

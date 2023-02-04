@@ -56,7 +56,7 @@ namespace Rooting.WebApi.Controllers
             FamilyTypes.Plant => Constants.Player1,
             FamilyTypes.Animal => Constants.Player2,
             FamilyTypes.Fungi => Constants.Player3,
-            FamilyTypes.None => Guid.Empty,
+            FamilyTypes.Any => Guid.Empty,
             _ => Guid.Empty
         };
     }

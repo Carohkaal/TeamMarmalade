@@ -26,7 +26,7 @@ namespace Rooting.Rules
                 case 'T': return FamilyTypes.Plant;
                 case 'F': return FamilyTypes.Fungi;
                 case '#': return FamilyTypes.All;
-                default: return FamilyTypes.None;
+                default: return FamilyTypes.Any;
             }
         }
 
@@ -199,7 +199,7 @@ namespace Rooting.Rules
                 foreach (var c in item)
                 {
                     var fam = c.ToFamilyType();
-                    if (fam != FamilyTypes.None)
+                    if (fam != FamilyTypes.Any)
                     {
                         setup.AddTile(row, col, fam);
                     }

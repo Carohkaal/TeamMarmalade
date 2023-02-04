@@ -60,7 +60,7 @@ namespace Rooting.Rules
             var key = (row << 8) + col;
             return map.ContainsKey(key)
                 ? map[key].FamilyType
-                : FamilyTypes.None;
+                : FamilyTypes.Any;
         }
 
         public bool AddTile(int row, int col, FamilyTypes familyType)
@@ -87,7 +87,7 @@ namespace Rooting.Rules
                 foreach (var c in line)
                 {
                     var fam = c.ToFamilyType();
-                    if (fam != FamilyTypes.None)
+                    if (fam != FamilyTypes.Any)
                     {
                         AddTile(row, col, fam);
                     }
