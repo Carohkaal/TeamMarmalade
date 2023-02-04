@@ -4,7 +4,6 @@
     {
         public string Name { get; set; } = string.Empty;
         public int Tier { get; set; }
-        public int TotalCost { get; set; }
         public string FamilyType { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string Art { get; set; } = string.Empty;

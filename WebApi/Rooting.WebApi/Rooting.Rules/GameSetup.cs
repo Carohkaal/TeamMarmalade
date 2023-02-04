@@ -22,6 +22,7 @@ namespace Rooting.Rules
         public Dictionary<string, Requirement> Requirements { get; } = new();
         public Dictionary<string, ActionBase> Actions { get; } = new();
         public Dictionary<string, CardBase> Cards { get; } = new();
+        public Dictionary<int, CardBase> Deck { get; } = new();
 
         public IEnumerable<LogLine> LogLines => logLines;
         private readonly List<LogLine> logLines = new();

@@ -5,7 +5,7 @@
         /// <summary>
         /// External unique identifier for all objects
         /// </summary>
-        public Guid Uuid { get; set; }
+        public Guid Uuid { get; set; } = Guid.NewGuid();
 
         /// <summary>
         /// Name for the item
