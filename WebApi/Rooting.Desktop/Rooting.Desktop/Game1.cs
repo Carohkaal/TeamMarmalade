@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Text;
 using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Net.Http;
@@ -12,6 +13,7 @@ namespace Rooting.Desktop
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private SpriteFont _currentFont;
         private RootingWebApiClient _webApiClient;
         private HttpClient _httpClient = new HttpClient();
         private Uri serverUri = new Uri("https://rootingwebapi.azurewebsites.net");
@@ -21,6 +23,14 @@ namespace Rooting.Desktop
         private PlayerModel[] _players;
 
         private Texture2D cardTexture;
+
+        public static GameWindow gw;
+        public static MouseState mouseState;
+        private bool myBoxHasFocus = true;
+        private StringBuilder myTextBoxDisplayCharacters = new StringBuilder();
+        //...
+
+        // in load assign the game window to that reference this is so we can have a nice way to have more then one textbox.
 
         public Game1()
         {
@@ -53,17 +63,52 @@ namespace Rooting.Desktop
 
         protected override void LoadContent()
         {
+            gw = Window;
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            _currentFont = Content.Load<SpriteFont>("Arial");
             cardTexture = Content.Load<Texture2D>("Card1");
 
 
             // TODO: use this.Content to load your game content here
         }
 
+        public static void RegisterFocusedButtonForTextInput(System.EventHandler<TextInputEventArgs> method)
+        {
+            gw.TextInput += method;
+        }
+        public static void UnRegisterFocusedButtonForTextInput(System.EventHandler<TextInputEventArgs> method)
+        {
+            gw.TextInput -= method;
+        }
+
+        public void CheckClickOnMyBox(Point mouseClick, bool isClicked, Rectangle r)
+        {
+            if (r.Contains(mouseClick) && isClicked)
+            {
+                myBoxHasFocus = !myBoxHasFocus;
+                if (myBoxHasFocus)
+                    RegisterFocusedButtonForTextInput(OnInput);
+                else
+                    UnRegisterFocusedButtonForTextInput(OnInput);
+            }
+        }
+
+        public void OnInput(object sender, TextInputEventArgs e)
+        {
+            var k = e.Key;
+            var c = e.Character;
+            myTextBoxDisplayCharacters.Append(c);
+            System.Diagnostics.Debug.WriteLine(myTextBoxDisplayCharacters);
+        }
+
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+            mouseState = Mouse.GetState();
+            var isClicked = mouseState.LeftButton == ButtonState.Pressed;
+            CheckClickOnMyBox(mouseState.Position, isClicked, new Rectangle(0, 0, 200, 200));
 
             // TODO: Add your update logic here
 
@@ -75,7 +120,9 @@ namespace Rooting.Desktop
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin();
-            _spriteBatch.Draw(cardTexture, new Vector2(0, 0), Color.White);
+            //_spriteBatch.Draw(cardTexture, new Vector2(0, 0), Color.White);
+            _spriteBatch.DrawString(_currentFont, myBoxHasFocus.ToString(), new Vector2(10, 50), Color.Yellow);
+            _spriteBatch.DrawString(_currentFont, myTextBoxDisplayCharacters, new Vector2(10, 100), Color.Red);
             _spriteBatch.End();
 
             // TODO: Add your drawing code here
