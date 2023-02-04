@@ -11,7 +11,7 @@ namespace Rooting.Rules
             switch (value)
             {
                 case FamilyTypes.Animal: return 'A';
-                case FamilyTypes.Tree: return 'T';
+                case FamilyTypes.Plant: return 'T';
                 case FamilyTypes.Fungi: return 'F';
                 case FamilyTypes.All: return '#';
                 default: return '.';
@@ -23,7 +23,7 @@ namespace Rooting.Rules
             switch (char.ToUpperInvariant(c))
             {
                 case 'A': return FamilyTypes.Animal;
-                case 'T': return FamilyTypes.Tree;
+                case 'T': return FamilyTypes.Plant;
                 case 'F': return FamilyTypes.Fungi;
                 case '#': return FamilyTypes.All;
                 default: return FamilyTypes.None;

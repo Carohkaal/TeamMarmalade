@@ -53,7 +53,7 @@ namespace Rooting.WebApi.Controllers
 
         private static Guid GetPlayerId(FamilyTypes type) => type switch
         {
-            FamilyTypes.Tree => Constants.Player1,
+            FamilyTypes.Plant => Constants.Player1,
             FamilyTypes.Animal => Constants.Player2,
             FamilyTypes.Fungi => Constants.Player3,
             FamilyTypes.None => Guid.Empty,

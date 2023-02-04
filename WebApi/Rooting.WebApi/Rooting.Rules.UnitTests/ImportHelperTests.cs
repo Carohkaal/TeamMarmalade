@@ -41,7 +41,7 @@ namespace Rooting.Rules.UnitTests
             {
                 Description = "Foo description",
                 Name = "Foo",
-                RequireFamily = FamilyTypes.Tree,
+                RequireFamily = FamilyTypes.Plant,
                 RequireTier = 1,
                 RequireTileControl = true,
                 RequireTileDistance = 1,
@@ -73,7 +73,7 @@ namespace Rooting.Rules.UnitTests
                 {
                     new Score { FamilyTypes= FamilyTypes.Animal, ScoreType = ScoreType.Mission, ScoreValue = 2 },
                     new Score { FamilyTypes= FamilyTypes.Fungi, ScoreType = ScoreType.Capture, ScoreValue = -2 },
-                    new Score { FamilyTypes= FamilyTypes.Tree, ScoreType = ScoreType.Distance, ScoreValue = 5 },
+                    new Score { FamilyTypes= FamilyTypes.Plant, ScoreType = ScoreType.Distance, ScoreValue = 5 },
                 }
             };
             model.Actions.Add("FOO-ACTION", act1);
@@ -86,7 +86,7 @@ namespace Rooting.Rules.UnitTests
     {
                     new Score { FamilyTypes= FamilyTypes.Animal, ScoreType = ScoreType.Mission, ScoreValue = -1 },
                     new Score { FamilyTypes= FamilyTypes.Fungi, ScoreType = ScoreType.Capture, ScoreValue = 5 },
-                    new Score { FamilyTypes= FamilyTypes.Tree, ScoreType = ScoreType.Distance, ScoreValue = 2 },
+                    new Score { FamilyTypes= FamilyTypes.Plant, ScoreType = ScoreType.Distance, ScoreValue = 2 },
     }
             };
             model.Actions.Add("BAR-ACTION", act2);
