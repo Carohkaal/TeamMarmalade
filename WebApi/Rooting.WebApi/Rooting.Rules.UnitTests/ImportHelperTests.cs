@@ -71,9 +71,9 @@ namespace Rooting.Rules.UnitTests
                 Name = "Foo-Action",
                 Scores = new Score[]
                 {
-                    new Score { FamilyTypes= FamilyTypes.Animal, ScoreType = ScoreType.Mission, ScoreValue = 2 },
-                    new Score { FamilyTypes= FamilyTypes.Fungi, ScoreType = ScoreType.Capture, ScoreValue = -2 },
-                    new Score { FamilyTypes= FamilyTypes.Plant, ScoreType = ScoreType.Distance, ScoreValue = 5 },
+                    new Score { FamilyTypes= FamilyTypes.Animal, ScoreType = ScoreType.Mission, ScoreValue = "2" },
+                    new Score { FamilyTypes= FamilyTypes.Fungi, ScoreType = ScoreType.Capture, ScoreValue = "-2" },
+                    new Score { FamilyTypes= FamilyTypes.Plant, ScoreType = ScoreType.Distance, ScoreValue ="5" },
                 }
             };
             model.Actions.Add("FOO-ACTION", act1);
@@ -84,9 +84,9 @@ namespace Rooting.Rules.UnitTests
                 Name = "Bar-Action",
                 Scores = new Score[]
     {
-                    new Score { FamilyTypes= FamilyTypes.Animal, ScoreType = ScoreType.Mission, ScoreValue = -1 },
-                    new Score { FamilyTypes= FamilyTypes.Fungi, ScoreType = ScoreType.Capture, ScoreValue = 5 },
-                    new Score { FamilyTypes= FamilyTypes.Plant, ScoreType = ScoreType.Distance, ScoreValue = 2 },
+                    new Score { FamilyTypes= FamilyTypes.Animal, ScoreType = ScoreType.Mission, ScoreValue = "Func1" },
+                    new Score { FamilyTypes= FamilyTypes.Fungi, ScoreType = ScoreType.Capture, ScoreValue = "54" },
+                    new Score { FamilyTypes= FamilyTypes.Plant, ScoreType = ScoreType.Distance, ScoreValue = "2" },
     }
             };
             model.Actions.Add("BAR-ACTION", act2);

@@ -1,133 +1,133 @@
 {
-  "Requirements": [
-    {
-      "Name": "Foo",
-      "Description": "Foo description",
-      "RequireTier": 1,
-      "RequireFamily": "Tree",
-      "RequireTileControl": true,
-      "RequireTileDistance": 1
-    },
-    {
-      "Name": "Bar",
-      "Description": "Bar description",
-      "RequireTier": 0,
-      "RequireFamily": "Fungi",
-      "RequireTileControl": false,
-      "RequireTileDistance": 0
-    },
-    {
-      "Name": "Alice",
-      "Description": "Alice description",
-      "RequireTier": 0,
-      "RequireFamily": "Animal",
-      "RequireTileControl": false,
-      "RequireTileDistance": 0
-    }
-  ],
-  "Actions": [
-    {
-      "Name": "Foo-Action",
-      "Cost": 1,
-      "Scores": [
+    "Requirements": [
         {
-          "FamilyType": "Animal",
-          "ScoreType": "Mission",
-          "Score": 2
+            "Name": "Foo",
+            "Description": "Foo description",
+            "RequireTier": 1,
+            "RequireFamily": "Plant",
+            "RequireTileControl": true,
+            "RequireTileDistance": 1
         },
         {
-          "FamilyType": "Fungi",
-          "ScoreType": "Capture",
-          "Score": -2
+            "Name": "Bar",
+            "Description": "Bar description",
+            "RequireTier": 0,
+            "RequireFamily": "Fungi",
+            "RequireTileControl": false,
+            "RequireTileDistance": 0
         },
         {
-          "FamilyType": "Tree",
-          "ScoreType": "Distance",
-          "Score": 5
+            "Name": "Alice",
+            "Description": "Alice description",
+            "RequireTier": 0,
+            "RequireFamily": "Animal",
+            "RequireTileControl": false,
+            "RequireTileDistance": 0
         }
-      ]
-    },
-    {
-      "Name": "Bar-Action",
-      "Cost": 2,
-      "Scores": [
+    ],
+    "Actions": [
         {
-          "FamilyType": "Animal",
-          "ScoreType": "Mission",
-          "Score": -1
+            "Name": "Foo-Action",
+            "Cost": 1,
+            "Scores": [
+                {
+                    "FamilyType": "Animal",
+                    "ScoreType": "Mission",
+                    "Score": "2"
+                },
+                {
+                    "FamilyType": "Fungi",
+                    "ScoreType": "Capture",
+                    "Score": "-2"
+                },
+                {
+                    "FamilyType": "Plant",
+                    "ScoreType": "Distance",
+                    "Score": "5"
+                }
+            ]
         },
         {
-          "FamilyType": "Fungi",
-          "ScoreType": "Capture",
-          "Score": 5
-        },
-        {
-          "FamilyType": "Tree",
-          "ScoreType": "Distance",
-          "Score": 2
+            "Name": "Bar-Action",
+            "Cost": 2,
+            "Scores": [
+                {
+                    "FamilyType": "Animal",
+                    "ScoreType": "Mission",
+                    "Score": "-1"
+                },
+                {
+                    "FamilyType": "Fungi",
+                    "ScoreType": "Capture",
+                    "Score": "5"
+                },
+                {
+                    "FamilyType": "Plant",
+                    "ScoreType": "Distance",
+                    "Score": "2"
+                }
+            ]
         }
-      ]
-    }
-  ],
-  "Cards": [
-    {
-      "Name": "Pawn",
-      "Tier": 1,
-      "FamilyType": "Fungi",
-      "Description": "Pawn for fungi",
-      "Art": "https://rootingwebapi.azurewebsites.net/art/pawn.jpg",
-      "PlayRange": 1,
-      "Actions": [
-        "Foo-Action"
-      ],
-      "Requirements": [
-        "Foo",
-        "Bar"
-      ]
-    },
-    {
-      "Name": "Rook",
-      "Tier": 2,
-      "FamilyType": "Fungi",
-      "Description": "Rook for fungi",
-      "Art": "https://rootingwebapi.azurewebsites.net/art/pawn.jpg",
-      "PlayRange": 3,
-      "Actions": [
-        "Foo-Action",
-        "Bar-Action"
-      ],
-      "Requirements": [
-        "Alice"
-      ]
-    }
-  ],
-  "Deck": [
-    {
-      "Id": 1,
-      "Name": "Pawn"
-    },
-    {
-      "Id": 2,
-      "Name": "Pawn"
-    },
-    {
-      "Id": 3,
-      "Name": "Pawn"
-    },
-    {
-      "Id": 4,
-      "Name": "Rook"
-    },
-    {
-      "Id": 5,
-      "Name": "Rook"
-    }
-  ],
-  "Map": [
-    "############",
-    "..##T#######",
-    ".##T########",
-    "....#F######",
-    "##T########."
-  ]
+    ],
+    "Cards": [
+        {
+            "Name": "Pawn",
+            "Tier": 1,
+            "FamilyType": "Fungi",
+            "Description": "Pawn for fungi",
+            "Art": "https://rootingwebapi.azurewebsites.net/art/pawn.jpg",
+            "PlayRange": 1,
+            "Actions": [
+                "Foo-Action"
+            ],
+            "Requirements": [
+                "Foo",
+                "Bar"
+            ]
+        },
+        {
+            "Name": "Rook",
+            "Tier": 2,
+            "FamilyType": "Fungi",
+            "Description": "Rook for fungi",
+            "Art": "https://rootingwebapi.azurewebsites.net/art/pawn.jpg",
+            "PlayRange": 3,
+            "Actions": [
+                "Foo-Action",
+                "Bar-Action"
+            ],
+            "Requirements": [
+                "Alice"
+            ]
+        }
+    ],
+    "Deck": [
+        {
+            "Id": 1,
+            "Name": "Pawn"
+        },
+        {
+            "Id": 2,
+            "Name": "Pawn"
+        },
+        {
+            "Id": 3,
+            "Name": "Pawn"
+        },
+        {
+            "Id": 4,
+            "Name": "Rook"
+        },
+        {
+            "Id": 5,
+            "Name": "Rook"
+        }
+    ],
+    "Map": [
+        "############",
+        "..##T#######",
+        ".##T########",
+        "....#F######",
+        "##T########."
+    ]
 }

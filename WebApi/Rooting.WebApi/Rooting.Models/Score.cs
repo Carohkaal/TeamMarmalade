@@ -2,7 +2,7 @@
 {
     public class Score : ICloneable
     {
-        public int ScoreValue { get; set; }
+        public string ScoreValue { get; set; } = string.Empty;
         public ScoreType ScoreType { get; set; }
         public FamilyTypes FamilyTypes { get; set; }
 
