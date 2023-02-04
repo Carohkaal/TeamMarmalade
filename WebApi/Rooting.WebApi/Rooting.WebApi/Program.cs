@@ -19,6 +19,7 @@ namespace Rooting.WebApi
             builder.Services.AddSingleton<IGameEngine, GameRulesGGJ2023>();
             builder.Services.AddSingleton<IGameDefinitionFactory, GameDefinitionFactory>();
             builder.Services.AddSingleton<GameStatistics>();
+            
 
             var app = builder.Build();
 
@@ -27,9 +28,8 @@ namespace Rooting.WebApi
             app.UseSwaggerUI();
 
             app.UseHttpsRedirection();
-
+            app.UseStaticFiles();
             app.UseAuthorization();
-
             app.MapControllers();
 
             app.Run();
