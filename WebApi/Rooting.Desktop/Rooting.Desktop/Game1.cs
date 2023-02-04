@@ -25,7 +25,9 @@ namespace Rooting.Desktop
         /// <summary>
         ///  My cards
         /// </summary>
-        private Dictionary<string, Texture2D> cardTexture;
+        /// 
+        Texture2D textBoxTexture;
+        //private Dictionary<string, Texture2D> cardTexture;
 
         private CardModel[] cardsInHand = Array.Empty<CardModel>();
 
@@ -72,6 +74,14 @@ namespace Rooting.Desktop
             gw = Window;
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _currentFont = Content.Load<SpriteFont>("Fonts/NeueKabel-Regular12");
+            try
+            {
+                textBoxTexture = Content.Load<Texture2D>("TextBoxBackgroundTEMP");
+            }
+            catch
+            { 
+      
+            }
             var textures = new Dictionary<string, Texture2D>();
             foreach (var card in cardsInHand)
             {
@@ -116,7 +126,6 @@ namespace Rooting.Desktop
             var k = e.Key;
             var c = e.Character;
             myTextBoxDisplayCharacters.Append(c);
-            System.Diagnostics.Debug.WriteLine(myTextBoxDisplayCharacters);
         }
 
         protected override void Update(GameTime gameTime)
@@ -139,8 +148,9 @@ namespace Rooting.Desktop
 
             _spriteBatch.Begin();
             //_spriteBatch.Draw(cardTexture, new Vector2(0, 0), Color.White);
-            _spriteBatch.DrawString(_currentFont, myBoxHasFocus.ToString(), new Vector2(10, 50), Color.Black);
-            _spriteBatch.DrawString(_currentFont, myTextBoxDisplayCharacters, new Vector2(10, 100), Color.Black);
+            _spriteBatch.Draw(textBoxTexture, new Vector2(0, 40), Color.White);
+            _spriteBatch.DrawString(_currentFont, "Please input your name and click start", new Vector2(0, 0), Color.White);
+            _spriteBatch.DrawString(_currentFont, myTextBoxDisplayCharacters, new Vector2(10, 100), Color.White);
             _spriteBatch.End();
 
             // TODO: Add your drawing code here
