@@ -144,7 +144,7 @@ namespace Rooting.Rules.UnitTests
       ""Name"": ""Foo"",
       ""Description"": ""Foo description"",
       ""RequireTier"": 1,
-      ""RequireFamily"": ""Tree"",
+      ""RequireFamily"": ""Plant"",
       ""RequireTileControl"": true,
       ""RequireTileDistance"": 1
     },
@@ -173,17 +173,17 @@ namespace Rooting.Rules.UnitTests
         {
           ""FamilyType"": ""Animal"",
           ""ScoreType"": ""Mission"",
-          ""Score"": 2
+          ""Score"": ""2""
         },
         {
           ""FamilyType"": ""Fungi"",
           ""ScoreType"": ""Capture"",
-          ""Score"": -2
+          ""Score"": ""-2""
         },
         {
-          ""FamilyType"": ""Tree"",
+          ""FamilyType"": ""Plant"",
           ""ScoreType"": ""Distance"",
-          ""Score"": 5
+          ""Score"": ""5""
         }
       ]
     },
@@ -194,17 +194,17 @@ namespace Rooting.Rules.UnitTests
         {
           ""FamilyType"": ""Animal"",
           ""ScoreType"": ""Mission"",
-          ""Score"": 2
+          ""Score"": ""Func""
         },
         {
           ""FamilyType"": ""Fungi"",
           ""ScoreType"": ""Capture"",
-          ""Score"": -2
+          ""Score"": ""-2""
         },
         {
-          ""FamilyType"": ""Tree"",
+          ""FamilyType"": ""Plant"",
           ""ScoreType"": ""Distance"",
-          ""Score"": 5
+          ""Score"": ""5""
         }
       ]
     }
