@@ -7,13 +7,27 @@ using System.Linq;
 using System.Net.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SharpDX.Direct3D9;
 
 namespace Rooting.Desktop
 {
     public class Game1 : Game
     {
+        enum GameState
+        {
+            MainMenu,
+            Gameplay
+        }
+
+        GameState _state;
+
+        private Point gameResolution = new Point(1920, 1080);
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+
+        RenderTarget2D renderTarget;
+        Rectangle renderTargetDestination;
+
         private SpriteFont _currentFont;
         private RootingWebApiClient _webApiClient;
         private HttpClient _httpClient = new HttpClient();
@@ -31,18 +45,18 @@ namespace Rooting.Desktop
 
         private PlayingCard[] cardsInHand = Array.Empty<PlayingCard>();
         private Texture2D _defaultCard;
-        public static GameWindow gw;
+        private Texture2D _startScreen;
+        private Texture2D _startButton;
         public static MouseState mouseState;
-        private bool myBoxHasFocus = true;
-        private StringBuilder myTextBoxDisplayCharacters = new StringBuilder();
-        //...
 
-        // in load assign the game window to that reference this is so we can have a nice way to have more then one textbox.
+        private KeyboardState currentKeyboardState;
+
+        string textBox = ""; //Start with no text
 
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
-            //_graphics.IsFullScreen = true;
+            _graphics.IsFullScreen = true;
             _graphics.ApplyChanges();
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -86,14 +100,25 @@ namespace Rooting.Desktop
             _cards = _cardDefinitions.Value;
             _players = _currentPlayers.Value;
 
+            Window.TextInput += TextInputHandler;
+
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            gw = Window;
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            _graphics.PreferredBackBufferWidth = gameResolution.X;
+            _graphics.PreferredBackBufferHeight = gameResolution.Y;
+            _graphics.ApplyChanges();
+
+            renderTarget = new RenderTarget2D(GraphicsDevice, gameResolution.X, gameResolution.Y);
+            renderTargetDestination = GetRenderTargetDestination(gameResolution, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+
             _currentFont = Content.Load<SpriteFont>("Fonts/NeueKabel-Regular12");
+            _startScreen = Content.Load<Texture2D>("Startscreen-01");
+            _startButton = Content.Load<Texture2D>("Startbutton");
             foreach (var card in _cardDefinitions.Value)
             {
                 try
@@ -108,63 +133,137 @@ namespace Rooting.Desktop
             // TODO: use this.Content to load your game content here
         }
 
-        public static void RegisterFocusedButtonForTextInput(System.EventHandler<TextInputEventArgs> method)
+        private void TextInputHandler(object sender, TextInputEventArgs args)
         {
-            gw.TextInput += method;
+            var pressedKey = args.Key;
+            var character = args.Character;
+
+            textBox.Append(character);
         }
 
-        public static void UnRegisterFocusedButtonForTextInput(System.EventHandler<TextInputEventArgs> method)
-        {
-            gw.TextInput -= method;
-        }
-
-        public void CheckClickOnMyBox(Point mouseClick, bool isClicked, Rectangle r)
-        {
+        public bool ButtonOnClick(Point mouseClick, bool isClicked, Rectangle r)
+       {
             if (r.Contains(mouseClick) && isClicked)
             {
-                myBoxHasFocus = !myBoxHasFocus;
-                if (myBoxHasFocus)
-                    RegisterFocusedButtonForTextInput(OnInput);
-                else
-                    UnRegisterFocusedButtonForTextInput(OnInput);
+                return true;
             }
-        }
-
-        public void OnInput(object sender, TextInputEventArgs e)
-        {
-            var k = e.Key;
-            var c = e.Character;
-            myTextBoxDisplayCharacters.Append(c);
+            return false;
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            base.Update(gameTime);
+
+            switch (_state)
+            {
+                case GameState.MainMenu:
+                    UpdateMainMenu(gameTime);
+                    break;
+                case GameState.Gameplay:
+                    UpdateGameplay(gameTime);
+                    break;
+            }
+        }
+
+        void UpdateMainMenu(GameTime deltaTime)
+        {
+            // Poll for current keyboard state
+            currentKeyboardState = Keyboard.GetState();
+            // If they hit esc, exit
+            if (currentKeyboardState.IsKeyDown(Keys.Escape))
                 Exit();
 
             mouseState = Mouse.GetState();
             var isClicked = mouseState.LeftButton == ButtonState.Pressed;
-            CheckClickOnMyBox(mouseState.Position, isClicked, new Rectangle(0, 0, 200, 200));
+            ButtonOnClick(mouseState.Position, isClicked, new Rectangle(740, 540, 200, 200));
 
-            // TODO: Add your update logic here
+            // Respond to user input for menu selections, etc
+            //if (pushedStartGameButton)
+            //    _state = GameState.GamePlay;
+        }
 
-            base.Update(gameTime);
+        void UpdateGameplay(GameTime deltaTime)
+        {
+
+            // Respond to user actions in the game.
+            // Update enemies
+            // Handle collisions
+            //if (playerDied)
+            //    _state = GameState.MainMenu;
+        }
+
+
+
+        Rectangle GetRenderTargetDestination(Point resolution, int preferredBackBufferWidth, int preferredBackBufferHeight)
+        {
+            float resolutionRatio = (float)resolution.X / resolution.Y;
+            float screenRatio;
+            Point bounds = new Point(preferredBackBufferWidth, preferredBackBufferHeight);
+            screenRatio = (float)bounds.X / bounds.Y;
+            float scale;
+            Rectangle rectangle = new Rectangle();
+
+            if (resolutionRatio < screenRatio)
+                scale = (float)bounds.Y / resolution.Y;
+            else if (resolutionRatio > screenRatio)
+                scale = (float)bounds.X / resolution.X;
+            else
+            {
+                // Resolution and window/screen share aspect ratio
+                rectangle.Size = bounds;
+                return rectangle;
+            }
+            rectangle.Width = (int)(resolution.X * scale);
+            rectangle.Height = (int)(resolution.Y * scale);
+            return CenterRectangle(new Rectangle(Point.Zero, bounds), rectangle);
+        }
+
+        static Rectangle CenterRectangle(Rectangle outerRectangle, Rectangle innerRectangle)
+        {
+            Point delta = outerRectangle.Center - innerRectangle.Center;
+            innerRectangle.Offset(delta);
+            return innerRectangle;
         }
 
         protected override void Draw(GameTime gameTime)
         {
+            base.Draw(gameTime);
+            switch (_state)
+            {
+                case GameState.MainMenu:
+                    DrawMainMenu(gameTime);
+                    break;
+                case GameState.Gameplay:
+                    DrawGameplay(gameTime);
+                    break;
+            }
+        }
+
+        void DrawMainMenu(GameTime deltaTime)
+        {
+            // Draw the main menu, any active selections, etc
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            GraphicsDevice.SetRenderTarget(renderTarget);
+            GraphicsDevice.SetRenderTarget(null);
+
             _spriteBatch.Begin();
+            _spriteBatch.Draw(renderTarget, renderTargetDestination, Color.White);
+            _spriteBatch.Draw(_startScreen, new Vector2(0, 0), Color.White);
             //_spriteBatch.Draw(cardTexture, new Vector2(0, 0), Color.White);
-            _spriteBatch.Draw(textBoxTexture, new Vector2(0, 40), Color.White);
-            _spriteBatch.DrawString(_currentFont, "Please input your name and click start", new Vector2(0, 0), Color.White);
-            _spriteBatch.DrawString(_currentFont, myTextBoxDisplayCharacters, new Vector2(10, 100), Color.White);
+            _spriteBatch.DrawString(_currentFont, "Please input your name and click start", new Vector2(840, 540), Color.Black);
+            _spriteBatch.DrawString(_currentFont, textBox, new Vector2(20, 20), Color.Black);
+            _spriteBatch.Draw(_startButton, new Vector2(810, 640), Color.White);
             _spriteBatch.End();
-
-            // TODO: Add your drawing code here
-
-            base.Draw(gameTime);
         }
+
+        void DrawGameplay(GameTime deltaTime)
+        {
+            // Draw the background the level
+            // Draw enemies
+            // Draw the player
+            // Draw particle effects, etc
+        }
+
     }
 }
