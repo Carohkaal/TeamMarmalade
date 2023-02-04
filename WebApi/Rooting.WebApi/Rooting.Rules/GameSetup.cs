@@ -25,15 +25,31 @@ namespace Rooting.Rules
         public Dictionary<string, CardBase> Cards { get; } = new();
         public Dictionary<int, PlayingCard> Deck { get; } = new();
 
-        public int MapColums() => map.Values.Select(m => m.Col).OrderByDescending(m => m).First();
+        public int MapColums()
+        {
+            var col = 0;
+            foreach (var m in map.Values)
+            {
+                if (m.Col > col) col = m.Col;
+            }
+            return col;
+        }
 
-        public int MapRows() => map.Values.Select(m => m.Row).OrderByDescending(m => m).First();
+        public int MapRows()
+        {
+            var row = 0;
+            foreach (var m in map.Values)
+            {
+                if (m.Row > row) row = m.Row;
+            }
+            return row;
+        }
 
         public IEnumerable<TileBase> Tiles() => map.Values;
 
         public TileBase Tile(int row, int col)
         {
-            var key = row << 8 + col;
+            var key = (row << 8) + col;
             return map.ContainsKey(key)
                 ? map[key]
                 : new TileBase(row, col);
@@ -41,7 +57,7 @@ namespace Rooting.Rules
 
         public FamilyTypes TileBaseType(int row, int col)
         {
-            var key = row << 8 + col;
+            var key = (row << 8) + col;
             return map.ContainsKey(key)
                 ? map[key].FamilyType
                 : FamilyTypes.None;
@@ -49,7 +65,7 @@ namespace Rooting.Rules
 
         public bool AddTile(int row, int col, FamilyTypes familyType)
         {
-            var key = row << 8 + col;
+            var key = (row << 8) + col;
             if (map.ContainsKey(key)) return false;
             map.Add(key,
                 new TileBase

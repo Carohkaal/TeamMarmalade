@@ -23,9 +23,10 @@
                 for (var c = 0; c < Cols; c++)
                 {
                     TileBase newTile;
-                    var tile = tiles.FirstOrDefault(t => t.Row == r && t.Col == c);
+                    var tile = tileMap.FirstOrDefault(t => t.Row == r && t.Col == c);
+
                     if (tile != null)
-                        newTile = tile;
+                        newTile = (TileBase)tile.Clone();
                     else
                         newTile = (TileBase)EmptyTile.Clone();
 
