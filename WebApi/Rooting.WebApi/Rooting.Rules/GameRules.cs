@@ -139,6 +139,7 @@ namespace Rooting.Rules
 
         public CardModel[] Cards() => gameSetup.Cards.Values.Select(m => new CardModel
         {
+            Name = m.Name,
             Art = m.Art,
             Cost = m.TotalCost,
             Description = m.Description,

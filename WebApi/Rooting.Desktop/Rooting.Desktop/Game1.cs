@@ -3,9 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Text;
-using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Net.Http;
+using System.Collections.Generic;
 
 namespace Rooting.Desktop
 {
@@ -22,7 +22,12 @@ namespace Rooting.Desktop
         private CardModel[] _cards;
         private PlayerModel[] _players;
 
-        private Texture2D cardTexture;
+        /// <summary>
+        ///  My cards
+        /// </summary>
+        private Dictionary<string, Texture2D> cardTexture;
+
+        private CardModel[] cardsInHand = Array.Empty<CardModel>();
 
         public static GameWindow gw;
         public static MouseState mouseState;
@@ -35,6 +40,7 @@ namespace Rooting.Desktop
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
+
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             _httpClient.BaseAddress = serverUri;
@@ -65,9 +71,20 @@ namespace Rooting.Desktop
         {
             gw = Window;
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _currentFont = Content.Load<SpriteFont>("Fonts/NeueKabel-Regular12");
-            cardTexture = Content.Load<Texture2D>("Card1");
-
+            _currentFont = Content.Load<SpriteFont>("Arial");
+            var textures = new Dictionary<string, Texture2D>();
+            foreach (var card in cardsInHand)
+            {
+                try
+                {
+                    var texture = Content.Load<Texture2D>(card.Art);
+                    textures.Add(card.Name, texture);
+                }
+                catch
+                {
+                    // no texture
+                }
+            }
 
             // TODO: use this.Content to load your game content here
         }
@@ -76,6 +93,7 @@ namespace Rooting.Desktop
         {
             gw.TextInput += method;
         }
+
         public static void UnRegisterFocusedButtonForTextInput(System.EventHandler<TextInputEventArgs> method)
         {
             gw.TextInput -= method;

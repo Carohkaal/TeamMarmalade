@@ -2,6 +2,7 @@
 {
     public class CardModel
     {
+        public string Name { get; set; } = string.Empty;
         public int Tier { get; set; }
         public int Cost { get; set; }
         public int Range { get; set; }
