@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Rooting.Models;
 using Rooting.Models.ResponseModels;
+using Rooting.Rules;
 
 namespace Rooting.WebApi.Controllers
 {
@@ -44,7 +45,7 @@ namespace Rooting.WebApi.Controllers
         }
 
         [HttpPost("ResetGame")]
-        public Guid ResetGame()
+        public long ResetGame()
         {
             gameStatistics.ResetGame();
             return gameStatistics.GameId;

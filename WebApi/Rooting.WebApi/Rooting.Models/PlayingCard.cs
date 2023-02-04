@@ -6,18 +6,12 @@
         public string Name { get; set; } = string.Empty;
         public FamilyTypes FamilyType { get; set; }
         public PlayingState PlayingState { get; set; }
+        public int PlayedAtTile { get; set; }
+        public string Message { get; set; } = string.Empty;
 
         public object Clone()
         {
             return MemberwiseClone();
         }
-    }
-
-    public enum PlayingState
-    {
-        None = 0,
-        InStock = 1,
-        InHand = 2,
-        Played = 3,
     }
 }

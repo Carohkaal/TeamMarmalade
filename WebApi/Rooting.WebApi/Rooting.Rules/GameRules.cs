@@ -7,67 +7,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using System.Numerics;
 
 namespace Rooting.Rules
 {
-    public interface IGameEngine
-    {
-        void ExecuteLoop(IGameStatistics gameStatistics);
-    }
-
-    public class GameRulesGGJ2023 : IGameEngine
-    {
-        private readonly ILogger<GameRulesGGJ2023> logger;
-        private readonly TimeSpan gameLoopTime = TimeSpan.FromSeconds(15);
-        private readonly Random r = new Random();
-
-        public GameRulesGGJ2023(ILogger<GameRulesGGJ2023> logger)
-        {
-            this.logger = logger;
-        }
-
-        public void ExecuteLoop(IGameStatistics gameStatistics)
-        {
-            if (gameStatistics.Players.Count() < 3)
-            {
-                gameStatistics.Generation = 0;
-                return;
-            }
-
-            // make sure each family has 5 cards
-            foreach (FamilyTypes fam in Enum.GetValues(typeof(FamilyTypes)))
-            {
-                if (!gameStatistics.IsPlayerPlaying(fam)) continue;
-
-                var currentCards = gameStatistics.CurrentInHand(fam);
-                while (currentCards.Length < 5)
-                {
-                    var cardsLeft = gameStatistics.NotPlayedCards(fam);
-                    if (cardsLeft.Length == 0)
-                    {
-                        gameStatistics.PlayerIsPlaying(fam, false);
-                        break;
-                    }
-                    var cardId = r.Next(cardsLeft.Length);
-                    var card = cardsLeft[cardId];
-                    gameStatistics.TakeCardInHand(fam, card.Id);
-                }
-            }
-        }
-    }
-
-    public interface IGameDefinitionFactory
-    {
-        GameSetup NewGame(int gameId);
-    }
-
     public interface IGameStatistics
     {
-        Guid GameId { get; }
-        bool GameStarted { get; }
+        long GameId { get; }
         int Generation { get; set; }
+        GameStatus CurrentGameStatus { get; }
         IEnumerable<Player> Players { get; }
-        DateTime TimeStarted { get; }
+        DateTime AutoStartTime { get; }
 
         PlayingCard[] CurrentInHand(FamilyTypes familyType);
 
@@ -82,15 +32,23 @@ namespace Rooting.Rules
 
     public class GameStatistics : IGameStatistics
     {
-        private Guid gameId = Guid.NewGuid();
+        private readonly TimeSpan gameLoopTime = TimeSpan.FromSeconds(15);
+        private long gameId = DateTime.Today.Ticks;
         private readonly ConcurrentDictionary<FamilyTypes, Player> activePlayers = new();
         private readonly IGameDefinitionFactory gameDefinitionFactory;
         private GameSetup gameSetup;
-        public Guid GameId => gameId;
+        public long GameId => gameId;
         public int Generation { get; set; }
-        public DateTime TimeStarted { get; set; }
-        public bool GameStarted { get; private set; }
+        public GameStatus CurrentGameStatus { get; private set; }
         public IEnumerable<Player> Players => activePlayers.Values;
+        public DateTime AutoStartTime { get; private set; }
+        public GameLog gameLog = new();
+        private DateTime NextTurn { get; set; }
+
+        private readonly Player System = new Player
+        {
+            Name = "System"
+        };
 
         public GameStatistics(
             IGameDefinitionFactory gameDefinitionFactory,
@@ -102,6 +60,18 @@ namespace Rooting.Rules
 
         public PlayerModel ClaimPlayer(PlayerModel model, string remoteIp)
         {
+            if (CurrentGameStatus != GameStatus.WaitingForPlayers)
+            {
+                return new PlayerModel
+                {
+                    Name = model.Name,
+                    FamilyType = model.FamilyType,
+                    Avatar = model.Avatar,
+                    Uuid = Guid.Empty,
+                    Message = "The server is not accepting new players."
+                };
+            }
+
             var message = string.Empty;
             var player = new Player
             {
@@ -143,11 +113,13 @@ namespace Rooting.Rules
 
         public void ResetGame()
         {
-            gameId = Guid.NewGuid();
+            gameId = DateTime.Now.Ticks;
             Generation = 0;
-            TimeStarted = DateTime.MinValue;
-            GameStarted = false;
+            gameLog.StartedAtTime = DateTime.MinValue;
+            CurrentGameStatus = GameStatus.WaitingForPlayers;
             activePlayers.Clear();
+            AutoStartTime = DateTime.Now.AddMinutes(20);
+            gameLog = new();
             gameSetup = gameDefinitionFactory.NewGame(1);
         }
 
@@ -156,7 +128,7 @@ namespace Rooting.Rules
             return activePlayers.Values.FirstOrDefault(m => m.Uuid == playerId);
         }
 
-        internal void UpdatePlayer(FamilyTypes family, string name, string avatar)
+        public void UpdatePlayer(FamilyTypes family, string name, string avatar)
         {
             var player = activePlayers[family];
             player.Name = name;
@@ -210,9 +182,144 @@ namespace Rooting.Rules
             card.PlayingState = PlayingState.InHand;
         }
 
-        internal GameStatus GameStatus()
+        public GameStatus ReadGameStatus() => CurrentGameStatus;
+
+        public GameGeneration StartGame(Player player, bool force)
         {
-            throw new NotImplementedException();
+            var r = new GameGeneration
+            {
+                GameStatus = CurrentGameStatus,
+                CurrentTime = DateTime.Now,
+                Id = GameId,
+            };
+
+            if (CurrentGameStatus == GameStatus.WaitingForPlayers)
+            {
+                if (force)
+                {
+                    AddGameLog(player, LogLevel.Warning, $"{player.Name} started the game with {Players.Count()} players.");
+                    CurrentGameStatus = GameStatus.GameWaitingForEndOfTurn;
+                    gameLog.StartedAtTime = DateTime.Now;
+                    NextTurn = DateTime.Now.Add(gameLoopTime);
+                    r.GameStatus = GameStatus.GameWaitingForEndOfTurn;
+                    r.NextTurn = NextTurn;
+                }
+                else
+                {
+                    r.NextTurn = AutoStartTime;
+                }
+            }
+            else if (CurrentGameStatus == GameStatus.GameCanStart)
+            {
+                AddGameLog(player, LogLevel.Warning, $"{player.Name} started the game.");
+                CurrentGameStatus = GameStatus.GameWaitingForEndOfTurn;
+                gameLog.StartedAtTime = DateTime.Now;
+                NextTurn = DateTime.Now.Add(gameLoopTime);
+                r.GameStatus = GameStatus.GameWaitingForEndOfTurn;
+                r.NextTurn = NextTurn;
+            }
+            else
+            {
+                AddGameLog(player, LogLevel.Warning, $"{player.Name} tried to restart the game.");
+            }
+            return r;
         }
+
+        private void AddGameLog(Player player, LogLevel level, string message)
+        {
+            var entry = new LogEntry(player, level, message);
+            gameLog.Status = CurrentGameStatus;
+            gameLog.LogEntries.Add(entry);
+        }
+
+        public GameGeneration GameStatusUserIntervention(Player player, GameStatus gameStatus)
+        {
+            if (gameStatus == GameStatus.GamePaused
+                && (CurrentGameStatus == GameStatus.GameWaitingForEndOfTurn
+                || CurrentGameStatus == GameStatus.GameCalculation
+                || CurrentGameStatus == GameStatus.GamePaused))
+            {
+                CurrentGameStatus = GameStatus.GamePaused;
+                AddGameLog(player, LogLevel.Information, "Game paused");
+                return new GameGeneration
+                {
+                    CurrentTime = DateTime.Now,
+                    GameStatus = CurrentGameStatus,
+                    NextTurn = NextTurn,
+                    Id = gameId,
+                    Shout = "Game is paused."
+                };
+            }
+
+            if (gameStatus == GameStatus.GameWaitingForEndOfTurn && CurrentGameStatus == GameStatus.GamePaused)
+            {
+                CurrentGameStatus = GameStatus.GameWaitingForEndOfTurn;
+                NextTurn = DateTime.Now.Add(gameLoopTime);
+                AddGameLog(player, LogLevel.Information, "Game resumed");
+                return new GameGeneration
+                {
+                    CurrentTime = DateTime.Now,
+                    GameStatus = CurrentGameStatus,
+                    NextTurn = NextTurn,
+                    Id = gameId,
+                    Shout = "Game resuming."
+                };
+            }
+
+            if (gameStatus == GameStatus.GameStopped && CurrentGameStatus != GameStatus.GameCalculation)
+            {
+                CurrentGameStatus = GameStatus.GameStopped;
+                AddGameLog(player, LogLevel.Information, "Game stopped");
+                return new GameGeneration
+                {
+                    CurrentTime = DateTime.Now,
+                    GameStatus = CurrentGameStatus,
+                    NextTurn = DateTime.MaxValue,
+                    Id = gameId,
+                    Shout = "Game terminated."
+                };
+            }
+            else
+            {
+                AddGameLog(player, LogLevel.Warning, $"Modify state from {CurrentGameStatus} to {gameStatus} failed.");
+                return new GameGeneration
+                {
+                    CurrentTime = DateTime.Now,
+                    GameStatus = CurrentGameStatus,
+                    NextTurn = NextTurn,
+                    Id = gameId,
+                    Shout = "Game status canot be modified."
+                };
+            }
+        }
+
+        public PlayingCard PlayCard(FamilyTypes familyType, PlayingCard playingCard)
+        {
+            if (playingCard.FamilyType != familyType)
+            {
+                AddGameLog(System, LogLevel.Error, $"Card {playingCard.Id} is not from {familyType}.");
+                playingCard.PlayingState = PlayingState.Error;
+                playingCard.Message = "Playing card mismatch with family";
+                return playingCard;
+            }
+
+            var card = CurrentInHand(familyType).FirstOrDefault(m => m.Id == playingCard.Id);
+            if (card != null)
+            {
+                card.PlayingState = PlayingState.Played;
+                card.PlayedAtTile = playingCard.PlayedAtTile;
+                card.Message = playingCard.Message ?? $"Played at {DateTime.Now:HH:mm}";
+                return card;
+            }
+            else
+            {
+                AddGameLog(System, LogLevel.Warning, $"Could not find card {playingCard.Id} in hand.");
+                playingCard.Message = "Not played, Not in hand";
+                playingCard.PlayingState = PlayingState.Error;
+                return playingCard;
+            }
+        }
+
+        public GameLog OpenGameLog() => gameLog;
     }
 }

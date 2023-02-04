@@ -7,7 +7,7 @@
         /// <summary>
         /// Waiting for all player to be claimed
         /// </summary>
-        WaitingForPLayers = 1,
+        WaitingForPlayers = 1,
 
         /// <summary>
         /// All players have been claimed, the game can start
