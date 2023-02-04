@@ -71,7 +71,7 @@ namespace Rooting.Desktop
         {
             gw = Window;
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _currentFont = Content.Load<SpriteFont>("Arial");
+            _currentFont = Content.Load<SpriteFont>("Fonts/NeueKabel-Regular12");
             var textures = new Dictionary<string, Texture2D>();
             foreach (var card in cardsInHand)
             {
