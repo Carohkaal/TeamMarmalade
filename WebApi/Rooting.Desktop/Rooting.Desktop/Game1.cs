@@ -27,7 +27,7 @@ namespace Rooting.Desktop
         /// <summary>
         ///  My cards
         /// </summary>
-        private Dictionary<string, Texture2D> cardTexture;
+        private Dictionary<string, Texture2D> cardTextures;
 
         private PlayingCard[] cardsInHand = Array.Empty<PlayingCard>();
         private Texture2D _defaultCard;
@@ -94,14 +94,13 @@ namespace Rooting.Desktop
             gw = Window;
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _currentFont = Content.Load<SpriteFont>("Fonts/NeueKabel-Regular12");
-            var textures = new Dictionary<string, Texture2D>();
-            foreach (var card in cardsInHand)
+            foreach (var card in _cardDefinitions.Value)
             {
                 try
                 {
-                    var cardTexture = Content.Load<Texture2D>(c.Art);
+                    var cardTexture = Content.Load<Texture2D>(card.Art);
                     if (cardTexture != null)
-                        cardTextures.Add(c.Name, cardTexture);
+                        cardTextures.Add(card.Name, cardTexture);
                 }
                 catch { }
             }

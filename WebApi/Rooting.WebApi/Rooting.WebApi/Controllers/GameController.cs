@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 using Rooting.Models;
 using Rooting.Models.ResponseModels;
 using Rooting.Rules;
@@ -80,5 +81,18 @@ namespace Rooting.WebApi.Controllers
         /// <returns></returns>
         [HttpGet("GameLog")]
         public GameLog OpenGameLog() => gameStatistics.OpenGameLog();
+
+        [HttpGet("World/{gameId}/{playerId}")]
+        public ActionResult<WorldMap> WorldMap(string gameId, string playerId)
+        {
+            if (!long.TryParse(gameId, out var gameReference))
+            {
+                return BadRequest($"Invalid game id: {gameId}");
+            }
+            return ExecuteForUser(playerId, (player) =>
+            {
+                return gameStatistics.GetWorldMap(player, gameReference);
+            });
+        }
     }
 }

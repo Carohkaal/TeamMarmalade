@@ -24,8 +24,10 @@ namespace Rooting.Rules
         public Dictionary<string, ActionBase> Actions { get; } = new();
         public Dictionary<string, CardBase> Cards { get; } = new();
         public Dictionary<int, PlayingCard> Deck { get; } = new();
-        public int RowCount { get; } = 0;
-        public int ColCount { get; } = 0;
+
+        public int MapColums() => map.Values.Select(m => m.Col).OrderByDescending(m => m).First();
+
+        public int MapRows() => map.Values.Select(m => m.Row).OrderByDescending(m => m).First();
 
         public TileBase Tile(int row, int col)
         {

@@ -38,6 +38,7 @@ namespace Rooting.Rules
         IEnumerable<Player> Players { get; }
         DateTime AutoStartTime { get; }
         DateTime NextTurn { get; }
+        WorldMap WorldMap { get; }
 
         PlayingCard[] CurrentInHand(FamilyTypes familyType);
 
@@ -65,6 +66,7 @@ namespace Rooting.Rules
         public DateTime AutoStartTime { get; private set; }
         public GameLog gameLog = new();
         public DateTime NextTurn { get; private set; }
+        public WorldMap WorldMap { get; private set; } = new WorldMap();
 
         private readonly Player System = new Player
         {
@@ -144,6 +146,7 @@ namespace Rooting.Rules
             AutoStartTime = DateTime.Now.AddMinutes(20);
             gameLog = new();
             gameSetup = gameDefinitionFactory.NewGame(1);
+            this.WorldMap.Cols = gameSetup.ColCount
         }
 
         public Player? Player(Guid playerId)
@@ -360,5 +363,10 @@ namespace Rooting.Rules
         }
 
         public GameLog OpenGameLog() => gameLog;
+
+        public WorldMap GetWorldMap(Player player, long gameId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
