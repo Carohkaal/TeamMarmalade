@@ -10,6 +10,7 @@ public class CanvasLayer : Godot.CanvasLayer
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		GD.Print("readyfunc");
 	}
 
 //  // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -17,16 +18,13 @@ public class CanvasLayer : Godot.CanvasLayer
 //  {
 //      
 //  }
-}
 
+	public void _on_Button_pressed()
+	{
+		print("onbuttonpressedfunc");
+		WeatherForecastApi _apiClient = new WeatherForecastApi("https://rootingwebapi.azurewebsites.net/");
+		var fc = await _apiClient.GetWeatherForecastAsync();
+			return;
+	}
 
-private void _on_Button_pressed()
-{
-	// Replace with function body.
-}
-
-
-private void _on_HTTPRequest_request_completed(int result, int response_code, PoolStringArray headers, PoolByteArray body)
-{
-	// Replace with function body.
 }
