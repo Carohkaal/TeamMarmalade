@@ -49,12 +49,12 @@ namespace Rooting
 
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<GameStatus> GameStatusAsync();
+        System.Threading.Tasks.Task<GameGeneration> GameStatusAsync();
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<GameStatus> GameStatusAsync(System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<GameGeneration> GameStatusAsync(System.Threading.CancellationToken cancellationToken);
 
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
@@ -393,7 +393,7 @@ namespace Rooting
 
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<GameStatus> GameStatusAsync()
+        public virtual System.Threading.Tasks.Task<GameGeneration> GameStatusAsync()
         {
             return GameStatusAsync(System.Threading.CancellationToken.None);
         }
@@ -401,7 +401,7 @@ namespace Rooting
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<GameStatus> GameStatusAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<GameGeneration> GameStatusAsync(System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("Game/GameStatus");
@@ -438,7 +438,7 @@ namespace Rooting
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<GameStatus>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<GameGeneration>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -1340,8 +1340,8 @@ namespace Rooting
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public long Id { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("gameStatus", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public GameStatus GameStatus { get; set; }
+        [Newtonsoft.Json.JsonProperty("gameStatus", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string GameStatus { get; set; }
 
         [Newtonsoft.Json.JsonProperty("currentTime", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTimeOffset CurrentTime { get; set; }

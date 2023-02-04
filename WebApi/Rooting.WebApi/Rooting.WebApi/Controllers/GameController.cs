@@ -46,7 +46,7 @@ namespace Rooting.WebApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("GameStatus")]
-        public GameStatus GameStatus() => gameStatistics.ReadGameStatus();
+        public GameGeneration GameStatus() => gameStatistics.ReadGameStatus();
 
         /// <summary>
         /// Start the game, return the time the current turn will end.
