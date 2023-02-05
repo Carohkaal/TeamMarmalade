@@ -42,11 +42,26 @@ namespace Rooting.Models
         bool Play();
     }
 
+    public class ScoreBlock
+    {
+        public ScoreBlock()
+        {
+        }
+
+        public int Unspecified { get; set; } = 0;
+        public int Distance { get; set; } = 0;
+        public int Control { get; set; } = 0;
+        public int Capture { get; set; } = 0;
+        public int Mission { get; set; } = 0;
+        public int SubLevel { get; set; } = 0;
+
+        public int Value => Unspecified + Distance + Control + Capture + Mission + SubLevel;
+    }
+
     public class ScoringClass
     {
         public IEnumerable<IScoringToken> Tokens => scoringTokens;
-        public Dictionary<FamilyTypes, int> FamilyScore { get; set; } = new();
-        public Dictionary<FamilyTypes, int> SubsurfaceScore { get; set; } = new();
+        public Dictionary<FamilyTypes, ScoreBlock> FamilyScore { get; set; } = new();
         public ICollection<PlayingCard> CardsPlayed => cardsPlayed;
 
         private readonly List<IScoringToken> scoringTokens = new();
@@ -57,6 +72,9 @@ namespace Rooting.Models
             scoringTokens.Clear();
             scoringTokens.AddRange(tokens);
         }
+
+        public bool HasToken(TokenType tokenType, FamilyTypes familyTypes)
+            => scoringTokens.Any(m => m.Token == tokenType && m.Family == familyTypes);
 
         public void AddCard(PlayingCard card)
         {
@@ -74,28 +92,56 @@ namespace Rooting.Models
             return false;
         }
 
-        public void SetScore(FamilyTypes type, int score)
+        public void SetScore(FamilyTypes type, ScoreType scoreType, int score)
         {
             if (FamilyScore.ContainsKey(type))
-                FamilyScore[type] = score;
+            {
+                FamilyScore[type].Unspecified = scoreType == ScoreType.Unspecified ? score : FamilyScore[type].Unspecified;
+                FamilyScore[type].Distance = scoreType == ScoreType.Distance ? score : FamilyScore[type].Distance;
+                FamilyScore[type].Control = scoreType == ScoreType.Control ? score : FamilyScore[type].Control;
+                FamilyScore[type].Capture = scoreType == ScoreType.Capture ? score : FamilyScore[type].Capture;
+                FamilyScore[type].Mission = scoreType == ScoreType.Mission ? score : FamilyScore[type].Mission;
+                FamilyScore[type].SubLevel = scoreType == ScoreType.SubLevel ? score : FamilyScore[type].SubLevel;
+            }
             else
-                FamilyScore.Add(type, score);
+            {
+                var newScore = new ScoreBlock
+                {
+                    Unspecified = scoreType == ScoreType.Unspecified ? score : 0,
+                    Distance = scoreType == ScoreType.Distance ? score : 0,
+                    Control = scoreType == ScoreType.Control ? score : 0,
+                    Capture = scoreType == ScoreType.Capture ? score : 0,
+                    Mission = scoreType == ScoreType.Mission ? score : 0,
+                    SubLevel = scoreType == ScoreType.SubLevel ? score : 0,
+                };
+                FamilyScore.Add(type, newScore);
+            }
         }
 
-        public void AddScore(FamilyTypes type, int score)
+        public void AddScore(FamilyTypes type, ScoreType scoreType, int score)
         {
             if (FamilyScore.ContainsKey(type))
-                FamilyScore[type] += score;
+            {
+                FamilyScore[type].Unspecified += scoreType == ScoreType.Unspecified ? score : 0;
+                FamilyScore[type].Distance += scoreType == ScoreType.Distance ? score : 0;
+                FamilyScore[type].Control += scoreType == ScoreType.Control ? score : 0;
+                FamilyScore[type].Capture += scoreType == ScoreType.Capture ? score : 0;
+                FamilyScore[type].Mission += scoreType == ScoreType.Mission ? score : 0;
+                FamilyScore[type].SubLevel += scoreType == ScoreType.SubLevel ? score : 0;
+            }
             else
-                FamilyScore.Add(type, score);
-        }
-
-        public void AddSubScore(FamilyTypes type, int score)
-        {
-            if (SubsurfaceScore.ContainsKey(type))
-                SubsurfaceScore[type] += score;
-            else
-                SubsurfaceScore.Add(type, score);
+            {
+                var newScore = new ScoreBlock
+                {
+                    Unspecified = scoreType == ScoreType.Unspecified ? score : 0,
+                    Distance = scoreType == ScoreType.Distance ? score : 0,
+                    Control = scoreType == ScoreType.Control ? score : 0,
+                    Capture = scoreType == ScoreType.Capture ? score : 0,
+                    Mission = scoreType == ScoreType.Mission ? score : 0,
+                    SubLevel = scoreType == ScoreType.SubLevel ? score : 0,
+                };
+                FamilyScore.Add(type, newScore);
+            }
         }
     }
 

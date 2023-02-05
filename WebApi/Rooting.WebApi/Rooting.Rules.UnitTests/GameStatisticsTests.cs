@@ -179,7 +179,7 @@ namespace Rooting.Rules.UnitTests
 
             var hand = sut.CurrentInHand(player.FamilyType);
             var card = hand[0];
-            var origin = new Origin(3, 3);
+            var origin = new Origin(3, 8);
             var cardPlayed = sut.PlayCard(player, card, origin);
 
             Assert.IsNotNull(cardPlayed);

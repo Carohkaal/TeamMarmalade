@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Rooting.Models;
 using Rooting.Models.ImportExport;
+using Rooting.Models.ResponseModels;
 
 namespace Rooting.Rules
 {
@@ -300,22 +301,29 @@ namespace Rooting.Rules
         private static Requirement? InterpretRequirement(GameSetup setup, DefineRequirement? data)
         {
             if (data == null) return null;
-            var r = new Requirement
+            TokenType token = TokenType.None;
+            if (!string.IsNullOrEmpty(data.RequireToken) && !Enum.TryParse<TokenType>(data.RequireToken, out token))
             {
-                Name = data.Name,
-                Description = data.Description,
-                RequireTier = data.RequireTier,
-                RequireTileControl = data.RequireTileControl,
-                RequireTileDistance = data.RequireTileDistance,
-            };
+                setup.Invalid(nameof(TokenType), $"Invalid token in requirement {data.Name} : {data.RequireFamily}, should be one of: {Enum.GetNames<TokenType>()}");
+                return null;
+            }
 
             if (!Enum.TryParse<FamilyTypes>(data.RequireFamily, out var fam))
             {
                 setup.Invalid(nameof(FamilyTypes), $"Invalid family in requirement {data.Name} : {data.RequireFamily}, should be one of: {Enum.GetNames<FamilyTypes>()}");
                 return null;
             }
-            r.RequireFamily = fam;
-            return r;
+
+            return new Requirement
+            {
+                Name = data.Name,
+                Description = data.Description,
+                RequireTier = data.RequireTier,
+                RequireToken = token,
+                RequireFamily = fam,
+                RequireTileControl = data.RequireTileControl,
+                RequireTileDistance = data.RequireTileDistance,
+            };
         }
 
         public static void ImportCards(GameSetup setup, GameImport m)

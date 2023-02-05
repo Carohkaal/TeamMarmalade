@@ -30,38 +30,38 @@ namespace Rooting.Rules
 
         public static int ScoresDifference(this TileBase tile, FamilyTypes family)
         {
-            var familyScore = tile.ScoringClass.FamilyScore.Where(m => m.Key == family).Sum(m => m.Value);
-            var otherScore = tile.ScoringClass.FamilyScore.Where(m => m.Key != family).Sum(m => m.Value);
+            var familyScore = tile.ScoringClass.FamilyScore.Where(m => m.Key == family).Sum(m => m.Value.Value);
+            var otherScore = tile.ScoringClass.FamilyScore.Where(m => m.Key != family).Sum(m => m.Value.Value);
             return familyScore - otherScore;
         }
 
         public static TileBase SubScore(this TileBase tile, FamilyTypes family, int score)
         {
             if (score == 0) return tile;
-            tile.ScoringClass.AddSubScore(family, score);
+            tile.ScoringClass.AddScore(family, ScoreType.SubLevel, score);
             return tile;
         }
 
         public static TileBase Score(this TileBase tile, FamilyTypes family, int score)
         {
             if (score == 0) return tile;
-            tile.ScoringClass.AddScore(family, score);
+            tile.ScoringClass.AddScore(family, ScoreType.Unspecified, score);
             return tile;
         }
 
         public static TileBase Score(this TileBase tile, FamilyTypes family, Func<int, int> calculate)
         {
-            var score = tile.ScoringClass.FamilyScore[family];
+            var score = tile.ScoringClass.FamilyScore[family].Value;
             if (score == 0) return tile;
 
             var newScore = calculate(score);
-            tile.ScoringClass.SetScore(family, newScore);
+            tile.ScoringClass.SetScore(family, ScoreType.Unspecified, newScore);
             return tile;
         }
 
         public static int FamilyScore(this TileBase tile, FamilyTypes family)
         {
-            return tile.ScoringClass.FamilyScore.Where(m => m.Key == family).Sum(m => m.Value);
+            return tile.ScoringClass.FamilyScore.Where(m => m.Key == family).Sum(m => m.Value.Value);
         }
 
         public static bool FamilyRules(this TileBase tile, FamilyTypes family)
@@ -79,7 +79,7 @@ namespace Rooting.Rules
 
         public static int OtherFamilyScore(this TileBase tile, FamilyTypes family)
         {
-            return tile.ScoringClass.FamilyScore.Where(m => m.Key != family).Sum(m => m.Value);
+            return tile.ScoringClass.FamilyScore.Where(m => m.Key != family).Sum(m => m.Value.Value);
         }
 
         public static void AddSettlement(this TileBase? tile, FamilyTypes family, TokenType tokenType)
@@ -99,7 +99,7 @@ namespace Rooting.Rules
             if (tile.FamilyType == family)
             {
                 // bonus for adding an extra card
-                tile.ScoringClass.AddScore(family, 1);
+                tile.ScoringClass.AddScore(family, ScoreType.Control, 1);
             }
             else
             {
@@ -255,9 +255,62 @@ namespace Rooting.Rules
             gameStatistics.SetNextTime("");
         }
 
-        public (PlayingState state, string? message) PlayCard(PlayingCard card, TileBase tile)
+        public (PlayingState state, string? message, int costs) PlayCard(WorldMap map, CardBase cardRule, PlayingCard cardItem, TileBase tile, int GameTierForUser)
         {
-            throw new NotImplementedException();
+            foreach (var rq in cardRule.Requirements)
+            {
+                if (rq.RequireTier > GameTierForUser)
+                {
+                    return (PlayingState.Error, "Not enough evolved.", 0);
+                }
+
+                if (rq.RequireFamily != tile.FamilyType)
+                {
+                    return (PlayingState.Error, $"Tile is not of family {cardItem.FamilyType}.", 0);
+                }
+
+                if (rq.RequireToken != TokenType.None && !tile.ScoringClass.HasToken(rq.RequireToken, cardItem.FamilyType))
+                {
+                    return (PlayingState.Error, $"No token of type {rq.RequireToken} on this location.", 0);
+                }
+
+                if (rq.RequireTileControl && !tile.FamilyRules(cardItem.FamilyType))
+                {
+                    return (PlayingState.Error, $"{cardItem.FamilyType} is not the current ruler for this location.", 0);
+                }
+
+                if (rq.RequireTileDistance > 0)
+                {
+                }
+            }
+
+            var totalCosts = 0;
+            var message = string.Empty;
+            cardItem.PlayingState = PlayingState.Played;
+            cardItem.PlayedAtTile = tile;
+            tile.ScoringClass.AddCard(cardItem);
+            tile.ScoringClass.AddScore(cardItem.FamilyType, ScoreType.Distance, cardRule.Score);
+            foreach (var a in cardRule.Actions)
+            {
+                totalCosts += a.Cost;
+                foreach (var sc in a.Scores)
+                {
+                    var scoreType = sc.ScoreType;
+                    var score = sc.ScoreValue;
+                    if (int.TryParse(score, out var scoreValue))
+                    {
+                        if (scoreValue > 0)
+                        {
+                            tile.ScoringClass.AddScore(cardItem.FamilyType, scoreType, scoreValue);
+                        }
+                    }
+                    else
+                    {
+                        ApplyRule(score, tile, map);
+                    }
+                }
+            }
+            return (PlayingState.Played, message, totalCosts);
         }
     }
 }

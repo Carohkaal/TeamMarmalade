@@ -407,7 +407,15 @@ namespace Rooting.Rules
                 return playingCard;
             }
 
-            (PlayingState state, string? message) = gameEngine.PlayCard(card, tile);
+            var cardRule = gameSetup.Cards[playingCard.Name.ToUpperInvariant()];
+            if (cardRule == null)
+            {
+                AddGameLog(System, LogLevel.Warning, $"Could not find card rule {playingCard.Name}.");
+                playingCard.Message = "Not played, No rule defind";
+                playingCard.PlayingState = PlayingState.Error;
+                return playingCard;
+            }
+            (PlayingState state, string? message, int costs) = gameEngine.PlayCard(WorldMap, cardRule, card, tile, player.EvolvedLevel);
 
             player.IsPlaying = false;
             card.PlayingState = state;

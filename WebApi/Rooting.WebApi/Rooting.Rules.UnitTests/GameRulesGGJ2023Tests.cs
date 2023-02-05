@@ -30,7 +30,7 @@ namespace Rooting.Rules.UnitTests
             Assert.IsNotNull(tile);
             Console.WriteLine(JsonConvert.SerializeObject(tile, Formatting.Indented));
             Assert.AreEqual(FamilyTypes.Plant, tile.FamilyType);
-            Assert.AreEqual(10, tile.ScoringClass.FamilyScore[FamilyTypes.Plant]);
+            Assert.AreEqual(10, tile.ScoringClass.FamilyScore[FamilyTypes.Plant].Value);
             Assert.IsFalse(tile.ScoringClass.Tokens.Any(m => m.Family == FamilyTypes.Plant));
         }
 
@@ -46,7 +46,7 @@ namespace Rooting.Rules.UnitTests
             Assert.IsNotNull(tile);
             Console.WriteLine(JsonConvert.SerializeObject(tile, Formatting.Indented));
             Assert.AreEqual(FamilyTypes.Plant, tile.FamilyType);
-            Assert.AreEqual(21, tile.ScoringClass.FamilyScore[FamilyTypes.Plant]);
+            Assert.AreEqual(21, tile.ScoringClass.FamilyScore[FamilyTypes.Plant].Value);
             Assert.IsNotNull(tile.ScoringClass.Tokens.Single(m => m.Family == FamilyTypes.Plant && m.Token == TokenType.Village));
         }
 

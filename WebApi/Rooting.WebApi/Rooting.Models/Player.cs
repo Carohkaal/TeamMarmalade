@@ -11,5 +11,6 @@
         public ICollection<PlayingCard> CardsStock { get; set; } = Array.Empty<PlayingCard>();
         public ICollection<PlayingCard> CardsPlayed { get; set; } = Array.Empty<PlayingCard>();
         public bool IsPlaying { get; set; }
+        public int EvolvedLevel { get; set; }
     }
 }
