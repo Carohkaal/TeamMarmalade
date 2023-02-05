@@ -55,6 +55,7 @@ namespace Rooting.Desktop
         private Texture2D _startScreen;
         private Texture2D _startButton;
         private Texture2D _mapExample;
+        private Texture2D _tileEmpty;
 
         private Vector2 newCardPos = new Vector2(0, 0);
 
@@ -67,7 +68,7 @@ namespace Rooting.Desktop
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
-           // _graphics.IsFullScreen = true;
+            // _graphics.IsFullScreen = true;
             _graphics.ApplyChanges();
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -116,9 +117,9 @@ namespace Rooting.Desktop
             cardsInHand = myCards.ToArray();
         }
 
-        private async Task LoadWorld()
+        private void LoadWorld()
         {
-            var World = await _webApiClient.WorldAsync(gameId, CurrentPlayer.Uuid.ToString());
+            var World = _webApiClient.WorldAsync(gameId, CurrentPlayer.Uuid.ToString()).GetAwaiter().GetResult();
             tiles = World.Tiles.ToArray();
         }
 
@@ -139,8 +140,10 @@ namespace Rooting.Desktop
 
             StartGame();
 
+
             try
             {
+                LoadWorld();
                 LoadCurrentHand();
             }
             catch { }
@@ -163,14 +166,15 @@ namespace Rooting.Desktop
             _currentFont = Content.Load<SpriteFont>("Fonts/NeueKabel-Regular12");
             _startScreen = Content.Load<Texture2D>("Startscreen-01");
             _startButton = Content.Load<Texture2D>("Startbutton");
-            _mapExample = Content.Load<Texture2D>("Map_example");
+            _tileEmpty = Content.Load<Texture2D>("emptytile");
+            //_mapExample = Content.Load<Texture2D>("Map_example");
             //_cardTexture = Content.Load<Texture2D>("cards/plants-assimilate");
             foreach (var card in _cardDefinitions.Value)
             {
                 try
                 {
                     var name = card.Art;
-                    var n  = name.LastIndexOf('.');
+                    var n = name.LastIndexOf('.');
                     if (n > 0)
                     {
                         name = name.Substring(0, n);
@@ -329,21 +333,22 @@ namespace Rooting.Desktop
 
             //foreach (var tile in tiles)
             //{
-            //    _spriteBatch.Draw(tiletexture,, Color.White);
-            //  if there is a next in row
-            //     tileVector.X + tileWidth
-            //  if there is no next in row
-            //      tileVector.Y + tileWidth
-            //      tileVector.X = 0
-            //}
+            //    _spriteBatch.Draw(_tileEmpty, new Vector2(0, 0), Color.White);
+                //  if there is a next in row
+                //     tileVector.X + tileWidth
+                //  if there is no next in row
+                //      tileVector.Y + tileWidth
+                //      tileVector.X = 0
+                //}
 
-            foreach (var card in cardsInHand)
-            //var card1 = cardsInHand[0];
-            //var card2 = cardsInHand[1];
-            {
-                _spriteBatch.Draw(cardTextures[card.Name], new Vector2(newCardPos.X + 256, newCardPos.Y), Color.White);
+                foreach (var card in cardsInHand)
+                //var card1 = cardsInHand[0];
+                //var card2 = cardsInHand[1];
+                {
+                    _spriteBatch.Draw(cardTextures[card.Name], new Vector2(newCardPos.X + 256, newCardPos.Y), Color.White);
+                }
+                _spriteBatch.End();
             }
-            _spriteBatch.End();
         }
     }
 }
