@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Text;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Collections.Generic;
@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using SharpDX.Direct3D9;
 using Microsoft.Win32.SafeHandles;
 //using System.Windows.Forms;
+using System.Threading;
 
 //using SharpDX.Direct3D11;
 
@@ -52,11 +53,12 @@ namespace Rooting.Desktop
         private CardModel[] _cards;
         private PlayerModel[] _players;
         private PlayerModel CurrentPlayer = new();
+        private readonly SoundBox SoundBox = new();
 
         /// <summary>
         ///  My cards
         /// </summary>
-        private Dictionary<string, Texture2D> cardTextures;
+        private readonly Dictionary<string, Texture2D> cardTextures;
 
         private PlayingCard[] cardsInHand = Array.Empty<PlayingCard>();
         private TileBase[] tiles = Array.Empty<TileBase>();
@@ -149,7 +151,6 @@ namespace Rooting.Desktop
 
             StartGame();
 
-
             try
             {
                 LoadWorld();
@@ -163,6 +164,8 @@ namespace Rooting.Desktop
 
         protected override void LoadContent()
         {
+            SoundBox.LoadContent(Content);
+
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             _graphics.PreferredBackBufferWidth = gameResolution.X;
@@ -246,7 +249,9 @@ namespace Rooting.Desktop
             currentKeyboardState = Keyboard.GetState();
             // If they hit esc, exit
             if (currentKeyboardState.IsKeyDown(Keys.Escape))
+            {
                 Exit();
+            }
 
             mouseState = Mouse.GetState();
             var isClicked = mouseState.LeftButton == ButtonState.Pressed;
@@ -305,7 +310,6 @@ namespace Rooting.Desktop
 
         protected override void Draw(GameTime gameTime)
         {
-
             switch (_state)
             {
                 //case GameState.MainMenu:
@@ -316,7 +320,6 @@ namespace Rooting.Desktop
                     break;
             }
             base.Draw(gameTime);
-
         }
 
         private void DrawMainMenu(GameTime deltaTime)
@@ -374,5 +377,6 @@ namespace Rooting.Desktop
             
             _spriteBatch.End();
             }
+            _spriteBatch.End();
         }
     }
