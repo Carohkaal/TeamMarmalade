@@ -24,12 +24,19 @@ namespace Rooting.Desktop
             Gameplay
         }
 
+        ///
+        /// CONSTANTS
+        ///
+
+        private const FamilyTypes desiredFamilyType = FamilyTypes._1;
+        private const string desiredUserName = "Marmalade";
+
         private readonly GameState _state = GameState.Gameplay;
 
-        private const int tileWidth = 512 - 100;
+        private const int tileWidth = 512 - 120;
         private const int tileHeight = 237 - 50;
-        private int cardWidth = 150;
-        private int cardHeight = 200;
+        private int cardWidth = 300;
+        private int cardHeight = 400;
 
         private int mapRows;
         private int mapCols;
@@ -77,7 +84,7 @@ namespace Rooting.Desktop
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.IsFullScreen = true;
+            //_graphics.IsFullScreen = true;
             _graphics.ApplyChanges();
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -147,7 +154,7 @@ namespace Rooting.Desktop
 
             ResetGame();
 
-            ClaimPlayer("Danny", "", FamilyTypes._1);
+            ClaimPlayer(desiredUserName, "", desiredFamilyType);
 
             StartGame();
 
@@ -188,22 +195,19 @@ namespace Rooting.Desktop
                     var name = card.Art;
                     var lastIndexOf = name.LastIndexOf('.');
 
-                    //If a cardname contains size info this code can be used
-
-                    var firstIndexOf = name.IndexOf('.');
-                    if (firstIndexOf != lastIndexOf)
-                    {
-                        var fileSizeInfo = name.Substring(firstIndexOf, lastIndexOf);
-                        cardWidth = Int32.Parse(fileSizeInfo.Substring(0, fileSizeInfo.LastIndexOf('x')));
-                        cardHeight = Int32.Parse(fileSizeInfo.Substring(fileSizeInfo.LastIndexOf('x'), fileSizeInfo.Length));
-                    }
-
                     name = name.Substring(0, lastIndexOf);
 
 
-                    var cardTexture = Content.Load<Texture2D>($"cards/{name}.150x200");
+                    var cardTexture = Content.Load<Texture2D>($"cards/{name}.{cardHeight}x{cardWidth}");
                     if (cardTexture != null)
                         cardTextures.Add(card.Name, cardTexture);
+
+                    //for (int i = 0; i <= cardsInHand.Length; i++)
+                   // {
+                    //    if (card.Name == cardsInHand[i].Name) ;
+
+
+                  //  }
                 }
                 catch { }
             }
@@ -359,11 +363,11 @@ namespace Rooting.Desktop
                 {
                     if (j%2==0)
                     {
-                        _spriteBatch.Draw(_tileEmpty, new Vector2(tileWidth + j * tileWidth, tileHeight + i * tileHeight + tileHeight/2), Color.White);
+                        _spriteBatch.Draw(_tileEmpty, new Vector2(0 + j * tileWidth, 0 + i * tileHeight + tileHeight/2), Color.White);
                     }
                     else
                     {
-                        _spriteBatch.Draw(_tileEmpty, new Vector2(tileWidth + j * tileWidth, tileHeight + i * tileHeight), Color.White);
+                        _spriteBatch.Draw(_tileEmpty, new Vector2(0 + j * tileWidth, 0 + i * tileHeight), Color.White);
                     }
                 }
             }
@@ -372,11 +376,14 @@ namespace Rooting.Desktop
 
             for (int i = 0; i < cardsInHand.Length; i++)
             {
-                _spriteBatch.Draw(cardTextures[cardsInHand[i].Name], new Vector2(cardWidth + i * cardWidth, 880), Color.White);
+                //Draw Card Art
+                _spriteBatch.Draw(cardTextures[cardsInHand[i].Name], new Vector2(cardWidth + i * cardWidth, 680), Color.White);
+                //Draw Card Description
+                _spriteBatch.DrawString(_currentFont, GetCardDefinition(cardsInHand[i]).Description, new Vector2(cardWidth + i * cardWidth, 950), Color.Black);
             }
-            
+
             _spriteBatch.End();
-            }
-            _spriteBatch.End();
+
         }
     }
+}
