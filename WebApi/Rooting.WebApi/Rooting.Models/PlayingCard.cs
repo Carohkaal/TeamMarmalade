@@ -1,6 +1,6 @@
 ﻿namespace Rooting.Models
 {
-    public struct PlayingCard : ICloneable
+    public class PlayingCard : ICloneable
     {
         public PlayingCard()
         {

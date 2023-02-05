@@ -188,9 +188,15 @@ namespace Rooting.Rules
             { "PLANTRULEFLOWERINGBLOOM", (o, m) => {
                 var tile = m.Tile(o);
                 if (tile==null) return;
-
+                var random = new Random();
                 foreach(var t in m.Surrounding(o)) {
-                    if (t.FamilyRules(FamilyTypes.Plant)) t.AddSettlement(FamilyTypes.Plant, TokenType.Village);
+                    if (t.FamilyRules(FamilyTypes.Plant))
+                        t.AddSettlement(FamilyTypes.Plant, TokenType.Village);
+                    else
+                    if(t.FamilyType==FamilyTypes.All) {
+                        t.FamilyType=FamilyTypes.Plant;
+                        t.Score(FamilyTypes.Plant, random.Next(3)+1);
+                    }
                 };
             } },
             { "FUNGIRULECOLONIZATION", (o, m) => {
@@ -229,7 +235,8 @@ namespace Rooting.Rules
                 if (!gameStatistics.IsPlayerPlaying(fam)) continue;
 
                 var currentCards = gameStatistics.CurrentInHand(fam);
-                while (currentCards.Length < 5)
+                var getCards = 5 - currentCards.Length;
+                while (getCards > 0)
                 {
                     var cardsLeft = gameStatistics.NotPlayedCards(fam);
                     if (cardsLeft.Length == 0)
@@ -239,9 +246,8 @@ namespace Rooting.Rules
                     var cardId = r.Next(cardsLeft.Length);
                     var card = cardsLeft[cardId];
                     gameStatistics.TakeCardInHand(fam, card.Id);
-                    currentCards = gameStatistics.CurrentInHand(fam);
+                    getCards--;
                 }
-                if (currentCards.Length == 0) gameStatistics.PlayerIsPlaying(fam, false);
             }
 
             if (gameStatistics.NextTurn > DateTime.Now) return;

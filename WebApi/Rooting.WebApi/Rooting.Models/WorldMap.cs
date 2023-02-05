@@ -41,7 +41,11 @@
 
         public TileBase? Tile(IOrigin o)
         {
-            return tiles.FirstOrDefault(t => t.Row == o.Row && t.Col == o.Col);
+            var tile = tiles.FirstOrDefault(t => t.Row == o.Row && t.Col == o.Col);
+            if (tile == null) return null;
+            // Not for any family: FamilyTypes = 0
+            if (tile.FamilyType == FamilyTypes.Any) return null;
+            return tile;
         }
 
         public IEnumerable<TileBase> Surrounding(IOrigin o)

@@ -49,5 +49,27 @@ namespace Rooting.Rules.UnitTests
             Assert.AreEqual(21, tile.ScoringClass.FamilyScore[FamilyTypes.Plant]);
             Assert.IsNotNull(tile.ScoringClass.Tokens.Single(m => m.Family == FamilyTypes.Plant && m.Token == TokenType.Village));
         }
+
+        [TestMethod]
+        public void TestFloweringBloomRule()
+        {
+            var o = new Origin(2, 1);
+            var map = _game.WorldMap;
+            _engine.ApplyRule("plantRuleFloweringBloom", o, map);
+
+            var tile = _game.WorldMap.Tile(o);
+            Assert.IsNotNull(tile);
+            Console.WriteLine(JsonConvert.SerializeObject(tile, Formatting.Indented));
+            Assert.AreEqual(FamilyTypes.All, tile.FamilyType);
+
+            var o2 = new Origin(2, 2);
+            var otherTile = _game.WorldMap.Tile(o2);
+            Assert.IsNotNull(otherTile);
+            Console.WriteLine(JsonConvert.SerializeObject(otherTile, Formatting.Indented));
+            Assert.AreEqual(FamilyTypes.Plant, otherTile.FamilyType);
+            Assert.IsNull(otherTile.ScoringClass.Tokens.FirstOrDefault(m => m.Family == FamilyTypes.Plant && m.Token == TokenType.Village));
+        }
+
+        //plantRuleFloweringBloom
     }
 }
