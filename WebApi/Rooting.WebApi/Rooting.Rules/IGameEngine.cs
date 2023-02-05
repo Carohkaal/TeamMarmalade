@@ -7,5 +7,7 @@ namespace Rooting.Rules
         void ExecuteLoop(IGameStatistics gameStatistics);
 
         void ApplyRule(string ruleName, IOrigin origin, WorldMap map);
+
+        (PlayingState state, string? message) PlayCard(PlayingCard card, TileBase tile);
     }
 }

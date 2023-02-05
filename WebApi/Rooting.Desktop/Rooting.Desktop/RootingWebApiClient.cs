@@ -31,12 +31,12 @@ namespace Rooting
 
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<PlayingCard> PlayCardAsync(string playerId, PlayingCard body);
+        System.Threading.Tasks.Task<PlayingCard> PlayCardAsync(string playerId, string tileId, PlayingCard body);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<PlayingCard> PlayCardAsync(string playerId, PlayingCard body, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<PlayingCard> PlayCardAsync(string playerId, string tileId, PlayingCard body, System.Threading.CancellationToken cancellationToken);
 
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
@@ -237,22 +237,26 @@ namespace Rooting
 
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<PlayingCard> PlayCardAsync(string playerId, PlayingCard body)
+        public virtual System.Threading.Tasks.Task<PlayingCard> PlayCardAsync(string playerId, string tileId, PlayingCard body)
         {
-            return PlayCardAsync(playerId, body, System.Threading.CancellationToken.None);
+            return PlayCardAsync(playerId, tileId, body, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<PlayingCard> PlayCardAsync(string playerId, PlayingCard body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<PlayingCard> PlayCardAsync(string playerId, string tileId, PlayingCard body, System.Threading.CancellationToken cancellationToken)
         {
             if (playerId == null)
                 throw new System.ArgumentNullException("playerId");
 
+            if (tileId == null)
+                throw new System.ArgumentNullException("tileId");
+
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append("Game/PlayCard/{playerId}");
+            urlBuilder_.Append("Game/PlayCard/{playerId}/{tileId}");
             urlBuilder_.Replace("{playerId}", System.Uri.EscapeDataString(ConvertToString(playerId, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{tileId}", System.Uri.EscapeDataString(ConvertToString(tileId, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
             var disposeClient_ = false;

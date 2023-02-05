@@ -25,12 +25,23 @@ namespace Rooting.WebApi.Controllers
             });
         }
 
-        [HttpPost("PlayCard/{playerId}")]
-        public ActionResult<PlayingCard> PlayCard(string playerId, [FromBody] PlayingCard playingCard)
+        [HttpPost("PlayCard/{playerId}/{tileId}")]
+        public ActionResult<PlayingCard> PlayCard(string playerId, string tileId, [FromBody] PlayingCard playingCard)
         {
+            if (!Guid.TryParse(tileId, out var tileReference))
+            {
+                return BadRequest($"Invalid tile id: {tileId}, GUID expected");
+            }
+
+            var tile = gameStatistics.WorldMap.Tiles.FirstOrDefault(m => m.Uuid == tileReference);
+            if (tile == null)
+            {
+                return BadRequest($"Invalid tile id: {tileId}, Not found");
+            }
+
             return ExecuteForUser(playerId, (player) =>
             {
-                return gameStatistics.PlayCard(player, playingCard);
+                return gameStatistics.PlayCard(player, playingCard, tile);
             });
         }
 

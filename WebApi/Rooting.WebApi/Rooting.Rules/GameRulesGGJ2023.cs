@@ -254,5 +254,10 @@ namespace Rooting.Rules
 
             gameStatistics.SetNextTime("");
         }
+
+        public (PlayingState state, string? message) PlayCard(PlayingCard card, TileBase tile)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
