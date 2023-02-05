@@ -9,34 +9,35 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SharpDX.Direct3D9;
 using Microsoft.Win32.SafeHandles;
+
 //using SharpDX.Direct3D11;
 
 namespace Rooting.Desktop
 {
     public class Game1 : Game
     {
-        enum GameState
+        private enum GameState
         {
             MainMenu,
             Gameplay
         }
 
-        GameState _state = GameState.Gameplay;
+        private readonly GameState _state = GameState.Gameplay;
 
-        private int tileWidth = 512;
-        private string gameId = "1";
+        private const int tileWidth = 512;
+        private const string gameId = "1";
 
         private Point gameResolution = new Point(1920, 1080);
-        private GraphicsDeviceManager _graphics;
+        private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        RenderTarget2D renderTarget;
-        Rectangle renderTargetDestination;
+        private RenderTarget2D renderTarget;
+        private Rectangle renderTargetDestination;
 
         private SpriteFont _currentFont;
-        private RootingWebApiClient _webApiClient;
-        private HttpClient _httpClient = new HttpClient();
-        private Uri serverUri = new Uri("https://rootingwebapi.azurewebsites.net");
+        private readonly RootingWebApiClient _webApiClient;
+        private readonly HttpClient _httpClient = new HttpClient();
+        private readonly Uri serverUri = new Uri("https://rootingwebapi.azurewebsites.net");
         private readonly Lazy<CardModel[]> _cardDefinitions;
         private readonly Lazy<PlayerModel[]> _currentPlayers;
         private CardModel[] _cards;
@@ -46,12 +47,12 @@ namespace Rooting.Desktop
         /// <summary>
         ///  My cards
         /// </summary>
-        private Dictionary<string, Texture2D> cardTextures;
+        private readonly Dictionary<string, Texture2D> cardTextures;
 
         private PlayingCard[] cardsInHand = Array.Empty<PlayingCard>();
         private TileBase[] tiles = Array.Empty<TileBase>();
 
-        private Texture2D _defaultCard;
+        private readonly Texture2D _defaultCard;
         private Texture2D _startScreen;
         private Texture2D _startButton;
         private Texture2D _mapExample;
@@ -62,7 +63,7 @@ namespace Rooting.Desktop
 
         private KeyboardState currentKeyboardState;
 
-        string textBox = ""; //Start with no text
+        private string textBox = ""; //Start with no text
 
         public Game1()
         {
@@ -106,13 +107,11 @@ namespace Rooting.Desktop
             tiles = World.Tiles.ToArray();
         }
 
-
         private CardModel? GetCardDefinition(PlayingCard card)
         {
             return _cardDefinitions.Value.Where(m => m.Name == card.Name).FirstOrDefault();
         }
 
-      
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
@@ -163,7 +162,7 @@ namespace Rooting.Desktop
         }
 
         public bool ButtonOnClick(Point mouseClick, bool isClicked, Rectangle r)
-       {
+        {
             if (r.Contains(mouseClick) && isClicked)
             {
                 return true;
@@ -178,15 +177,15 @@ namespace Rooting.Desktop
             switch (_state)
             {
                 //case GameState.MainMenu:
-                  //  UpdateMainMenu(gameTime);
-                    //break;
+                //  UpdateMainMenu(gameTime);
+                //break;
                 case GameState.Gameplay:
                     UpdateGameplay(gameTime);
                     break;
             }
         }
 
-        void UpdateMainMenu(GameTime deltaTime)
+        private void UpdateMainMenu(GameTime deltaTime)
         {
             // Poll for current keyboard state
             currentKeyboardState = Keyboard.GetState();
@@ -203,14 +202,13 @@ namespace Rooting.Desktop
             //    _state = GameState.GamePlay;
         }
 
-        void UpdateGameplay(GameTime deltaTime)
+        private void UpdateGameplay(GameTime deltaTime)
         {
             // Poll for current keyboard state
             currentKeyboardState = Keyboard.GetState();
             // If they hit esc, exit
             if (currentKeyboardState.IsKeyDown(Keys.Escape))
                 Exit();
-
 
             // Respond to user actions in the game.
             // Update enemies
@@ -219,9 +217,7 @@ namespace Rooting.Desktop
             //    _state = GameState.MainMenu;
         }
 
-
-
-        Rectangle GetRenderTargetDestination(Point resolution, int preferredBackBufferWidth, int preferredBackBufferHeight)
+        private Rectangle GetRenderTargetDestination(Point resolution, int preferredBackBufferWidth, int preferredBackBufferHeight)
         {
             float resolutionRatio = (float)resolution.X / resolution.Y;
             float screenRatio;
@@ -245,7 +241,7 @@ namespace Rooting.Desktop
             return CenterRectangle(new Rectangle(Point.Zero, bounds), rectangle);
         }
 
-        static Rectangle CenterRectangle(Rectangle outerRectangle, Rectangle innerRectangle)
+        private static Rectangle CenterRectangle(Rectangle outerRectangle, Rectangle innerRectangle)
         {
             Point delta = outerRectangle.Center - innerRectangle.Center;
             innerRectangle.Offset(delta);
@@ -259,15 +255,15 @@ namespace Rooting.Desktop
             switch (_state)
             {
                 //case GameState.MainMenu:
-                  //  DrawMainMenu(gameTime);
-                    //break;
+                //  DrawMainMenu(gameTime);
+                //break;
                 case GameState.Gameplay:
                     DrawGameplay(gameTime);
                     break;
             }
         }
 
-        void DrawMainMenu(GameTime deltaTime)
+        private void DrawMainMenu(GameTime deltaTime)
         {
             // Draw the main menu, any active selections, etc
             GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -284,7 +280,7 @@ namespace Rooting.Desktop
             _spriteBatch.End();
         }
 
-        void DrawGameplay(GameTime deltaTime)
+        private void DrawGameplay(GameTime deltaTime)
         {
             GraphicsDevice.Clear(Color.Transparent);
 
@@ -294,7 +290,6 @@ namespace Rooting.Desktop
             _spriteBatch.Begin();
             _spriteBatch.Draw(renderTarget, renderTargetDestination, Color.White);
 
-
             //_spriteBatch.Draw(_mapExample, new Vector2(500 , 500), Color.White);
 
             //DRAW MAP
@@ -302,7 +297,7 @@ namespace Rooting.Desktop
             //foreach (var tile in tiles)
             //{
             //    _spriteBatch.Draw(tiletexture,, Color.White);
-            //  if there is a next in row 
+            //  if there is a next in row
             //     tileVector.X + tileWidth
             //  if there is no next in row
             //      tileVector.Y + tileWidth
@@ -317,7 +312,5 @@ namespace Rooting.Desktop
 
             _spriteBatch.End();
         }
-
     }
-
 }
