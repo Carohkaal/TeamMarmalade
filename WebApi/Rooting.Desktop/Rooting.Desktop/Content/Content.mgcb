@@ -20,17 +20,29 @@
 /processorParam:TextureFormat=Compressed
 /build:Arial.spritefont
 
+#begin audio/23DB02TG_msc_allFamilies.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:audio/23DB02TG_msc_allFamilies.ogg
+
 #begin audio/23DB02TG_msc_animals.ogg
 /importer:OggImporter
 /processor:SongProcessor
 /processorParam:Quality=Best
 /build:audio/23DB02TG_msc_animals.ogg
 
-#begin audio/23DB02TG_msc_basis.ogg
+#begin audio/23DB02TG_msc_animals.ogg
 /importer:OggImporter
 /processor:SongProcessor
 /processorParam:Quality=Best
-/build:audio/23DB02TG_msc_basis.ogg
+/build:audio/23DB02TG_msc_animals.ogg
+
+#begin audio/23DB02TG_msc_fight.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:audio/23DB02TG_msc_fight.ogg
 
 #begin audio/23DB02TG_msc_fight.ogg
 /importer:OggImporter
@@ -44,11 +56,23 @@
 /processorParam:Quality=Best
 /build:audio/23DB02TG_msc_funghi.ogg
 
-#begin audio/23DB02TG_msc_plant.ogg
+#begin audio/23DB02TG_msc_funghi.ogg
 /importer:OggImporter
 /processor:SongProcessor
 /processorParam:Quality=Best
-/build:audio/23DB02TG_msc_plant.ogg
+/build:audio/23DB02TG_msc_funghi.ogg
+
+#begin audio/23DB02TG_msc_plants.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:audio/23DB02TG_msc_plants.ogg
+
+#begin audio/23DB02TG_sfx_cardPickUp.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:audio/23DB02TG_sfx_cardPickUp.mp3
 
 #begin audio/23DB02TG_sfx_cardPickUp.wav
 /importer:WavImporter
@@ -56,11 +80,35 @@
 /processorParam:Quality=Best
 /build:audio/23DB02TG_sfx_cardPickUp.wav
 
+#begin audio/23DB02TG_sfx_cardPickUp.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/23DB02TG_sfx_cardPickUp.wav
+
+#begin audio/23DB02TG_sfx_placeTile.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:audio/23DB02TG_sfx_placeTile.mp3
+
 #begin audio/23DB02TG_sfx_placeTile.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:audio/23DB02TG_sfx_placeTile.wav
+
+#begin audio/23DB02TG_sfx_placeTile.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/23DB02TG_sfx_placeTile.wav
+
+#begin audio/23DB02TG_sfx_UIExit.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:audio/23DB02TG_sfx_UIExit.mp3
 
 #begin audio/23DB02TG_sfx_UIExit.wav
 /importer:WavImporter
@@ -68,17 +116,59 @@
 /processorParam:Quality=Best
 /build:audio/23DB02TG_sfx_UIExit.wav
 
+#begin audio/23DB02TG_sfx_UIExit.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/23DB02TG_sfx_UIExit.wav
+
+#begin audio/23DB02TG_sfx_UIHover.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:audio/23DB02TG_sfx_UIHover.mp3
+
 #begin audio/23DB02TG_sfx_UIHover.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:audio/23DB02TG_sfx_UIHover.wav
 
+#begin audio/23DB02TG_sfx_UIHover.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/23DB02TG_sfx_UIHover.wav
+
+#begin audio/23DB02TG_sfx_UISelect.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:audio/23DB02TG_sfx_UISelect.mp3
+
 #begin audio/23DB02TG_sfx_UISelect.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:audio/23DB02TG_sfx_UISelect.wav
+
+#begin audio/23DB02TG_sfx_UISelect.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/23DB02TG_sfx_UISelect.wav
+
+#begin audio/23DB02TG_sfx_ultimateVocalCue.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:audio/23DB02TG_sfx_ultimateVocalCue.mp3
+
+#begin audio/23DB02TG_sfx_ultimateVocalCue.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/23DB02TG_sfx_ultimateVocalCue.wav
 
 #begin audio/23DB02TG_sfx_ultimateVocalCue.wav
 /importer:WavImporter
