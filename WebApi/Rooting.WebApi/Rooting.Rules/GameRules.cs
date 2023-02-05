@@ -382,7 +382,7 @@ namespace Rooting.Rules
             }
 
             var card = CurrentInHand(familyType).FirstOrDefault(m => m.Id == playingCard.Id);
-            if (card != null)
+            if (card.Id > 0)
             {
                 player.IsPlaying = false;
                 card.PlayingState = PlayingState.Played;
