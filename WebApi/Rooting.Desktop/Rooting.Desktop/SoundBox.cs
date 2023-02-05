@@ -1,10 +1,8 @@
 ﻿using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Media;
-using SharpDX.Direct3D9;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Rooting.Desktop
@@ -49,8 +47,8 @@ namespace Rooting.Desktop
             sounds.Enqueue(name);
         }
 
-        private Task soundQueueTask;
-        private Task blayBackgroundTask;
+        private readonly Task soundQueueTask;
+        private readonly Task blayBackgroundTask;
 
         private async Task HandleQueue()
         {
@@ -79,6 +77,7 @@ namespace Rooting.Desktop
                     volume = (volume - 0.1f);
                     if (volume < 0) { volume = 0; }
                     MediaPlayer.Volume = volume;
+                    MediaPlayer.IsRepeating = true;
                     await Task.Delay(10);
                 }
                 song = Song;
@@ -90,11 +89,13 @@ namespace Rooting.Desktop
             {
                 volume = volume - 0.1f;
                 MediaPlayer.Volume = volume;
+                MediaPlayer.IsRepeating = true;
             }
             if (Volume > volume)
             {
                 volume = volume + 0.1f;
                 MediaPlayer.Volume = volume;
+                MediaPlayer.IsRepeating = true;
             }
             await Task.Delay(10);
         }
