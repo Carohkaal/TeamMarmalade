@@ -8,12 +8,12 @@ namespace Rooting.Models
         {
             PlayingState = PlayingState.None;
             Family = FamilyTypes.Any;
-            Level = TokenType.None;
+            Token = TokenType.None;
         }
 
         public FamilyTypes Family { get; set; }
         public PlayingState PlayingState { get; set; }
-        public TokenType Level { get; set; }
+        public TokenType Token { get; set; }
 
         public bool Play()
         {
@@ -28,7 +28,7 @@ namespace Rooting.Models
             {
                 PlayingState = PlayingState.Played,
                 Family = family,
-                Level = level,
+                Token = level,
             };
         }
     }
@@ -36,7 +36,7 @@ namespace Rooting.Models
     public interface IScoringToken
     {
         FamilyTypes Family { get; }
-        TokenType Level { get; }
+        TokenType Token { get; }
         PlayingState PlayingState { get; }
 
         bool Play();

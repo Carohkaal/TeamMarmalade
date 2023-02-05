@@ -39,12 +39,12 @@
                 }
         }
 
-        public TileBase? Tile(Origin o)
+        public TileBase? Tile(IOrigin o)
         {
             return tiles.FirstOrDefault(t => t.Row == o.Row && t.Col == o.Col);
         }
 
-        public IEnumerable<TileBase> Surrounding(Origin o)
+        public IEnumerable<TileBase> Surrounding(IOrigin o)
         {
             var set = new TileBase?[] {
                 tiles.FirstOrDefault(t => t.Row == o.Row-1 && t.Col == o.Col-1),

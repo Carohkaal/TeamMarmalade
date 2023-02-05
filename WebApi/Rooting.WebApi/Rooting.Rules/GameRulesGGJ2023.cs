@@ -93,15 +93,25 @@ namespace Rooting.Rules
         public static void SettlementUpgrade(this TileBase? tile, FamilyTypes family)
         {
             if (tile == null) return;
-            var scoringTokens = tile.ScoringClass.Tokens.Where(m => m.Family == family);
-            if (scoringTokens.Count() == 0) return;
+            var scoringTokens = tile.ScoringClass.Tokens.Where(m => m.Family != family && m.Token >= TokenType.Dwelling);
+            if (scoringTokens.Count() > 0) return;
 
-            if (scoringTokens.Any(m => m.Level == TokenType.Village))
+            if (tile.FamilyType == family)
+            {
+                // bonus for adding an extra card
+                tile.ScoringClass.AddScore(family, 1);
+            }
+            else
+            {
+                tile.FamilyType = family;
+            }
+
+            if (tile.ScoringClass.Tokens.Any(m => m.Token == TokenType.Village && m.Family == family))
             {
                 if (tile.ScoresDifference(family) > 15)
                 {
                     var newTokens = tile.ScoringClass.Tokens
-                        .Remove((m) => m.Level == TokenType.Village && m.Family == family)
+                        .Remove((m) => m.Token == TokenType.Village && m.Family == family)
                         .AddToken(() => ScoringToken.CreateToken(family, TokenType.City));
                     tile.ScoringClass.UpdateTokens(newTokens);
                 }
@@ -123,7 +133,7 @@ namespace Rooting.Rules
 
         private readonly Random r = new Random();
 
-        private readonly Dictionary<string, Action<Origin, WorldMap>> TileRules = new()
+        private readonly Dictionary<string, Action<IOrigin, WorldMap>> TileRules = new()
         {
             { "PLANTRULECOLONIZATION", (o, m) => {
                 var tile = m.Tile(o);
@@ -194,6 +204,17 @@ namespace Rooting.Rules
                     tile.Score(FamilyTypes.Fungi, 10);
             } }
         };
+
+        public void ApplyRule(string ruleName, IOrigin origin, WorldMap map)
+        {
+            var name = ruleName.ToUpperInvariant();
+            if (!TileRules.ContainsKey(name))
+            {
+                logger.LogError($"Invalid rule : {ruleName} executed on [{origin.Row}, {origin.Col}]");
+            }
+            var rule = TileRules[name];
+            rule.Invoke(origin, map);
+        }
 
         public GameRulesGGJ2023(ILogger<GameRulesGGJ2023>? logger = null)
         {
