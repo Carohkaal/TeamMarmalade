@@ -380,6 +380,10 @@ namespace Rooting.Desktop
                 _spriteBatch.Draw(cardTextures[cardsInHand[i].Name], new Vector2(cardWidth + i * cardWidth, 680), Color.White);
                 //Draw Card Description
                 _spriteBatch.DrawString(_currentFont, GetCardDefinition(cardsInHand[i]).Description, new Vector2(cardWidth + i * cardWidth, 950), Color.Black);
+                //Draw Card Name
+                _spriteBatch.DrawString(_currentFont, GetCardDefinition(cardsInHand[i]).Name, new Vector2(cardWidth + i * cardWidth + 20, 700), Color.Black);
+                //Draw Card Cost
+                _spriteBatch.DrawString(_currentFont, GetCardDefinition(cardsInHand[i]).Cost.ToString(), new Vector2(cardWidth + i * cardWidth + 260, 700), Color.Black);
             }
 
             _spriteBatch.End();
