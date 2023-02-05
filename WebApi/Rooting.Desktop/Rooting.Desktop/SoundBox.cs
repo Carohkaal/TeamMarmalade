@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Media;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
@@ -9,7 +10,8 @@ namespace Rooting.Desktop
 {
     internal class SoundBox
     {
-        private readonly Dictionary<string, SoundEffect> soundEffects = new();
+        private readonly Dictionary<string, SoundEffect> SoundEffects = new();
+        private readonly Dictionary<string, Song> BackgroundMusic = new();
 
         public SoundBox()
         {
@@ -17,13 +19,24 @@ namespace Rooting.Desktop
 
         public void LoadContent(ContentManager contentManager)
         {
-            soundEffects.Clear();
-            soundEffects.Add("getCard", contentManager.Load<SoundEffect>("audio\\23DB02TG_sfx_cardPickUp"));
-            soundEffects.Add("placeTile", contentManager.Load<SoundEffect>("audio\\23DB02TG_sfx_placeTile"));
-            soundEffects.Add("hover", contentManager.Load<SoundEffect>("audio\\23DB02TG_sfx_UIHover"));
-            soundEffects.Add("exit", contentManager.Load<SoundEffect>("audio\\23DB02TG_sfx_UIExit"));
-            soundEffects.Add("select", contentManager.Load<SoundEffect>("audio\\23DB02TG_sfx_UISelect"));
-            soundEffects.Add("vocalCue", contentManager.Load<SoundEffect>("audio\\23DB02TG_sfx_ultimateVocalCue"));
+            BackgroundMusic.Clear();
+            BackgroundMusic.Add("animals", contentManager.Load<Song>("audio\\23DB02TG_msc_animals"));
+            BackgroundMusic.Add("basis", contentManager.Load<Song>("audio\\23DB02TG_msc_basis"));
+            BackgroundMusic.Add("fight", contentManager.Load<Song>("audio\\23DB02TG_msc_fight"));
+            BackgroundMusic.Add("funghi", contentManager.Load<Song>("audio\\23DB02TG_msc_funghi"));
+            BackgroundMusic.Add("plant", contentManager.Load<Song>("audio\\23DB02TG_msc_plant"));
+
+            MediaPlayer.Play(BackgroundMusic["fight"]);
+            Thread.Sleep(2000);
+            MediaPlayer.Play(BackgroundMusic["animals"]);
+
+            SoundEffects.Clear();
+            SoundEffects.Add("getCard", contentManager.Load<SoundEffect>("audio\\23DB02TG_sfx_cardPickUp"));
+            SoundEffects.Add("placeTile", contentManager.Load<SoundEffect>("audio\\23DB02TG_sfx_placeTile"));
+            SoundEffects.Add("hover", contentManager.Load<SoundEffect>("audio\\23DB02TG_sfx_UIHover"));
+            SoundEffects.Add("exit", contentManager.Load<SoundEffect>("audio\\23DB02TG_sfx_UIExit"));
+            SoundEffects.Add("select", contentManager.Load<SoundEffect>("audio\\23DB02TG_sfx_UISelect"));
+            SoundEffects.Add("vocalCue", contentManager.Load<SoundEffect>("audio\\23DB02TG_sfx_ultimateVocalCue"));
 
             QueueSound("vocalCue");
         }
@@ -38,13 +51,17 @@ namespace Rooting.Desktop
 
         private Task SoundQueueTask;
 
+        public void Mixer(int basic, int animals, int funghi, int plant, int fight)
+        {
+        }
+
         private async Task HandleQueue()
         {
             while (true)
             {
                 if (sounds.TryDequeue(out var name))
                 {
-                    var soundEffectInstance = soundEffects[name].CreateInstance();
+                    var soundEffectInstance = SoundEffects[name].CreateInstance();
                     soundEffectInstance.Play();
                     await Task.Delay(20);
                     while (soundEffectInstance.State != SoundState.Stopped) { await Task.Delay(10); }
