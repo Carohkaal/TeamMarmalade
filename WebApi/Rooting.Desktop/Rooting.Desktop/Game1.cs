@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SharpDX.Direct3D9;
+using Microsoft.Win32.SafeHandles;
 //using SharpDX.Direct3D11;
 
 namespace Rooting.Desktop
@@ -21,6 +22,9 @@ namespace Rooting.Desktop
         }
 
         GameState _state = GameState.Gameplay;
+
+        private int tileWidth = 512;
+        private string gameId = "1";
 
         private Point gameResolution = new Point(1920, 1080);
         private GraphicsDeviceManager _graphics;
@@ -37,7 +41,7 @@ namespace Rooting.Desktop
         private readonly Lazy<PlayerModel[]> _currentPlayers;
         private CardModel[] _cards;
         private PlayerModel[] _players;
-        private PlayerModel CurrentPLayer = new();
+        private PlayerModel CurrentPlayer = new();
 
         /// <summary>
         ///  My cards
@@ -82,39 +86,40 @@ namespace Rooting.Desktop
             });
         }
 
-        private async Task ClaimPLayer(string myName, string myAvatar, FamilyTypes myFamily)
+        private async Task ClaimPlayer(string myName, string myAvatar, FamilyTypes myFamily)
         {
-            CurrentPLayer.Avatar = myAvatar;
-            CurrentPLayer.FamilyType = myFamily;
-            CurrentPLayer.Name = myName;
-            CurrentPLayer = await _webApiClient.ClaimFamilyAsync(CurrentPLayer);
+            CurrentPlayer.Avatar = myAvatar;
+            CurrentPlayer.FamilyType = myFamily;
+            CurrentPlayer.Name = myName;
+            CurrentPlayer = await _webApiClient.ClaimFamilyAsync(CurrentPlayer);
         }
 
         private async Task LoadCurrentHand()
         {
-            var myCards = await _webApiClient.CardsToPlayAsync(CurrentPLayer.Uuid.ToString());
+            var myCards = await _webApiClient.CardsToPlayAsync(CurrentPlayer.Uuid.ToString());
             cardsInHand = myCards.ToArray();
         }
 
         private async Task LoadWorld()
         {
-            var World = await _webApiClient.WorldAsync("1", CurrentPLayer.Uuid.ToString());
+            var World = await _webApiClient.WorldAsync(gameId, CurrentPlayer.Uuid.ToString());
             tiles = World.Tiles.ToArray();
         }
+
 
         private CardModel? GetCardDefinition(PlayingCard card)
         {
             return _cardDefinitions.Value.Where(m => m.Name == card.Name).FirstOrDefault();
         }
 
+      
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
             _cards = _cardDefinitions.Value;
             _players = _currentPlayers.Value;
 
-            ClaimPLayer("Danny", "", FamilyTypes._2);
-
+            ClaimPlayer("Danny", "", FamilyTypes._2);
             //Window.TextInput += TextInputHandler;
 
             base.Initialize();
@@ -206,7 +211,6 @@ namespace Rooting.Desktop
             if (currentKeyboardState.IsKeyDown(Keys.Escape))
                 Exit();
 
-            LoadCurrentHand();
 
             // Respond to user actions in the game.
             // Update enemies
@@ -293,9 +297,16 @@ namespace Rooting.Desktop
 
             //_spriteBatch.Draw(_mapExample, new Vector2(500 , 500), Color.White);
 
+            //DRAW MAP
+
             //foreach (var tile in tiles)
             //{
-            //    _spriteBatch.Draw(cardTextures[card.Name], newCardPos, Color.White);
+            //    _spriteBatch.Draw(tiletexture,, Color.White);
+            //  if there is a next in row 
+            //     tileVector.X + tileWidth
+            //  if there is no next in row
+            //      tileVector.Y + tileWidth
+            //      tileVector.X = 0
             //}
 
             foreach (var card in cardsInHand)
