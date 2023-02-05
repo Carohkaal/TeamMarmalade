@@ -25,10 +25,10 @@ namespace Rooting.Desktop
 
         private readonly GameState _state = GameState.Gameplay;
 
-        private const int tileWidth = 512;
-        private const int tileHeight = 237;
-        private const int cardWidth = 150;
-        private const int cardHeight = 200;
+        private const int tileWidth = 512 - 100;
+        private const int tileHeight = 237 - 50;
+        private int cardWidth = 150;
+        private int cardHeight = 200;
 
         private int mapRows;
         private int mapCols;
@@ -186,14 +186,14 @@ namespace Rooting.Desktop
                     var lastIndexOf = name.LastIndexOf('.');
 
                     //If a cardname contains size info this code can be used
-                    //
-                    //var firstIndexOf = name.IndexOf('.');
-                    //if (firstIndexOf != lastIndexOf)
-                    //{
-                    //    var fileSizeInfo = name.Substring(firstIndexOf, lastIndexOf);
-                    //    cardWidth = Int32.Parse(fileSizeInfo.Substring(0, fileSizeInfo.LastIndexOf('x')));
-                    //    cardHeight = Int32.Parse(fileSizeInfo.Substring(fileSizeInfo.LastIndexOf('x'), fileSizeInfo.Length));
-                    //}
+
+                    var firstIndexOf = name.IndexOf('.');
+                    if (firstIndexOf != lastIndexOf)
+                    {
+                        var fileSizeInfo = name.Substring(firstIndexOf, lastIndexOf);
+                        cardWidth = Int32.Parse(fileSizeInfo.Substring(0, fileSizeInfo.LastIndexOf('x')));
+                        cardHeight = Int32.Parse(fileSizeInfo.Substring(fileSizeInfo.LastIndexOf('x'), fileSizeInfo.Length));
+                    }
 
                     name = name.Substring(0, lastIndexOf);
 
@@ -354,7 +354,14 @@ namespace Rooting.Desktop
             {
                 for (int j = 0; j < mapCols; j++)
                 {
-                    _spriteBatch.Draw(_tileEmpty, new Vector2(tileWidth + j * tileWidth, tileHeight + i * tileHeight), Color.White);
+                    if (j%2==0)
+                    {
+                        _spriteBatch.Draw(_tileEmpty, new Vector2(tileWidth + j * tileWidth, tileHeight + i * tileHeight + tileHeight/2), Color.White);
+                    }
+                    else
+                    {
+                        _spriteBatch.Draw(_tileEmpty, new Vector2(tileWidth + j * tileWidth, tileHeight + i * tileHeight), Color.White);
+                    }
                 }
             }
               
