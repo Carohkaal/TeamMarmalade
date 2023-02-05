@@ -154,6 +154,17 @@
       ]
     },
     {
+      "Name": "Plants Flowering Bloom",
+      "Cost": 7,
+      "Scores": [
+        {
+          "FamilyType": "Fungi",
+          "ScoreType": "Control",
+          "Score": "plantRuleFloweringBloom"
+        }
+      ]
+    },
+    {
       "Name": "Fungi Colonize",
       "Cost": 1,
       "Scores": [
@@ -172,7 +183,7 @@
       "Tier": 1,
       "FamilyType": "Plant",
       "Description": "Attempts colonization of area. Much more effective on untainted lands.",
-      "Art": "Plants - Colonization.png",
+      "Art": "plants-colonization.png",
       "PlayRange": 1,
       "Actions": [
         "Plants Colonize"
@@ -187,7 +198,7 @@
       "Tier": 1,
       "FamilyType": "Plant",
       "Description": "Creates minor presence but more strongly reduces enemy presence.",
-      "Art": "Plants - Defence.png",
+      "Art": "plants-defence.png",
       "PlayRange": 1,
       "Actions": [
         "Plants Defense"
@@ -202,7 +213,7 @@
       "Tier": 1,
       "FamilyType": "Plant",
       "Description": "Assimilate enemy presence, weak when no enemies are around.",
-      "Art": "Plants - Assimilate.png",
+      "Art": "plants-assimilate.png",
       "PlayRange": 1,
       "Actions": [
         "Plants Assimilate"
@@ -216,7 +227,7 @@
       "Tier": 2,
       "FamilyType": "Plant",
       "Description": "From a surface place of dominance, lay claim to the depths below.",
-      "Art": "Plants - Rooting.png",
+      "Art": "plants-rooting.png",
       "PlayRange": 0,
       "Actions": [
         "Plants Rooting"
@@ -232,7 +243,7 @@
       "Tier": 2,
       "FamilyType": "Plant",
       "Description": "Too much becomes a little.",
-      "Art": "Plants - Rooting.png",
+      "Art": "plants-decay.png",
       "PlayRange": 3,
       "Actions": [
         "Plants Decay"
@@ -247,7 +258,7 @@
       "Tier": 3,
       "FamilyType": "Plant",
       "Description": "Prevent the non-plants from expanding.",
-      "Art": "todo.png",
+      "Art": "plants-debilitatingvines.png",
       "PlayRange": 1,
       "Actions": [
         "Plants Debilitating Vines"
@@ -262,10 +273,25 @@
       "Tier": 3,
       "FamilyType": "Plant",
       "Description": "Prevent the non-plants from expanding.",
-      "Art": "todo.png",
+      "Art": "plants-rampantgrowth.png",
       "PlayRange": 0,
       "Actions": [
         "Plants Rampant Growth"
+      ],
+      "Requirements": [
+        "Plant City"
+      ]
+    },
+    {
+      "Name": "Flowering Bloom",
+      "AssetListName": "Plants-ULT-FloweringBloom",
+      "Tier": 4,
+      "FamilyType": "Plant",
+      "Description": "With the winds spreading the seeds, life will grow and flourish.",
+      "Art": "plants-floweringbloom.png",
+      "PlayRange": 0,
+      "Actions": [
+        "Plants Flowering Bloom"
       ],
       "Requirements": [
         "Plant City"
@@ -290,23 +316,79 @@
   "Deck": [
     {
       "Id": 1,
-      "Name": "Pawn"
+      "Name": "Growth"
     },
     {
       "Id": 2,
-      "Name": "Pawn"
+      "Name": "Growth"
     },
     {
       "Id": 3,
-      "Name": "Pawn"
+      "Name": "Growth"
     },
     {
       "Id": 4,
-      "Name": "Rook"
+      "Name": "Growth"
     },
     {
       "Id": 5,
-      "Name": "Rook"
+      "Name": "Reclaim"
+    },
+    {
+      "Id": 6,
+      "Name": "Reclaim"
+    },
+    {
+      "Id": 7,
+      "Name": "Assimilation"
+    },
+    {
+      "Id": 8,
+      "Name": "Assimilation"
+    },
+    {
+      "Id": 9,
+      "Name": "Rooting"
+    },
+    {
+      "Id": 10,
+      "Name": "Rooting"
+    },
+    {
+      "Id": 11,
+      "Name": "Decay"
+    },
+    {
+      "Id": 12,
+      "Name": "Decay"
+    },
+    {
+      "Id": 13,
+      "Name": "Debilitating Vines"
+    },
+    {
+      "Id": 14,
+      "Name": "Rampant Growth"
+    },
+    {
+      "Id": 15,
+      "Name": "Flowering Bloom"
+    },
+    {
+      "Id": 16,
+      "Name": "Expansion"
+    },
+    {
+      "Id": 17,
+      "Name": "Expansion"
+    },
+    {
+      "Id": 18,
+      "Name": "Expansion"
+    },
+    {
+      "Id": 19,
+      "Name": "Expansion"
     }
   ],
   "Map": [

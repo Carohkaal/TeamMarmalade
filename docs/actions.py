@@ -57,6 +57,13 @@ def plantRuleRampantGrowth():
         "Tile.PlantScore += value"
 
 
+# Flowering Bloom function for plants
+def plantRuleFloweringBloom():
+    for i in "SurroundingTiles":
+        if "Tile.PlantScore > Max(Tile.AnimalScore, Tile.FungiScore)":
+            "Add Plant Village to Tile."
+
+
 ## FUNGI FUNCTIONS:
 # Colonization function for fungi.
 def fungiRuleColonization():
