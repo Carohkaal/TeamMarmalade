@@ -398,7 +398,7 @@
             "Tier": 1,
             "FamilyType": "Fungi",
             "Description": "Attempts colonization of area. Much more effective on untainted lands.",
-            "Art": "todo.jpg",
+            "Art": "fungicolonization.png",
             "PlayRange": 1,
             "Score": 1,
             "Actions": [
@@ -414,7 +414,7 @@
           "Tier": 1,
           "FamilyType": "Fungi",
           "Description": "Creates minor presence but more strongly reduces enemy presence.",
-          "Art": "todo.png",
+          "Art": "fungidefaultcarddesign.png",
           "PlayRange": 1,
           "Score": 1,
           "Actions": [
@@ -430,7 +430,7 @@
           "Tier": 1,
           "FamilyType": "Fungi",
           "Description": "Assimilate enemy presence, weak when no enemies are around.",
-          "Art": "todo.png",
+          "Art": "fungidefaultcarddesign.png",
           "PlayRange": 1,
           "Score": 4,
           "Actions": [
@@ -446,7 +446,7 @@
           "Tier": 2,
           "FamilyType": "Fungi",
           "Description": "Use a strong subsurface presence to breach the earth.",
-          "Art": "todo.png",
+          "Art": "fungiflowering.png",
           "PlayRange": 0,
           "Score": 1,
           "Actions": [
@@ -462,7 +462,7 @@
           "Tier": 2,
           "FamilyType": "Fungi",
           "Description": "Prevent the non-fungi from expanding.",
-          "Art": "todo.png",
+          "Art": "fungidefaultcarddesign.png",
           "PlayRange": 2,
           "Score": 1,
           "Actions": [
@@ -479,7 +479,7 @@
           "Tier": 2,
           "FamilyType": "Fungi",
           "Description": "Utilize the aboveground 'nutrients' to grow stronger.",
-          "Art": "todo.png",
+          "Art": "funginourishment.png",
           "PlayRange": 3,
           "Score": 6,
           "Actions": [
@@ -495,7 +495,7 @@
           "Tier": 3,
           "FamilyType": "Fungi",
           "Description": "Spread the roots to surrounding tiles, depleting the originating tile.",
-          "Art": "todo.png",
+          "Art": "fungidefaultcarddesign.png",
           "PlayRange": 1,
           "Score": 2,
           "Actions": [
@@ -508,10 +508,10 @@
       {
           "Name": "SporeRelease",
           "AssetListName": "Fungi-ULT-SporeRelease",
-          "Tier": 3,
+          "Tier": 4,
           "FamilyType": "Fungi",
           "Description": "Prevent the non-plants from expanding.",
-          "Art": "todo.png",
+          "Art": "fungidefaultcarddesign.png",
           "PlayRange": 0,
           "Score": 7,
           "Actions": [
