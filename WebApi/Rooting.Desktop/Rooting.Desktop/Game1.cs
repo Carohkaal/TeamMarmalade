@@ -5,10 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+
 using System.Collections.Generic;
+
 using System.Threading.Tasks;
 using SharpDX.Direct3D9;
 using Microsoft.Win32.SafeHandles;
+
 //using System.Windows.Forms;
 using System.Threading;
 
@@ -33,7 +36,6 @@ namespace Rooting.Desktop
 
         private int mapRows;
         private int mapCols;
-        
 
         private const string gameId = "1";
 
@@ -200,7 +202,6 @@ namespace Rooting.Desktop
 
                     name = name.Substring(0, lastIndexOf);
 
-
                     var cardTexture = Content.Load<Texture2D>($"cards/{name}.150x200");
                     if (cardTexture != null)
                         cardTextures.Add(card.Name, cardTexture);
@@ -360,16 +361,15 @@ namespace Rooting.Desktop
                     _spriteBatch.Draw(_tileEmpty, new Vector2(tileWidth + j * tileWidth, tileHeight + i * tileHeight), Color.White);
                 }
             }
-              
-            //DRAW CARDS 
+
+            //DRAW CARDS
 
             for (int i = 0; i < cardsInHand.Length; i++)
             {
                 _spriteBatch.Draw(cardTextures[cardsInHand[i].Name], new Vector2(cardWidth + i * cardWidth, 880), Color.White);
             }
-            
-            _spriteBatch.End();
-            }
+
             _spriteBatch.End();
         }
     }
+}

@@ -26,10 +26,6 @@ namespace Rooting.Desktop
             BackgroundMusic.Add("funghi", contentManager.Load<Song>("audio\\23DB02TG_msc_funghi"));
             BackgroundMusic.Add("plant", contentManager.Load<Song>("audio\\23DB02TG_msc_plant"));
 
-            MediaPlayer.Play(BackgroundMusic["fight"]);
-            Thread.Sleep(2000);
-            MediaPlayer.Play(BackgroundMusic["animals"]);
-
             SoundEffects.Clear();
             SoundEffects.Add("getCard", contentManager.Load<SoundEffect>("audio\\23DB02TG_sfx_cardPickUp"));
             SoundEffects.Add("placeTile", contentManager.Load<SoundEffect>("audio\\23DB02TG_sfx_placeTile"));
