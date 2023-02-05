@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SharpDX.Direct3D9;
 using Microsoft.Win32.SafeHandles;
+//using System.Windows.Forms;
 
 //using SharpDX.Direct3D11;
 
@@ -25,6 +26,14 @@ namespace Rooting.Desktop
         private readonly GameState _state = GameState.Gameplay;
 
         private const int tileWidth = 512;
+        private const int tileHeight = 237;
+        private const int cardWidth = 150;
+        private const int cardHeight = 200;
+
+        private int mapRows;
+        private int mapCols;
+        
+
         private const string gameId = "1";
 
         private Point gameResolution = new Point(1920, 1080);
@@ -57,8 +66,6 @@ namespace Rooting.Desktop
         private Texture2D _mapExample;
         private Texture2D _tileEmpty;
 
-        private Vector2 newCardPos = new Vector2(0, 0);
-
         public static MouseState mouseState;
 
         private KeyboardState currentKeyboardState;
@@ -68,7 +75,7 @@ namespace Rooting.Desktop
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
-            // _graphics.IsFullScreen = true;
+            _graphics.IsFullScreen = true;
             _graphics.ApplyChanges();
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -120,6 +127,8 @@ namespace Rooting.Desktop
         private void LoadWorld()
         {
             var World = _webApiClient.WorldAsync(gameId, CurrentPlayer.Uuid.ToString()).GetAwaiter().GetResult();
+            mapRows = World.Rows;
+            mapCols = World.Cols;
             tiles = World.Tiles.ToArray();
         }
 
@@ -166,7 +175,7 @@ namespace Rooting.Desktop
             _currentFont = Content.Load<SpriteFont>("Fonts/NeueKabel-Regular12");
             _startScreen = Content.Load<Texture2D>("Startscreen-01");
             _startButton = Content.Load<Texture2D>("Startbutton");
-            _tileEmpty = Content.Load<Texture2D>("emptytile");
+            _tileEmpty = Content.Load<Texture2D>("Tiles/emptytile");
             //_mapExample = Content.Load<Texture2D>("Map_example");
             //_cardTexture = Content.Load<Texture2D>("cards/plants-assimilate");
             foreach (var card in _cardDefinitions.Value)
@@ -174,12 +183,22 @@ namespace Rooting.Desktop
                 try
                 {
                     var name = card.Art;
-                    var n = name.LastIndexOf('.');
-                    if (n > 0)
-                    {
-                        name = name.Substring(0, n);
-                    }
-                    var cardTexture = Content.Load<Texture2D>($"cards/{name}");
+                    var lastIndexOf = name.LastIndexOf('.');
+
+                    //If a cardname contains size info this code can be used
+                    //
+                    //var firstIndexOf = name.IndexOf('.');
+                    //if (firstIndexOf != lastIndexOf)
+                    //{
+                    //    var fileSizeInfo = name.Substring(firstIndexOf, lastIndexOf);
+                    //    cardWidth = Int32.Parse(fileSizeInfo.Substring(0, fileSizeInfo.LastIndexOf('x')));
+                    //    cardHeight = Int32.Parse(fileSizeInfo.Substring(fileSizeInfo.LastIndexOf('x'), fileSizeInfo.Length));
+                    //}
+
+                    name = name.Substring(0, lastIndexOf);
+
+
+                    var cardTexture = Content.Load<Texture2D>($"cards/{name}.150x200");
                     if (cardTexture != null)
                         cardTextures.Add(card.Name, cardTexture);
                 }
@@ -327,28 +346,26 @@ namespace Rooting.Desktop
             _spriteBatch.Begin();
             _spriteBatch.Draw(renderTarget, renderTargetDestination, Color.White);
 
-            // _spriteBatch.Draw(_mapExample, new Vector2(500 , 500), Color.White);
+            //_spriteBatch.Draw(_mapExample, new Vector2(0, 0), Color.White);
 
             //DRAW MAP
 
-            //foreach (var tile in tiles)
-            //{
-            //    _spriteBatch.Draw(_tileEmpty, new Vector2(0, 0), Color.White);
-                //  if there is a next in row
-                //     tileVector.X + tileWidth
-                //  if there is no next in row
-                //      tileVector.Y + tileWidth
-                //      tileVector.X = 0
-                //}
-
-                foreach (var card in cardsInHand)
-                //var card1 = cardsInHand[0];
-                //var card2 = cardsInHand[1];
+            for (int i = 0; i < mapRows; i++)
+            {
+                for (int j = 0; j < mapCols; j++)
                 {
-                    _spriteBatch.Draw(cardTextures[card.Name], new Vector2(newCardPos.X + 256, newCardPos.Y), Color.White);
+                    _spriteBatch.Draw(_tileEmpty, new Vector2(tileWidth + j * tileWidth, tileHeight + i * tileHeight), Color.White);
                 }
-                _spriteBatch.End();
+            }
+              
+            //DRAW CARDS 
+
+            for (int i = 0; i < cardsInHand.Length; i++)
+            {
+                _spriteBatch.Draw(cardTextures[cardsInHand[i].Name], new Vector2(cardWidth + i * cardWidth, 880), Color.White);
+            }
+            
+            _spriteBatch.End();
             }
         }
     }
-}
