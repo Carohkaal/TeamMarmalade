@@ -89,12 +89,12 @@
                 {
                     "FamilyType": "Fungi",
                     "ScoreType": "Control",
-                    "Score": "1"
+                    "Score": "-5"
                 },
                 {
                     "FamilyType": "Plant",
                     "ScoreType": "Control",
-                    "Score": "-5"
+                    "Score": "1"
                 }
             ]
         },
@@ -103,7 +103,7 @@
             "Cost": 1,
             "Scores": [
                 {
-                    "FamilyType": "Fungi",
+                    "FamilyType": "Plant",
                     "ScoreType": "Control",
                     "Score": "plantRuleAssimilate"
                 }
@@ -114,7 +114,7 @@
             "Cost": 1,
             "Scores": [
                 {
-                    "FamilyType": "Fungi",
+                    "FamilyType": "Plant",
                     "ScoreType": "Control",
                     "Score": "plantRuleRooting"
                 }
@@ -125,7 +125,7 @@
             "Cost": 1,
             "Scores": [
                 {
-                    "FamilyType": "Fungi",
+                    "FamilyType": "Plant",
                     "ScoreType": "Control",
                     "Score": "plantRuleDecay"
                 }
@@ -136,7 +136,7 @@
             "Cost": 1,
             "Scores": [
                 {
-                    "FamilyType": "Fungi",
+                    "FamilyType": "Plant",
                     "ScoreType": "Control",
                     "Score": "plantRuleDebilitatingVines"
                 }
@@ -147,7 +147,7 @@
             "Cost": 1,
             "Scores": [
                 {
-                    "FamilyType": "Fungi",
+                    "FamilyType": "Plant",
                     "ScoreType": "Control",
                     "Score": "plantRuleRampantGrowth"
                 }
@@ -158,7 +158,7 @@
             "Cost": 7,
             "Scores": [
                 {
-                    "FamilyType": "Fungi",
+                    "FamilyType": "Plant",
                     "ScoreType": "Control",
                     "Score": "plantRuleFloweringBloom"
                 }
@@ -174,7 +174,94 @@
                     "Score": "fungiRuleColonization"
                 }
             ]
-        }
+        },
+      {
+          "Name": "Fungi Defense",
+          "Cost": 1,
+          "Scores": [
+              {
+                  "FamilyType": "Animal",
+                  "ScoreType": "Control",
+                  "Score": "-5"
+              },
+              {
+                  "FamilyType": "Fungi",
+                  "ScoreType": "Control",
+                  "Score": "1"
+              },
+              {
+                  "FamilyType": "Plant",
+                  "ScoreType": "Control",
+                  "Score": "-5"
+              }
+          ]
+      },
+      {
+          "Name": "Fungi Assimilate",
+          "Cost": 1,
+          "Scores": [
+              {
+                  "FamilyType": "Fungi",
+                  "ScoreType": "Control",
+                  "Score": "fungiRuleAssimilate"
+              }
+          ]
+      },
+      {
+          "Name": "Fungi Flowering",
+          "Cost": 1,
+          "Scores": [
+              {
+                  "FamilyType": "Fungi",
+                  "ScoreType": "Control",
+                  "Score": "fungiRuleFlowering"
+              }
+          ]
+      },
+      {
+          "Name": "Fungi Debilitation",
+          "Cost": 1,
+          "Scores": [
+              {
+                  "FamilyType": "Fungi",
+                  "ScoreType": "Control",
+                  "Score": "fungiRuleDebilitation"
+              }
+          ]
+      },
+      {
+          "Name": "Fungi Nourishment",
+          "Cost": 1,
+          "Scores": [
+              {
+                  "FamilyType": "Fungi",
+                  "ScoreType": "Control",
+                  "Score": "fungiRuleNourishment"
+              }
+          ]
+      },
+      {
+          "Name": "Fungi Depletion",
+          "Cost": 1,
+          "Scores": [
+              {
+                  "FamilyType": "Fungi",
+                  "ScoreType": "Control",
+                  "Score": "fungiRuleDepletion"
+              }
+          ]
+      },
+      {
+          "Name": "Fungi Spore Release",
+          "Cost": 7,
+          "Scores": [
+              {
+                  "FamilyType": "Fungi",
+                  "ScoreType": "Control",
+                  "Score": "fungiRuleSporeRelease"
+              }
+          ]
+      }
     ],
     "Cards": [
         {
@@ -320,7 +407,121 @@
             "Requirements": [
                 "Subsurface"
             ]
-        }
+        },
+        {
+          "Name": "Overtake",
+          "AssetListName": "Fungi-T1-Defense",
+          "Tier": 1,
+          "FamilyType": "Fungi",
+          "Description": "Creates minor presence but more strongly reduces enemy presence.",
+          "Art": "todo.png",
+          "PlayRange": 1,
+          "Score": 1,
+          "Actions": [
+              "Fungi Defense"
+          ],
+          "Requirements": [
+              "Subsurface"
+          ]
+      },
+      {
+          "Name": "Assimilate",
+          "AssetListName": "Fungi-T1-Assimilate",
+          "Tier": 1,
+          "FamilyType": "Fungi",
+          "Description": "Assimilate enemy presence, weak when no enemies are around.",
+          "Art": "todo.png",
+          "PlayRange": 1,
+          "Score": 4,
+          "Actions": [
+              "Fungi Assimilate"
+          ],
+          "Requirements": [
+              "Subsurface"
+          ]
+      },
+      {
+          "Name": "Flowering",
+          "AssetListName": "Fungi-T2-Flowering",
+          "Tier": 2,
+          "FamilyType": "Fungi",
+          "Description": "Use a strong subsurface presence to breach the earth.",
+          "Art": "todo.png",
+          "PlayRange": 0,
+          "Score": 1,
+          "Actions": [
+              "Fungi Flowering"
+          ],
+          "Requirements": [
+              "Subsurface"
+          ]
+      },
+      {
+          "Name": "Debilitation",
+          "AssetListName": "Fungi-T2-Debilitation",
+          "Tier": 2,
+          "FamilyType": "Fungi",
+          "Description": "Prevent the non-fungi from expanding.",
+          "Art": "todo.png",
+          "PlayRange": 2,
+          "Score": 1,
+          "Actions": [
+              "Fungi Debilitation"
+          ],
+          "Requirements": [
+              "Subsurface",
+              "Plant Village"
+          ]
+      },
+      {
+          "Name": "Nourishment",
+          "AssetListName": "Fungi-T3-Nourishment",
+          "Tier": 2,
+          "FamilyType": "Fungi",
+          "Description": "Utilize the aboveground 'nutrients' to grow stronger.",
+          "Art": "todo.png",
+          "PlayRange": 3,
+          "Score": 6,
+          "Actions": [
+              "Fungi Nourishment"
+          ],
+          "Requirements": [
+              "Subsurface"
+          ]
+      },
+      {
+          "Name": "Depletion",
+          "AssetListName": "Fungi-T3-Depletion",
+          "Tier": 3,
+          "FamilyType": "Fungi",
+          "Description": "Spread the roots to surrounding tiles, depleting the originating tile.",
+          "Art": "todo.png",
+          "PlayRange": 1,
+          "Score": 2,
+          "Actions": [
+              "Fungi Depletion"
+          ],
+          "Requirements": [
+              "Fungi City"
+          ]
+      },
+      {
+          "Name": "SporeRelease",
+          "AssetListName": "Fungi-ULT-SporeRelease",
+          "Tier": 3,
+          "FamilyType": "Fungi",
+          "Description": "Prevent the non-plants from expanding.",
+          "Art": "todo.png",
+          "PlayRange": 0,
+          "Score": 7,
+          "Actions": [
+              "Fungi Spore Release"
+          ],
+          "Requirements": [
+              "Fungi City",
+              "Surface"
+          ]
+      }
     ],
     "Deck": [
         {
@@ -398,6 +599,50 @@
         {
             "Id": 19,
             "Name": "Expansion"
+        },
+        {
+            "Id": 20,
+            "Name": "Overtake"
+        },
+        {
+            "Id": 21,
+            "Name": "Overtake"
+        },
+        {
+            "Id": 22,
+            "Name": "Assimilate"
+        },
+        {
+            "Id": 23,
+            "Name": "Assimilate"
+        },
+        {
+            "Id": 24,
+            "Name": "Flowering"
+        },
+        {
+            "Id": 25,
+            "Name": "Flowering"
+        },
+        {
+            "Id": 26,
+            "Name": "Debilitation"
+        },
+        {
+            "Id": 27,
+            "Name": "Debilitation"
+        },
+        {
+            "Id": 28,
+            "Name": "Nourishment"
+        },
+        {
+            "Id": 29,
+            "Name": "Depletion"
+        },
+        {
+            "Id": 30,
+            "Name": "SporeRelease"
         }
     ],
     "Map": [
