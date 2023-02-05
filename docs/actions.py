@@ -107,14 +107,17 @@ def fungiRuleDebilitation():
 def fungiRuleNourishment():
     ""
 
+
 # Depletion function for fungi
 # IMPLEMENTED: False
 def fungiRuleDepletion():
     ""
 
+
 # Spore release function for fungi
 # IMPLEMENTED: False
 def fungiRuleSporeRelease():
     ""
+
 
 ## ANIMAL FUNCTIONS:

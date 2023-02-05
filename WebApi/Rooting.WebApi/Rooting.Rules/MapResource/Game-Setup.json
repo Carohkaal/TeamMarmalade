@@ -506,7 +506,7 @@
           ]
       },
       {
-          "Name": "Fungi-ULT-SporeRelease",
+          "Name": "SporeRelease",
           "AssetListName": "Fungi-ULT-SporeRelease",
           "Tier": 3,
           "FamilyType": "Fungi",
