@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SharpDX.Direct3D9;
 using Microsoft.Win32.SafeHandles;
+using System.Reflection.Metadata.Ecma335;
 
 //using SharpDX.Direct3D11;
 
@@ -63,7 +64,7 @@ namespace Rooting.Desktop
 
         private KeyboardState currentKeyboardState;
 
-        private string textBox = ""; //Start with no text
+        private readonly string textBox = ""; //Start with no text
 
         public Game1()
         {
@@ -107,7 +108,7 @@ namespace Rooting.Desktop
             tiles = World.Tiles.ToArray();
         }
 
-        private CardModel? GetCardDefinition(PlayingCard card)
+        private CardModel GetCardDefinition(PlayingCard card)
         {
             return _cardDefinitions.Value.Where(m => m.Name == card.Name).FirstOrDefault();
         }
@@ -118,7 +119,7 @@ namespace Rooting.Desktop
             _cards = _cardDefinitions.Value;
             _players = _currentPlayers.Value;
 
-            ClaimPlayer("Danny", "", FamilyTypes._2);
+            _ = ClaimPlayer("Danny", "", FamilyTypes._2);
             //Window.TextInput += TextInputHandler;
 
             base.Initialize();

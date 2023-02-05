@@ -1199,84 +1199,6 @@ namespace Rooting
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.18.2.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ActionBase
-    {
-        [Newtonsoft.Json.JsonProperty("uuid", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid Uuid { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Name { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("cost", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int Cost { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("scores", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<Score> Scores { get; set; }
-
-        public string ToJson()
-        {
-
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this, new Newtonsoft.Json.JsonSerializerSettings());
-
-        }
-        public static ActionBase FromJson(string data)
-        {
-
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<ActionBase>(data, new Newtonsoft.Json.JsonSerializerSettings());
-
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.18.2.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class CardBase
-    {
-        [Newtonsoft.Json.JsonProperty("uuid", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid Uuid { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Name { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("totalCost", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int TotalCost { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("tier", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int Tier { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("playRange", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int PlayRange { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Description { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("art", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Art { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("familyTypes", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public FamilyTypes FamilyTypes { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("actions", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<ActionBase> Actions { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("requirements", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<Requirement> Requirements { get; set; }
-
-        public string ToJson()
-        {
-
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this, new Newtonsoft.Json.JsonSerializerSettings());
-
-        }
-        public static CardBase FromJson(string data)
-        {
-
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<CardBase>(data, new Newtonsoft.Json.JsonSerializerSettings());
-
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.18.2.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class CardModel
     {
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -1339,6 +1261,9 @@ namespace Rooting
     {
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public long Id { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("generation", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int Generation { get; set; }
 
         [Newtonsoft.Json.JsonProperty("gameStatus", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string GameStatus { get; set; }
@@ -1428,6 +1353,57 @@ namespace Rooting
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.18.2.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class IOrigin
+    {
+        [Newtonsoft.Json.JsonProperty("col", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int Col { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("row", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int Row { get; set; }
+
+        public string ToJson()
+        {
+
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this, new Newtonsoft.Json.JsonSerializerSettings());
+
+        }
+        public static IOrigin FromJson(string data)
+        {
+
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<IOrigin>(data, new Newtonsoft.Json.JsonSerializerSettings());
+
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.18.2.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class IScoringToken
+    {
+        [Newtonsoft.Json.JsonProperty("family", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public FamilyTypes Family { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("token", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public TokenType Token { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("playingState", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public PlayingState PlayingState { get; set; }
+
+        public string ToJson()
+        {
+
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this, new Newtonsoft.Json.JsonSerializerSettings());
+
+        }
+        public static IScoringToken FromJson(string data)
+        {
+
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<IScoringToken>(data, new Newtonsoft.Json.JsonSerializerSettings());
+
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.18.2.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class LogEntry
     {
         [Newtonsoft.Json.JsonProperty("t", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -1506,7 +1482,7 @@ namespace Rooting
         public PlayingState PlayingState { get; set; }
 
         [Newtonsoft.Json.JsonProperty("playedAtTile", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int PlayedAtTile { get; set; }
+        public IOrigin PlayedAtTile { get; set; }
 
         [Newtonsoft.Json.JsonProperty("message", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Message { get; set; }
@@ -1543,28 +1519,19 @@ namespace Rooting
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.18.2.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Requirement
+    public partial class ScoringClass
     {
-        [Newtonsoft.Json.JsonProperty("uuid", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid Uuid { get; set; }
+        [Newtonsoft.Json.JsonProperty("tokens", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<IScoringToken> Tokens { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Name { get; set; }
+        [Newtonsoft.Json.JsonProperty("familyScore", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.IDictionary<string, int> FamilyScore { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Description { get; set; }
+        [Newtonsoft.Json.JsonProperty("subsurfaceScore", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.IDictionary<string, int> SubsurfaceScore { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("requireTier", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int RequireTier { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("requireTileControl", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool RequireTileControl { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("requireTileDistance", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int RequireTileDistance { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("requireFamily", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public FamilyTypes RequireFamily { get; set; }
+        [Newtonsoft.Json.JsonProperty("cardsPlayed", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<PlayingCard> CardsPlayed { get; set; }
 
         public string ToJson()
         {
@@ -1572,55 +1539,12 @@ namespace Rooting
             return Newtonsoft.Json.JsonConvert.SerializeObject(this, new Newtonsoft.Json.JsonSerializerSettings());
 
         }
-        public static Requirement FromJson(string data)
+        public static ScoringClass FromJson(string data)
         {
 
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<Requirement>(data, new Newtonsoft.Json.JsonSerializerSettings());
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<ScoringClass>(data, new Newtonsoft.Json.JsonSerializerSettings());
 
         }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.18.2.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Score
-    {
-        [Newtonsoft.Json.JsonProperty("scoreValue", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string ScoreValue { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("scoreType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public ScoreType ScoreType { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("familyTypes", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public FamilyTypes FamilyTypes { get; set; }
-
-        public string ToJson()
-        {
-
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this, new Newtonsoft.Json.JsonSerializerSettings());
-
-        }
-        public static Score FromJson(string data)
-        {
-
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<Score>(data, new Newtonsoft.Json.JsonSerializerSettings());
-
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.18.2.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum ScoreType
-    {
-
-        _0 = 0,
-
-        _1 = 1,
-
-        _2 = 2,
-
-        _3 = 3,
-
-        _4 = 4,
 
     }
 
@@ -1642,8 +1566,8 @@ namespace Rooting
         [Newtonsoft.Json.JsonProperty("familyType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public FamilyTypes FamilyType { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("cardsPlayed", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<CardBase> CardsPlayed { get; set; }
+        [Newtonsoft.Json.JsonProperty("scoringClass", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public ScoringClass ScoringClass { get; set; }
 
         public string ToJson()
         {
@@ -1657,6 +1581,28 @@ namespace Rooting
             return Newtonsoft.Json.JsonConvert.DeserializeObject<TileBase>(data, new Newtonsoft.Json.JsonSerializerSettings());
 
         }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.18.2.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum TokenType
+    {
+
+        _0 = 0,
+
+        _1 = 1,
+
+        _2 = 2,
+
+        _3 = 3,
+
+        _4 = 4,
+
+        _5 = 5,
+
+        _6 = 6,
+
+        _17 = 17,
 
     }
 
