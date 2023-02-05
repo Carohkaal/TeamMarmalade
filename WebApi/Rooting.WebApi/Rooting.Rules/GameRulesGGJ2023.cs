@@ -39,6 +39,8 @@ namespace Rooting.Rules
             }
 
             if (gameStatistics.NextTurn > DateTime.Now) return;
+
+            gameStatistics.SetNextTime("");
         }
     }
 }

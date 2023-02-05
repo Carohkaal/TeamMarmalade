@@ -100,6 +100,47 @@ namespace Rooting.Rules.UnitTests
         }
 
         [TestMethod]
+        public void GameStatisticsCalculatesNewMoves()
+        {
+            GameGeneration result;
+            var sut = new GameStatistics(_factory, _engine, 1);
+            var playerModel = sut.ClaimPlayer(_fakePlayerModel, "REMOTE");
+            var player = sut.Player(playerModel.Uuid);
+            Assert.IsNotNull(player);
+            _ = sut.StartGame(player, true);
+
+            result = sut.ReadGameStatus();
+            Console.WriteLine(JsonConvert.SerializeObject(result, Formatting.Indented));
+            Assert.AreEqual("Game Started", result.Shout);
+            Assert.IsTrue(result.NextTurn > DateTime.Now);
+            Assert.AreEqual(0, result.Generation);
+            Thread.Sleep(1000);
+
+            result = sut.ReadGameStatus();
+            Console.WriteLine(JsonConvert.SerializeObject(result, Formatting.Indented));
+            Assert.AreEqual("", result.Shout);
+            Assert.AreEqual(1, result.Generation);
+        }
+
+        [TestMethod]
+        public void NewGameStatisticsCanStartWithTwoPlayers()
+        {
+            var sut = new GameStatistics(_factory, _engine);
+            _ = sut.ClaimPlayer(new PlayerModel { FamilyType = FamilyTypes.Fungi, Name = "Champi" }, "ETOMER");
+            var playerModel = sut.ClaimPlayer(_fakePlayerModel, "REMOTE");
+            var player = sut.Player(playerModel.Uuid);
+            Assert.IsNotNull(player);
+            var result = sut.StartGame(player, true);
+            Assert.IsNotNull(result);
+            Console.WriteLine(JsonConvert.SerializeObject(result, Formatting.Indented));
+            Assert.AreEqual("Game Started", result.Shout);
+            Assert.IsTrue(result.NextTurn > DateTime.Now);
+
+            var players = sut.Players;
+            Assert.AreEqual(2, players.Count());
+        }
+
+        [TestMethod]
         public void NewGameAfterStartupPlayerIsPlaying()
         {
             var sut = new GameStatistics(_factory, _engine);

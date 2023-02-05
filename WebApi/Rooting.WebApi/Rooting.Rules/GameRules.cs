@@ -39,6 +39,9 @@ namespace Rooting.Rules
         DateTime AutoStartTime { get; }
         DateTime NextTurn { get; }
         WorldMap WorldMap { get; }
+        TimeSpan GameLoopTime { get; }
+
+        void SetNextTime(string shout);
 
         PlayingCard[] CurrentInHand(FamilyTypes familyType);
 
@@ -53,7 +56,7 @@ namespace Rooting.Rules
 
     public class GameStatistics : IGameStatistics
     {
-        private readonly TimeSpan gameLoopTime = TimeSpan.FromSeconds(15);
+        public TimeSpan GameLoopTime { get; private set; }
         private long gameId = DateTime.Today.Ticks;
         private readonly ConcurrentDictionary<FamilyTypes, Player> activePlayers = new();
         private readonly IGameDefinitionFactory gameDefinitionFactory;
@@ -76,8 +79,12 @@ namespace Rooting.Rules
 
         public GameStatistics(
             IGameDefinitionFactory gameDefinitionFactory,
-            IGameEngine gameEngine)
+            IGameEngine gameEngine,
+            int loopTimeInSeconds = 15)
         {
+            if (loopTimeInSeconds < 1) loopTimeInSeconds = 1;
+            if (loopTimeInSeconds > 120) loopTimeInSeconds = 120;
+            GameLoopTime = TimeSpan.FromSeconds(loopTimeInSeconds);
             this.gameDefinitionFactory = gameDefinitionFactory;
             this.gameEngine = gameEngine;
             gameSetup = new GameSetup();
@@ -212,14 +219,23 @@ namespace Rooting.Rules
             card.PlayingState = PlayingState.InHand;
         }
 
-        public GameGeneration ReadGameStatus() => new GameGeneration
+        public GameGeneration ReadGameStatus()
         {
-            CurrentTime = DateTime.Now,
-            GameStatus = this.CurrentGameStatus.ToString(),
-            Id = Generation,
-            NextTurn = NextTurn,
-            Shout = Shout
-        };
+            if (DateTime.Now > NextTurn)
+            {
+                gameEngine.ExecuteLoop(this);
+            }
+
+            return new GameGeneration
+            {
+                CurrentTime = DateTime.Now,
+                GameStatus = this.CurrentGameStatus.ToString(),
+                Id = gameId,
+                Generation = Generation,
+                NextTurn = NextTurn,
+                Shout = Shout
+            };
+        }
 
         public GameGeneration StartGame(Player player, bool force)
         {
@@ -243,7 +259,7 @@ namespace Rooting.Rules
                     AddGameLog(player, LogLevel.Warning, $"{player.Name} started the game with {Players.Count()} players.");
                     CurrentGameStatus = GameStatus.GameWaitingForEndOfTurn;
                     gameLog.StartedAtTime = DateTime.Now;
-                    NextTurn = DateTime.Now.Add(gameLoopTime);
+                    NextTurn = DateTime.Now.Add(GameLoopTime);
                     Shout = "Game Started";
                     r.GameStatus = GameStatus.GameWaitingForEndOfTurn.ToString();
                     r.NextTurn = NextTurn;
@@ -261,7 +277,7 @@ namespace Rooting.Rules
                 AddGameLog(player, LogLevel.Warning, $"{player.Name} started the game.");
                 CurrentGameStatus = GameStatus.GameWaitingForEndOfTurn;
                 gameLog.StartedAtTime = DateTime.Now;
-                NextTurn = DateTime.Now.Add(gameLoopTime);
+                NextTurn = DateTime.Now.Add(GameLoopTime);
                 Shout = "Game Started";
                 r.GameStatus = GameStatus.GameWaitingForEndOfTurn.ToString();
                 r.NextTurn = NextTurn;
@@ -309,7 +325,7 @@ namespace Rooting.Rules
             if (gameStatus == GameStatus.GameWaitingForEndOfTurn && CurrentGameStatus == GameStatus.GamePaused)
             {
                 CurrentGameStatus = GameStatus.GameWaitingForEndOfTurn;
-                NextTurn = DateTime.Now.Add(gameLoopTime);
+                NextTurn = DateTime.Now.Add(GameLoopTime);
                 AddGameLog(player, LogLevel.Information, "Game resumed");
                 Shout = "Game resuming.";
                 return new GameGeneration
@@ -317,6 +333,7 @@ namespace Rooting.Rules
                     CurrentTime = DateTime.Now,
                     GameStatus = CurrentGameStatus.ToString(),
                     NextTurn = NextTurn,
+                    Generation = Generation,
                     Id = gameId,
                     Shout = Shout
                 };
@@ -332,6 +349,7 @@ namespace Rooting.Rules
                     CurrentTime = DateTime.Now,
                     GameStatus = CurrentGameStatus.ToString(),
                     NextTurn = DateTime.MaxValue,
+                    Generation = Generation,
                     Id = gameId,
                     Shout = Shout
                 };
@@ -345,6 +363,7 @@ namespace Rooting.Rules
                     CurrentTime = DateTime.Now,
                     GameStatus = CurrentGameStatus.ToString(),
                     NextTurn = NextTurn,
+                    Generation = Generation,
                     Id = gameId,
                     Shout = Shout
                 };
@@ -383,5 +402,12 @@ namespace Rooting.Rules
         public GameLog OpenGameLog() => gameLog;
 
         public WorldMap GetWorldMap(Player player, long gameId) => WorldMap;
+
+        public void SetNextTime(string shout)
+        {
+            Shout = shout;
+            Generation++;
+            NextTurn = NextTurn.Add(GameLoopTime);
+        }
     }
 }
