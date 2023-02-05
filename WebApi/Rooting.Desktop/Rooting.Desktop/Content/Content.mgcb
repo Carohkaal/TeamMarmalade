@@ -50,41 +50,41 @@
 /processorParam:Quality=Best
 /build:audio/23DB02TG_msc_plant.ogg
 
-#begin audio/23DB02TG_sfx_cardPickUp.mp3
-/importer:Mp3Importer
-/processor:SongProcessor
+#begin audio/23DB02TG_sfx_cardPickUp.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/23DB02TG_sfx_cardPickUp.mp3
+/build:audio/23DB02TG_sfx_cardPickUp.wav
 
-#begin audio/23DB02TG_sfx_placeTile.mp3
-/importer:Mp3Importer
-/processor:SongProcessor
+#begin audio/23DB02TG_sfx_placeTile.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/23DB02TG_sfx_placeTile.mp3
+/build:audio/23DB02TG_sfx_placeTile.wav
 
-#begin audio/23DB02TG_sfx_UIExit.mp3
-/importer:Mp3Importer
-/processor:SongProcessor
+#begin audio/23DB02TG_sfx_UIExit.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/23DB02TG_sfx_UIExit.mp3
+/build:audio/23DB02TG_sfx_UIExit.wav
 
-#begin audio/23DB02TG_sfx_UIHover.mp3
-/importer:Mp3Importer
-/processor:SongProcessor
+#begin audio/23DB02TG_sfx_UIHover.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/23DB02TG_sfx_UIHover.mp3
+/build:audio/23DB02TG_sfx_UIHover.wav
 
-#begin audio/23DB02TG_sfx_UISelect.mp3
-/importer:Mp3Importer
-/processor:SongProcessor
+#begin audio/23DB02TG_sfx_UISelect.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/23DB02TG_sfx_UISelect.mp3
+/build:audio/23DB02TG_sfx_UISelect.wav
 
-#begin audio/23DB02TG_sfx_ultimateVocalCue.mp3
-/importer:Mp3Importer
-/processor:SongProcessor
+#begin audio/23DB02TG_sfx_ultimateVocalCue.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/23DB02TG_sfx_ultimateVocalCue.mp3
+/build:audio/23DB02TG_sfx_ultimateVocalCue.wav
 
 #begin Card1.png
 /importer:TextureImporter
