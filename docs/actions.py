@@ -84,4 +84,37 @@ def fungiRuleColonization():
         "Tile.FungiScore += 10"
 
 
+# Assimilate function for fungi
+# IMPLEMENTED: False
+def fungiRuleAssimilate():
+    ""
+
+
+# Flowering function for fungi
+# IMPLEMENTED: False
+def fungiRuleFlowering():
+    ""
+
+
+# Debilitation function for fungi
+# IMPLEMENTED: False
+def fungiRuleDebilitation():
+    ""
+
+
+# Nourishment function for fungi
+# IMPLEMENTED: False
+def fungiRuleNourishment():
+    ""
+
+# Depletion function for fungi
+# IMPLEMENTED: False
+def fungiRuleDepletion():
+    ""
+
+# Spore release function for fungi
+# IMPLEMENTED: False
+def fungiRuleSporeRelease():
+    ""
+
 ## ANIMAL FUNCTIONS:
