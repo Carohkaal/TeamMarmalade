@@ -370,8 +370,17 @@ namespace Rooting.Rules
             }
         }
 
-        public PlayingCard PlayCard(Player player, PlayingCard playingCard)
+        public PlayingCard PlayCard(Player player, PlayingCard playingCard, IOrigin origin)
         {
+            var tile = WorldMap.Tile(origin);
+            if (tile == null || tile.FamilyType == FamilyTypes.Any)
+            {
+                var result = (PlayingCard)playingCard.Clone();
+                result.PlayingState = PlayingState.Error;
+                result.Message = $"Invalid tile at {origin.Col}, {origin.Row}";
+                return result;
+            }
+
             var familyType = player.FamilyType;
             if (playingCard.FamilyType != familyType)
             {
@@ -382,21 +391,29 @@ namespace Rooting.Rules
             }
 
             var card = CurrentInHand(familyType).FirstOrDefault(m => m.Id == playingCard.Id);
-            if (card.Id > 0)
+            if (card == null)
             {
-                player.IsPlaying = false;
-                card.PlayingState = PlayingState.Played;
-                card.PlayedAtTile = playingCard.PlayedAtTile;
-                card.Message = playingCard.Message ?? $"Played at {DateTime.Now:HH:mm}";
-                return card;
+                var result = (PlayingCard)playingCard.Clone();
+                result.PlayingState = PlayingState.Error;
+                result.Message = $"Card does not exist: {playingCard.Id}";
+                return result;
             }
-            else
+
+            if (card.Id <= 0)
             {
                 AddGameLog(System, LogLevel.Warning, $"Could not find card {playingCard.Id} in hand.");
                 playingCard.Message = "Not played, Not in hand";
                 playingCard.PlayingState = PlayingState.Error;
                 return playingCard;
             }
+
+            (PlayingState state, string? message) = gameEngine.PlayCard(card, tile);
+
+            player.IsPlaying = false;
+            card.PlayingState = state;
+            card.PlayedAtTile = origin;
+            card.Message = message ?? $"Played at {DateTime.Now:HH:mm}";
+            return card;
         }
 
         public GameLog OpenGameLog() => gameLog;

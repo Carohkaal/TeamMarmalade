@@ -168,6 +168,29 @@ namespace Rooting.Rules.UnitTests
         }
 
         [TestMethod]
+        public void NewGameAfterStartupPlayerCanPlayCard()
+        {
+            var sut = new GameStatistics(_factory, _engine);
+            var playerModel = sut.ClaimPlayer(_fakePlayerModel, "REMOTE");
+            var player = sut.Player(playerModel.Uuid);
+            Assert.IsNotNull(player);
+            var result = sut.StartGame(player, true);
+            Assert.IsNotNull(result);
+
+            var hand = sut.CurrentInHand(player.FamilyType);
+            var card = hand[0];
+            var origin = new Origin(3, 3);
+            var cardPlayed = sut.PlayCard(player, card, origin);
+
+            Assert.IsNotNull(cardPlayed);
+            Console.WriteLine(JsonConvert.SerializeObject(cardPlayed, Formatting.Indented));
+
+            var tile = sut.WorldMap.Tile(origin);
+            Assert.IsNotNull(tile);
+            Console.WriteLine(JsonConvert.SerializeObject(tile, Formatting.Indented));
+        }
+
+        [TestMethod]
         public void NewGameStatisticsCannotRestartWhenStarted()
         {
             var sut = new GameStatistics(_factory, _engine);
