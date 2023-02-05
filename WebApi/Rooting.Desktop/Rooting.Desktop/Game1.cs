@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Runtime;
 using System.Text;
 using System.Linq;
 using System.Net.Http;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SharpDX.Direct3D9;
 using Microsoft.Win32.SafeHandles;
+using SharpDX.MediaFoundation;
 
 //using SharpDX.Direct3D11;
 
@@ -47,17 +49,17 @@ namespace Rooting.Desktop
         /// <summary>
         ///  My cards
         /// </summary>
-        private readonly Dictionary<string, Texture2D> cardTextures;
+        private Dictionary<string, Texture2D> cardTextures;
 
         private PlayingCard[] cardsInHand = Array.Empty<PlayingCard>();
         private TileBase[] tiles = Array.Empty<TileBase>();
 
-        private readonly Texture2D _defaultCard;
         private Texture2D _startScreen;
         private Texture2D _startButton;
         private Texture2D _mapExample;
+        //private Texture2D _cardTexture;
 
-        private Vector2 newCardPos = new Vector2(0, 0);
+        private Vector2 newCardPos = new Vector2(500, 500);
 
         public static MouseState mouseState;
 
@@ -68,7 +70,7 @@ namespace Rooting.Desktop
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.IsFullScreen = true;
+           // _graphics.IsFullScreen = true;
             _graphics.ApplyChanges();
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -85,6 +87,8 @@ namespace Rooting.Desktop
                 var players = _webApiClient.CurrentPlayersAsync().GetAwaiter().GetResult();
                 return players.ToArray();
             });
+
+            cardTextures = new Dictionary<string, Texture2D>();
         }
 
         private async Task ClaimPlayer(string myName, string myAvatar, FamilyTypes myFamily)
@@ -139,11 +143,18 @@ namespace Rooting.Desktop
             _startScreen = Content.Load<Texture2D>("Startscreen-01");
             _startButton = Content.Load<Texture2D>("Startbutton");
             _mapExample = Content.Load<Texture2D>("Map_example");
+            //_cardTexture = Content.Load<Texture2D>("cards/plants-assimilate");
             foreach (var card in _cardDefinitions.Value)
             {
                 try
                 {
-                    var cardTexture = Content.Load<Texture2D>(card.Art);
+                    var name = card.Art;
+                    var n  = name.LastIndexOf('.');
+                    if (n > 0)
+                    {
+                        name = name.Substring(0, n);
+                    }
+                    var cardTexture = Content.Load<Texture2D>($"cards/{name}");
                     if (cardTexture != null)
                         cardTextures.Add(card.Name, cardTexture);
                 }
@@ -290,7 +301,7 @@ namespace Rooting.Desktop
             _spriteBatch.Begin();
             _spriteBatch.Draw(renderTarget, renderTargetDestination, Color.White);
 
-            //_spriteBatch.Draw(_mapExample, new Vector2(500 , 500), Color.White);
+            // _spriteBatch.Draw(_mapExample, new Vector2(500 , 500), Color.White);
 
             //DRAW MAP
 
@@ -304,11 +315,11 @@ namespace Rooting.Desktop
             //      tileVector.X = 0
             //}
 
-            foreach (var card in cardsInHand)
-            {
-                _spriteBatch.Draw(cardTextures[card.Name], newCardPos, Color.White);
-                newCardPos.X += 256;
-            }
+            //foreach (var card in cardsInHand)
+            //{
+            //    _spriteBatch.Draw(cardTextures[card.Name], newCardPos, Color.White);
+            //    newCardPos.X += 256;
+            //}
 
             _spriteBatch.End();
         }
