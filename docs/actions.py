@@ -3,6 +3,7 @@
 
 ## HELPER FUNCTIONS:
 # Checks whether a settlement upgrade should be added to the tile in question. Returns boolean.
+# IMPLEMENTED: False
 def checkSettlementUpgrade(family: str):
     if "Tile contains settlement not family":
         "continue/skip"
@@ -16,6 +17,7 @@ def checkSettlementUpgrade(family: str):
 
 ## PLANT FUNCTIONS:
 # Colonization function for plants.
+# IMPLEMENTED: False
 def plantRuleColonization():
     checkSettlementUpgrade("Plant")
 
@@ -26,6 +28,7 @@ def plantRuleColonization():
 
 
 # Assimilate function for plants.
+# IMPLEMENTED: False
 def plantRuleAssimilate():
     if "Tile.AnimalScore + Tile.FungiScore > 0":
         "Tile.PlantScore += 6"
@@ -34,23 +37,27 @@ def plantRuleAssimilate():
 
 
 # Rooting function for plants.
+# IMPLEMENTED: False
 def plantRuleRooting():
     if "Tile.PlantScore > Max(Tile.AnimalScore, Tile.FungiScore)":
         "SubsurfaceTile.PlantScore += 10"
 
 
 # Decay function for plants.
+# IMPLEMENTED: False
 def plantRuleDecay():
     "Tile.AnimalScore = Tile.AnimalScore / 2"
     "Tile.FungiScore = Tile.FungiScore / 2"
 
 
 # Debilitating Vines function for plants.
+# IMPLEMENTED: False
 def plantRuleDebilitatingVines():
     "Place token on Tile, preventing first upcoming non-plant score increase."
 
 
 # Rampant Growth function for plants
+# IMPLEMENTED: False
 def plantRuleRampantGrowth():
     "value = Tile.PlantScore / 2"
     for i in "SurroundingTiles":
@@ -58,6 +65,7 @@ def plantRuleRampantGrowth():
 
 
 # Flowering Bloom function for plants
+# IMPLEMENTED: False
 def plantRuleFloweringBloom():
     for i in "SurroundingTiles":
         if "Tile.PlantScore > Max(Tile.AnimalScore, Tile.FungiScore)":
@@ -66,6 +74,7 @@ def plantRuleFloweringBloom():
 
 ## FUNGI FUNCTIONS:
 # Colonization function for fungi.
+# IMPLEMENTED: False
 def fungiRuleColonization():
     checkSettlementUpgrade("fungi")
     
