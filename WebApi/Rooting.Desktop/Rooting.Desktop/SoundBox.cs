@@ -35,9 +35,8 @@ namespace Rooting.Desktop
             SoundEffects.Add("select", contentManager.Load<SoundEffect>("audio\\23DB02TG_sfx_UISelect"));
             SoundEffects.Add("vocalCue", contentManager.Load<SoundEffect>("audio\\23DB02TG_sfx_ultimateVocalCue"));
 
-            Song = "plants";
+            Song = "allFamilies";
             Volume = 80;
-            MediaPlayer.Play(BackgroundMusic["plants"]);
         }
 
         private readonly ConcurrentQueue<string> sounds = new ConcurrentQueue<string>();
@@ -70,34 +69,37 @@ namespace Rooting.Desktop
 
         private async Task PlayBackgroundMusic()
         {
-            if (Song != song)
+            while (true)
             {
-                while (volume > 0)
+                if (Song != song)
                 {
-                    volume = (volume - 0.1f);
-                    if (volume < 0) { volume = 0; }
+                    while (volume > 0)
+                    {
+                        volume = (volume - 0.1f);
+                        if (volume < 0) { volume = 0; }
+                        MediaPlayer.Volume = volume;
+                        MediaPlayer.IsRepeating = true;
+                        await Task.Delay(10);
+                    }
+                    song = Song;
+                    MediaPlayer.Play(BackgroundMusic[song]);
+                    MediaPlayer.IsRepeating = true;
+                }
+
+                if (Volume < volume)
+                {
+                    volume = volume - 0.1f;
                     MediaPlayer.Volume = volume;
                     MediaPlayer.IsRepeating = true;
-                    await Task.Delay(10);
                 }
-                song = Song;
-                MediaPlayer.Play(BackgroundMusic[song]);
-                MediaPlayer.IsRepeating = true;
+                if (Volume > volume)
+                {
+                    volume = volume + 0.1f;
+                    MediaPlayer.Volume = volume;
+                    MediaPlayer.IsRepeating = true;
+                }
+                await Task.Delay(10);
             }
-
-            if (Volume < volume)
-            {
-                volume = volume - 0.1f;
-                MediaPlayer.Volume = volume;
-                MediaPlayer.IsRepeating = true;
-            }
-            if (Volume > volume)
-            {
-                volume = volume + 0.1f;
-                MediaPlayer.Volume = volume;
-                MediaPlayer.IsRepeating = true;
-            }
-            await Task.Delay(10);
         }
 
         private float volume;
