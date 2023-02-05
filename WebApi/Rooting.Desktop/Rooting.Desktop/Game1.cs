@@ -88,17 +88,31 @@ namespace Rooting.Desktop
             cardTextures = new Dictionary<string, Texture2D>();
         }
 
-        private async Task ClaimPlayer(string myName, string myAvatar, FamilyTypes myFamily)
+        private void ResetGame()
+        {
+            _webApiClient.ResetGameAsync().GetAwaiter().GetResult();
+        }
+
+        private void StartGame()
+        {
+            _webApiClient.StartGameAsync(CurrentPlayer.Uuid.ToString(), "true").GetAwaiter().GetResult();
+        }
+
+        private void ClaimPlayer(string myName, string myAvatar, FamilyTypes myFamily)
         {
             CurrentPlayer.Avatar = myAvatar;
             CurrentPlayer.FamilyType = myFamily;
             CurrentPlayer.Name = myName;
-            CurrentPlayer = await _webApiClient.ClaimFamilyAsync(CurrentPlayer);
+            var NewPlayer = _webApiClient.ClaimFamilyAsync(CurrentPlayer).GetAwaiter().GetResult();
+            if (NewPlayer.Uuid != Guid.Empty)
+            {
+                CurrentPlayer = NewPlayer;
+            }
         }
 
-        private async Task LoadCurrentHand()
+        private void LoadCurrentHand()
         {
-            var myCards = await _webApiClient.CardsToPlayAsync(CurrentPlayer.Uuid.ToString());
+            var myCards = _webApiClient.CardsToPlayAsync(CurrentPlayer.Uuid.ToString()).GetAwaiter().GetResult();
             cardsInHand = myCards.ToArray();
         }
 
@@ -119,7 +133,17 @@ namespace Rooting.Desktop
             _cards = _cardDefinitions.Value;
             _players = _currentPlayers.Value;
 
-            _ = ClaimPlayer("Danny", "", FamilyTypes._2);
+            ResetGame();
+
+            ClaimPlayer("Danny", "", FamilyTypes._1);
+
+            StartGame();
+
+            try
+            {
+                LoadCurrentHand();
+            }
+            catch { }
             //Window.TextInput += TextInputHandler;
 
             base.Initialize();
@@ -258,7 +282,6 @@ namespace Rooting.Desktop
 
         protected override void Draw(GameTime gameTime)
         {
-            base.Draw(gameTime);
 
             switch (_state)
             {
@@ -269,6 +292,8 @@ namespace Rooting.Desktop
                     DrawGameplay(gameTime);
                     break;
             }
+            base.Draw(gameTime);
+
         }
 
         private void DrawMainMenu(GameTime deltaTime)
@@ -312,12 +337,12 @@ namespace Rooting.Desktop
             //      tileVector.X = 0
             //}
 
-            //foreach (var card in cardsInHand)
-            //{
-            //    _spriteBatch.Draw(cardTextures[card.Name], newCardPos, Color.White);
-            //    newCardPos.X += 256;
-            //}
-
+            foreach (var card in cardsInHand)
+            //var card1 = cardsInHand[0];
+            //var card2 = cardsInHand[1];
+            {
+                _spriteBatch.Draw(cardTextures[card.Name], new Vector2(newCardPos.X + 256, newCardPos.Y), Color.White);
+            }
             _spriteBatch.End();
         }
     }
