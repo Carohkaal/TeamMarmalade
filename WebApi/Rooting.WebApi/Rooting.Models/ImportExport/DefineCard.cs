@@ -8,6 +8,7 @@
         public string Description { get; set; } = string.Empty;
         public string Art { get; set; } = string.Empty;
         public int PlayRange { get; set; }
+        public int Score { get; set; }
         public string[] Actions { get; set; } = Array.Empty<string>();
         public string[] Requirements { get; set; } = Array.Empty<string>();
     }

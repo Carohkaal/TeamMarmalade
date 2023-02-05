@@ -348,6 +348,7 @@ namespace Rooting.Rules
                 Description = data.Description,
                 Art = data.Art,
                 Tier = data.Tier,
+                Score = data.Score,
                 PlayRange = data.PlayRange,
                 FamilyTypes = type,
             };

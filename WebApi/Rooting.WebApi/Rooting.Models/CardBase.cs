@@ -7,6 +7,7 @@
         public int PlayRange { get; set; }
         public string Description { get; set; } = string.Empty;
         public string Art { get; set; } = string.Empty;
+        public int Score { get; set; }
         public FamilyTypes FamilyTypes { get; set; }
         public ICollection<ActionBase> Actions { get; set; } = Array.Empty<ActionBase>();
         public ICollection<Requirement> Requirements { get; set; } = Array.Empty<Requirement>();
@@ -17,6 +18,7 @@
             {
                 TotalCost = TotalCost,
                 Tier = Tier,
+                Score = Score,
                 PlayRange = PlayRange,
                 Description = Description,
                 Art = Art,
