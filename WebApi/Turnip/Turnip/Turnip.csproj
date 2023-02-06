@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="content\graphics\cards\cover.300x400.png" />
+    <None Remove="content\graphics\cards\empty.400x300.png" />
+    <None Remove="content\graphics\cards\plants-assimilate.300x400.png" />
+    <None Remove="content\graphics\cards\plants-colonization.300x400.png" />
+    <None Remove="content\graphics\cards\plants-debilitatingvines.300x400.png" />
+    <None Remove="content\graphics\cards\plants-decay.300x400.png" />
+    <None Remove="content\graphics\cards\plants-defence.300x400.png" />
+    <None Remove="content\graphics\cards\plants-empty.300x400.png" />
+    <None Remove="content\graphics\cards\plants-floweringbloom.300x400.png" />
+    <None Remove="content\graphics\cards\plants-rampantgrowth.300x400.png" />
+  </ItemGroup>
+ 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
+  </ItemGroup>
+ 
+  <ItemGroup>
+    <Resource Include="content\graphics\cards\cover.300x400.png" />
+    <Resource Include="content\graphics\cards\empty.400x300.png" />
+    <Resource Include="content\graphics\cards\plants-assimilate.300x400.png" />
+    <Resource Include="content\graphics\cards\plants-colonization.300x400.png" />
+    <Resource Include="content\graphics\cards\plants-debilitatingvines.300x400.png" />
+    <Resource Include="content\graphics\cards\plants-decay.300x400.png" />
+    <Resource Include="content\graphics\cards\plants-defence.300x400.png" />
+    <Resource Include="content\graphics\cards\plants-empty.300x400.png" />
+    <Resource Include="content\graphics\cards\plants-floweringbloom.300x400.png" />
+    <Resource Include="content\graphics\cards\plants-rampantgrowth.300x400.png" />
+  </ItemGroup>
+ 
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+ 
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>
