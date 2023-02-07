@@ -18,6 +18,23 @@
     <None Remove="content\graphics\cards\plants-empty.300x400.png" />
     <None Remove="content\graphics\cards\plants-floweringbloom.300x400.png" />
     <None Remove="content\graphics\cards\plants-rampantgrowth.300x400.png" />
+    <None Remove="content\graphics\tiles\actiontile.png" />
+    <None Remove="content\graphics\tiles\animaltilebasic.png" />
+    <None Remove="content\graphics\tiles\animaltilecity.png" />
+    <None Remove="content\graphics\tiles\animaltileroots.png" />
+    <None Remove="content\graphics\tiles\animaltilevillage.png" />
+    <None Remove="content\graphics\tiles\emptytile.png" />
+    <None Remove="content\graphics\tiles\emptytileunderground.png" />
+    <None Remove="content\graphics\tiles\fungitilebasic.png" />
+    <None Remove="content\graphics\tiles\fungitilecity.png" />
+    <None Remove="content\graphics\tiles\fungitileroots.png" />
+    <None Remove="content\graphics\tiles\fungitilevillage.png" />
+    <None Remove="content\graphics\tiles\planttilebasic.png" />
+    <None Remove="content\graphics\tiles\planttilecity.png" />
+    <None Remove="content\graphics\tiles\planttileroots.png" />
+    <None Remove="content\graphics\tiles\planttileroots2.png" />
+    <None Remove="content\graphics\tiles\planttilevillage.png" />
+    <None Remove="content\graphics\tiles\seatile.png" />
   </ItemGroup>
  
   <ItemGroup>
@@ -37,6 +54,23 @@
     <Resource Include="content\graphics\cards\plants-empty.300x400.png" />
     <Resource Include="content\graphics\cards\plants-floweringbloom.300x400.png" />
     <Resource Include="content\graphics\cards\plants-rampantgrowth.300x400.png" />
+    <Resource Include="content\graphics\tiles\actiontile.png" />
+    <Resource Include="content\graphics\tiles\animaltilebasic.png" />
+    <Resource Include="content\graphics\tiles\animaltilecity.png" />
+    <Resource Include="content\graphics\tiles\animaltileroots.png" />
+    <Resource Include="content\graphics\tiles\animaltilevillage.png" />
+    <Resource Include="content\graphics\tiles\emptytile.png" />
+    <Resource Include="content\graphics\tiles\emptytileunderground.png" />
+    <Resource Include="content\graphics\tiles\fungitilebasic.png" />
+    <Resource Include="content\graphics\tiles\fungitilecity.png" />
+    <Resource Include="content\graphics\tiles\fungitileroots.png" />
+    <Resource Include="content\graphics\tiles\fungitilevillage.png" />
+    <Resource Include="content\graphics\tiles\planttilebasic.png" />
+    <Resource Include="content\graphics\tiles\planttilecity.png" />
+    <Resource Include="content\graphics\tiles\planttileroots.png" />
+    <Resource Include="content\graphics\tiles\planttileroots2.png" />
+    <Resource Include="content\graphics\tiles\planttilevillage.png" />
+    <Resource Include="content\graphics\tiles\seatile.png" />
   </ItemGroup>
  
   <ItemGroup>

@@ -34,6 +34,8 @@ namespace Turnip
 
             btnQuit.Click += OnQuit;
             btnResign.Click += OnResign;
+
+            DataContext = new models.PageViewModel();
         }
 
         private void CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -53,9 +55,9 @@ namespace Turnip
         {
             logger.LogInformation("Resigning game.");
 
-            var imageUri = ResourceAccessor.Get("content/graphics/cards/cover.300x400.png");
+            var imageUri = ResourceAccessor.Get("/content/graphics/tiles/animaltilebasic.png");
             var bitmap = new BitmapImage(imageUri);
-            card4.Source = bitmap;
+            c0.Source = bitmap;
         }
 
         private void OnQuit(object sender, RoutedEventArgs e)
