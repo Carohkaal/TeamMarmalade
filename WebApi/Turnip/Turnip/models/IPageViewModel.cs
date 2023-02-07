@@ -1,4 +1,4 @@
-﻿namespace Turnip.models
+﻿namespace Turnip.Models
 {
     public interface IPageViewModel
     {

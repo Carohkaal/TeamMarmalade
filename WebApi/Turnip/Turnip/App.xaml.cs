@@ -9,6 +9,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using Turnip.pages;
+using Turnip.Services;
 
 namespace Turnip
 {
@@ -30,6 +32,7 @@ namespace Turnip
             logger = NullLogger<Application>.Instance;
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
+
             var options = new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true };
             container = serviceCollection.BuildServiceProvider(options);
         }
@@ -42,12 +45,17 @@ namespace Turnip
                     o.AddConsole();
                 }
             );
-            container.AddTransient<IMainWindow, MainWindow>();
+            container.AddScoped<GameView>();
+            container.AddScoped<Splash>();
+            container.AddScoped<Scores>();
+            container.AddScoped<StartGame>();
+            container.AddScoped<LeaderBoard>();
+            container.AddSingleton<INavigationService, PageNavigationService>();
         }
 
         private void OnStartup(object sender, StartupEventArgs e)
         {
-            var mainWindow = container.GetService<IMainWindow>();
+            var mainWindow = new MainWindow(container);
             if (mainWindow == null)
             {
                 logger.LogCritical("No main window");
@@ -55,7 +63,7 @@ namespace Turnip
             }
             else
             {
-                Application.Current.MainWindow = (Window)mainWindow;
+                Application.Current.MainWindow = mainWindow;
                 Application.Current.MainWindow.Show();
             }
         }

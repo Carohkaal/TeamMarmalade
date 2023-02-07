@@ -18,6 +18,7 @@
     <None Remove="content\graphics\cards\plants-empty.300x400.png" />
     <None Remove="content\graphics\cards\plants-floweringbloom.300x400.png" />
     <None Remove="content\graphics\cards\plants-rampantgrowth.300x400.png" />
+    <None Remove="content\graphics\Startscreen-01.png" />
     <None Remove="content\graphics\tiles\actiontile.png" />
     <None Remove="content\graphics\tiles\animaltilebasic.png" />
     <None Remove="content\graphics\tiles\animaltilecity.png" />
@@ -35,6 +36,10 @@
     <None Remove="content\graphics\tiles\planttileroots2.png" />
     <None Remove="content\graphics\tiles\planttilevillage.png" />
     <None Remove="content\graphics\tiles\seatile.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="content\graphics\startscreen-01.png" />
   </ItemGroup>
  
   <ItemGroup>
