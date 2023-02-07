@@ -13,11 +13,19 @@ namespace Turnip.Models
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected void Notify(string propertyName)
+        public void Notify(object source, string propertyName)
         {
             if (PropertyChanged != null)
-                PropertyChanged(this,
+                PropertyChanged(source,
                     new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void Notify(object source, string[] propertyNames)
+        {
+            if (PropertyChanged == null) return;
+            foreach (var property in propertyNames)
+                PropertyChanged(source,
+                    new PropertyChangedEventArgs(property));
         }
     }
 }

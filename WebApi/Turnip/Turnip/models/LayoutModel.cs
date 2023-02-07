@@ -11,4 +11,11 @@ namespace Turnip.Models
         public string ButtonBgColor { get; set; } = "#8F8F8F";
         public string ButtonBorderColor { get; set; } = nameof(Colors.Black);
     }
+
+    public enum Alliance
+    {
+        Plants,
+        Fungi,
+        Animaux
+    }
 }

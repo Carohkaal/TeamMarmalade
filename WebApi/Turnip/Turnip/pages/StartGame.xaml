@@ -7,7 +7,128 @@
       mc:Ignorable="d"
       d:DesignHeight="1080" d:DesignWidth="1920"
       Title="StartGame">
+    <Grid Name="MainGrid" Width="1920" Height="1080">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="600"></ColumnDefinition>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="600"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="300"></RowDefinition>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="200"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Border Grid.Column="1" Grid.Row="1" BorderThickness="5" CornerRadius="20" Height="580" Width="650">
+            <WrapPanel Orientation="Vertical" HorizontalAlignment="Center">
+                <StackPanel Orientation="Horizontal">
+                    <Label  Name="lblNickName" Margin="10" Width="150" FontSize="30px" Content="Nick name:" />
+                    <TextBox Name="inputNickName" Margin="10" Width="350" FontSize="30px" Text="{Binding NickName, Mode=TwoWay}" />
+                    <Button Name="btnRecycleNickname" Content="C" FontSize="20" Height="40" Width="40">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="20"></Setter>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Button Name="btnPlants"
+                    Margin="10, 20, 20, 20"
+                    Width="150" Height="150"
+                    Content="Plants"
+                    FontSize="30px"
+                    BorderThickness="8"
+                    BorderBrush="{Binding PlantBgColor, Mode=OneWay}"
+                    Background="GreenYellow">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="75"></Setter>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                    <Button Name="btnFunghi"
+                    Margin="10, 20, 20, 20"
+                    Width="150" Height="150"
+                    Content="Funghi"
+                    FontSize="30px"
+                    BorderThickness="8"
+                    BorderBrush="{Binding FunghiBgColor, Mode=OneWay}"
+                    Background="LightBlue">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="75"></Setter>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                    <Button Name="btnAnimaux"
+                    Margin="10, 20, 20, 20"
+                    Width="150" Height="150"
+                    Content="Animals"
+                    FontSize="30px"
+                    BorderThickness="8"
+                    BorderBrush="{Binding AnimauxBgColor, Mode=OneWay}"
+                    Background="Khaki">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="75"></Setter>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </StackPanel>
 
-    <Grid>
+                <StackPanel Orientation="Horizontal">
+                    <Label  Name="lblGameId" Margin="10" Width="150" FontSize="30px" Content="Game id:" />
+                    <TextBox Name="valueGameId" Background="LightGray" FontSize="30px" Margin="10" Width="350"
+                             Text="{Binding GameId, Mode=OneWay}" />
+                    <Button Name="btnRecycleGameId" Content="?" FontSize="20" Height="40" Width="40">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="20"></Setter>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Name="helpText" Background="LightGray" Margin="10" Width="500" Height="100"
+                               FontSize="20px"
+                               TextAlignment="Center"
+                               TextWrapping="WrapWithOverflow"
+                               Text="Send the game id to other players so they can join the same game." />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <Button Name="btnStart"
+                    Margin="10"
+                    Width="250" Height="100"
+                    Content="Start game"
+                    FontSize="30px"
+                    BorderThickness="4"
+                    BorderBrush="DarkGreen"
+                    Background="GreenYellow">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="20"></Setter>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+
+                    <Button Name="btnBack"
+                    Margin="10"
+                    Width="250" Height="100"
+                    Content="Quit game"
+                    FontSize="30px"
+                    BorderThickness="4"
+                    BorderBrush="DarkGreen"
+                    Background="LightBlue">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="20"></Setter>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </StackPanel>
+            </WrapPanel>
+        </Border>
     </Grid>
 </Page>
