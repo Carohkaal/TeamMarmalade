@@ -8,7 +8,6 @@
       d:DesignHeight="1080" d:DesignWidth="1920"
       DataContext="GameModel"
       Title="GameView">
-
     <Grid Name="Main">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20" />
