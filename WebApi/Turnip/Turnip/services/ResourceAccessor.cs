@@ -9,7 +9,6 @@ namespace Turnip.Services
 {
     internal static class ResourceAccessor
     {
-        private static readonly RandomNumberGenerator rSecure = RandomNumberGenerator.Create();
         private static readonly Random r = new Random();
 
         public static Uri Get(string resourcePath)
@@ -29,20 +28,14 @@ namespace Turnip.Services
             return new BitmapImage(imageUri);
         }
 
+        private static readonly char[] SafeCharacters = "ABCDEFGHJKLMNPRSTUVWXYZabcdefghklmnprstuvxyz23456789".ToCharArray();
+
         public static string GetRandomGameId()
         {
-            var n = 8;
             var code = new char[9];
-            var random = new byte[20];
-            rSecure.GetBytes(random);
-            foreach (var c in random)
+            for (var n = 0; n < code.Length; n++)
             {
-                if ((c > 'A' && c < 'Z') || (c > 'a' && c < 'z') || (c > '2' && c < '9'))
-                {
-                    code[n] = (char)c;
-                    n--;
-                }
-                if (n < 0) break;
+                code[n] = SafeCharacters[r.Next(SafeCharacters.Length)];
             }
             code[4] = '-';
             var gameId = new string(code);

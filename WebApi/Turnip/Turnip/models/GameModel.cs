@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Policy;
+using System.Windows.Media;
 using Turnip.Services;
 
 namespace Turnip.Models
@@ -36,7 +37,7 @@ namespace Turnip.Models
             {
                 if (alliance == value) return;
                 alliance = value;
-                Notify(this, new[] { nameof(Alliance), nameof(PlantBgColor), nameof(FungiBgColor), nameof(AnimauxBgColor) });
+                Notify(this, new[] { nameof(Alliance), nameof(PlantBgColor), nameof(FunghiBgColor), nameof(AnimauxBgColor) });
             }
         }
         private Alliance alliance;
@@ -64,9 +65,9 @@ namespace Turnip.Models
             }
         }
 
-        public string PlantBgColor => Alliance == Alliance.Plants ? "DarkGreen" : "Black";
-        public string FungiBgColor => Alliance == Alliance.Fungi ? "DarkBlue" : "Black";
-        public string AnimauxBgColor => Alliance == Alliance.Animaux ? "DarkKhaki" : "Black";
+        public string PlantBgColor => Alliance == Alliance.Plants ? nameof(Colors.DarkGreen) : nameof(Colors.Black);
+        public string FunghiBgColor => Alliance == Alliance.Fungi ? nameof(Colors.DarkBlue) : nameof(Colors.Black);
+        public string AnimauxBgColor => Alliance == Alliance.Animaux ? nameof(Colors.DarkKhaki) : nameof(Colors.Black);
 
         public string DebugInfo
         {
