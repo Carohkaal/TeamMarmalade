@@ -45,11 +45,11 @@ namespace Turnip
                     o.AddConsole();
                 }
             );
-            container.AddScoped<GameView>();
-            container.AddScoped<Splash>();
-            container.AddScoped<Scores>();
-            container.AddScoped<StartGame>();
-            container.AddScoped<LeaderBoard>();
+            container.AddSingleton<GameView>();
+            container.AddSingleton<Splash>();
+            container.AddSingleton<Scores>();
+            container.AddSingleton<StartGame>();
+            container.AddSingleton<LeaderBoard>();
             container.AddSingleton<INavigationService, PageNavigationService>();
         }
 

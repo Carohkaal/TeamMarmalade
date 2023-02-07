@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Windows.Media.Imaging;
 using Turnip.Models;
 
 namespace Turnip.Services
@@ -15,6 +16,12 @@ namespace Turnip.Services
             );
 
             return new Uri(uri);
+        }
+
+        public static BitmapImage GetImage(string resourcePath)
+        {
+            var imageUri = Get(resourcePath);
+            return new BitmapImage(imageUri);
         }
     }
 

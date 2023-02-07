@@ -69,7 +69,7 @@ namespace Turnip
                 return;
             }
 
-            var page = GetPage(pageInfo.Page);
+            var page = FindPageResource(pageInfo.Page);
             if (page != null)
             {
                 this.MainFrame.Content = page;
@@ -82,7 +82,7 @@ namespace Turnip
 
         public void SetPage(string name)
         {
-            var page = GetPage(name);
+            var page = FindPageResource(name);
             if (page != null)
             {
                 this.MainFrame.Content = page;
@@ -93,14 +93,14 @@ namespace Turnip
             }
         }
 
-        private Page? GetPage(string pageName) =>
+        private Page? FindPageResource(string pageName) =>
          (pageName.ToUpperInvariant()) switch
          {
-             "SPLASH" => container.GetService<Splash>(),
-             "LEADERBOARD" => container.GetService<LeaderBoard>(),
-             "SCORES" => container.GetService<Scores>(),
-             "STARTGAME" => container.GetService<StartGame>(),
-             "GAMEVIEW" => container.GetService<GameView>(),
+             "SPLASH" => container.GetRequiredService<Splash>(),
+             "LEADERBOARD" => container.GetRequiredService<LeaderBoard>(),
+             "SCORES" => container.GetRequiredService<Scores>(),
+             "STARTGAME" => container.GetRequiredService<StartGame>(),
+             "GAMEVIEW" => container.GetRequiredService<GameView>(),
              _ => null
          };
     }

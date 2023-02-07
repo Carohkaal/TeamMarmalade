@@ -64,8 +64,7 @@ namespace Turnip.pages
         {
             logger.LogInformation("Resigning game.");
 
-            var imageUri = ResourceAccessor.Get("/content/graphics/tiles/animaltilebasic.png");
-            var bitmap = new BitmapImage(imageUri);
+            var bitmap = ResourceAccessor.GetImage("/content/graphics/tiles/animaltilebasic.png");
         }
 
         private void OnQuit(object sender, RoutedEventArgs e)

@@ -8,19 +8,14 @@
       d:DesignHeight="1080" d:DesignWidth="1920"
       Title="Splash">
 
-    <Grid>
+    <Grid Name="MainGrid">
         <Grid.ColumnDefinitions>
-
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="400"></RowDefinition>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Grid.Background>
-            <ImageBrush ImageSource="/Content/Graphics/startscreen-01.png" />
-        </Grid.Background>
-
         <StackPanel Grid.Column="0" Grid.Row="1">
             <Button Name="btnStart"
                     Margin="10"

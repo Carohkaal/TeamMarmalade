@@ -33,6 +33,11 @@ namespace Turnip.pages
 
             btnExit.Click += OnQuit;
             btnStart.Click += OnStart;
+
+            MainGrid.Background = new ImageBrush
+            {
+                ImageSource = ResourceAccessor.GetImage("/content/graphics/startscreen01.png")
+            };
         }
 
         private void OnQuit(object sender, RoutedEventArgs e)
