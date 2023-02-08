@@ -63,22 +63,13 @@ namespace Turnip
 
         private void OnNavigate(object? sender, EventArgs e)
         {
-            var pageInfo = e as PageNavigationEventArgs;
-            if (pageInfo == null)
+            if (e is not PageNavigationEventArgs pageInfo)
             {
                 logger?.LogWarning("Invalid arguments for navigation.");
                 return;
             }
 
-            var page = FindPageResource(pageInfo.Page);
-            if (page != null)
-            {
-                this.MainFrame.Content = page;
-            }
-            else
-            {
-                logger?.LogError($"Could not set page with name: {pageInfo.Page}");
-            }
+            SetPage(pageInfo.Page);
         }
 
         public void SetPage(string name)
@@ -86,6 +77,7 @@ namespace Turnip
             var page = FindPageResource(name);
             if (page != null)
             {
+                (page as IInitializePage)?.InitPageView();
                 this.MainFrame.Content = page;
             }
             else

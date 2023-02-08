@@ -19,10 +19,15 @@ using Turnip.Services;
 
 namespace Turnip.pages
 {
+    public interface IInitializePage
+    {
+        void InitPageView();
+    }
+
     /// <summary>
     /// Interaction logic for StartGame.xaml
     /// </summary>
-    public partial class StartGame : Page
+    public partial class StartGame : Page, IInitializePage
     {
         private readonly ILogger<StartGame> logger;
         private readonly INavigationService navigationService;
@@ -43,6 +48,7 @@ namespace Turnip.pages
             Game.Alliance = Alliance.Plants;
 
             btnStart.Click += OnStart;
+            btnBack.Click += OnBack;
             btnPlants.Click += (object sender, RoutedEventArgs e) => { Game.Alliance = Alliance.Plants; };
             btnFunghi.Click += (object sender, RoutedEventArgs e) => { Game.Alliance = Alliance.Fungi; };
             btnAnimaux.Click += (object sender, RoutedEventArgs e) => { Game.Alliance = Alliance.Animaux; };
@@ -74,6 +80,18 @@ namespace Turnip.pages
         {
             logger.LogInformation("Game initialized, waiting for other players.");
             navigationService.NavigateTo(PageNames.GameView);
+        }
+
+        private void OnBack(object sender, RoutedEventArgs e)
+        {
+            logger.LogInformation("Game initialized, waiting for other players.");
+            navigationService.NavigateTo(PageNames.Splash);
+        }
+
+        public void InitPageView()
+        {
+            // Creating a new game id when this page is loaded
+            Game.ResetId();
         }
     }
 }

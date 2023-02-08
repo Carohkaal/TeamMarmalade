@@ -116,7 +116,7 @@
                     <Button Name="btnBack"
                     Margin="10"
                     Width="250" Height="100"
-                    Content="Quit game"
+                    Content="Back"
                     FontSize="30px"
                     BorderThickness="4"
                     BorderBrush="DarkGreen"
