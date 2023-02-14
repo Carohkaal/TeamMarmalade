@@ -330,14 +330,14 @@
                             HorizontalAlignment="Center" FontSize="20" Padding="20" Height="120" Margin="10" Text="1 player connected">
                         </TextBlock>
                         <StackPanel Orientation="Horizontal">
-                            <Button Name="btnStart"
-                    Margin="10"
-                    Width="250" Height="100"
-                    Content="Start game"
-                    FontSize="30px"
-                    BorderThickness="4"
-                    BorderBrush="DarkGreen"
-                    Background="GreenYellow">
+                            <Button Name="btnStart" Click="OnStart"
+                                    Margin="10"
+                                    Width="250" Height="100"
+                                    Content="Start game"
+                                    FontSize="30px"
+                                    BorderThickness="4"
+                                    BorderBrush="DarkGreen"
+                                    Background="GreenYellow">
                                 <Button.Resources>
                                     <Style TargetType="Border">
                                         <Setter Property="CornerRadius" Value="20"></Setter>
@@ -346,13 +346,14 @@
                             </Button>
 
                             <Button Name="btnBack"
-                    Margin="10"
-                    Width="250" Height="100"
-                    Content="Back"
-                    FontSize="30px"
-                    BorderThickness="4"
-                    BorderBrush="DarkGreen"
-                    Background="LightBlue">
+                                    Click="OnBack"
+                                    Margin="10"
+                                    Width="250" Height="100"
+                                    Content="Back"
+                                    FontSize="30px"
+                                    BorderThickness="4"
+                                    BorderBrush="DarkGreen"
+                                    Background="LightBlue">
                                 <Button.Resources>
                                     <Style TargetType="Border">
                                         <Setter Property="CornerRadius" Value="20"></Setter>

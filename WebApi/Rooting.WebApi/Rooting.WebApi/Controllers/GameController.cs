@@ -11,8 +11,8 @@ namespace Rooting.WebApi.Controllers
     public class GameController : MarmaladeController<GameController>
     {
         public GameController(
-            GameStatistics gameStatistics,
-            ILogger<GameController> logger) : base(gameStatistics, logger)
+            GameManagement gameManagement,
+            ILogger<GameController> logger) : base(gameManagement, logger)
         {
         }
 
@@ -21,7 +21,7 @@ namespace Rooting.WebApi.Controllers
         {
             return ExecuteForUser(playerId, (player) =>
             {
-                return gameStatistics.CurrentInHand(player.FamilyType);
+                return gameManagement.CurrentInHand(player.FamilyType);
             });
         }
 
@@ -33,7 +33,7 @@ namespace Rooting.WebApi.Controllers
                 return BadRequest($"Invalid tile id: {tileId}, GUID expected");
             }
 
-            var tile = gameStatistics.WorldMap.Tiles.FirstOrDefault(m => m.Uuid == tileReference);
+            var tile = gameManagement.WorldMap.Tiles.FirstOrDefault(m => m.Uuid == tileReference);
             if (tile == null)
             {
                 return BadRequest($"Invalid tile id: {tileId}, Not found");
@@ -41,7 +41,7 @@ namespace Rooting.WebApi.Controllers
 
             return ExecuteForUser(playerId, (player) =>
             {
-                return gameStatistics.PlayCard(player, playingCard, tile);
+                return gameManagement.PlayCard(player, playingCard, tile);
             });
         }
 
@@ -49,15 +49,18 @@ namespace Rooting.WebApi.Controllers
         /// Get information for the game properties
         /// </summary>
         /// <returns></returns>
-        [HttpGet("CardDefinitions")]
-        public CardModel[] CardDefinitions() => gameStatistics.Cards();
+        [HttpGet("CardDefinitions/{gameId}")]
+        public ActionResult<CardModel[]> CardDefinitions(string gameId)
+        {
+            gameManagement.Cards();
+        }
 
         /// <summary>
         /// Get the current game status and timing information for the next run.
         /// </summary>
         /// <returns></returns>
-        [HttpGet("GameStatus")]
-        public GameGeneration GameStatus() => gameStatistics.ReadGameStatus();
+        [HttpGet("GameStatus/{gameId}")]
+        public GameGeneration GameStatus() => gameManagement.ReadGameStatus();
 
         /// <summary>
         /// Start the game, return the time the current turn will end.
@@ -69,7 +72,7 @@ namespace Rooting.WebApi.Controllers
             _ = bool.TryParse(force, out var withForce);
             return ExecuteForUser(playerId, (player) =>
             {
-                return gameStatistics.StartGame(player, withForce);
+                return gameManagement.StartGame(player, withForce);
             });
         }
 
@@ -82,7 +85,7 @@ namespace Rooting.WebApi.Controllers
         {
             return ExecuteForUser(playerId, (player) =>
             {
-                return gameStatistics.GameStatusUserIntervention(player, gameStatus);
+                return gameManagement.GameStatusUserIntervention(player, gameStatus);
             });
         }
 
@@ -91,7 +94,7 @@ namespace Rooting.WebApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("GameLog")]
-        public GameLog OpenGameLog() => gameStatistics.OpenGameLog();
+        public GameLog OpenGameLog() => gameManagement.OpenGameLog();
 
         [HttpGet("World/{gameId}/{playerId}")]
         public ActionResult<WorldMap> WorldMap(string gameId, string playerId)
@@ -102,7 +105,7 @@ namespace Rooting.WebApi.Controllers
             }
             return ExecuteForUser(playerId, (player) =>
             {
-                return gameStatistics.GetWorldMap(player, gameReference);
+                return gameManagement.GetWorldMap(player, gameReference);
             });
         }
     }

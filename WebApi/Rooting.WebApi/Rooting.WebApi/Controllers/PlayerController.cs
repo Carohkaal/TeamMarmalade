@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Rooting.Models;
 using Rooting.Models.ResponseModels;
 using Rooting.Rules;
+using Rooting.Rules.Repository;
+using System.Numerics;
 
 namespace Rooting.WebApi.Controllers
 {
@@ -9,55 +12,78 @@ namespace Rooting.WebApi.Controllers
     [Route("[controller]")]
     public class PlayerController : MarmaladeController<PlayerController>
     {
-        public PlayerController(GameStatistics gameStatistics, ILogger<PlayerController> logger) : base(gameStatistics, logger)
+        private readonly IGameDataRepository repository;
+
+        public PlayerController(
+            IGameDataRepository repository,
+            GameStatistics gameStatistics,
+            ILogger<PlayerController> logger) : base(gameStatistics, logger)
         {
+            this.repository = repository;
         }
 
-        [HttpGet("CurrentPlayers")]
-        public IEnumerable<PlayerModel> Get()
+        [HttpGet("CurrentPlayers/{gameId}")]
+        public IEnumerable<PlayerModel> Get(string gameId)
         {
-            return gameStatistics.Players.Select(m => new PlayerModel
-            {
-                Uuid = m.Uuid,
-                Name = m.Name,
-                Avatar = m.Avatar,
-                FamilyType = m.FamilyType
-            });
+            return gameManagement
+                .Players
+                .Where(m => m.GameId == gameId)
+                .Select(m => new PlayerModel
+                {
+                    Uuid = m.Uuid,
+                    Name = m.Name,
+                    Avatar = m.Avatar,
+                    GameId = gameId,
+                    FamilyType = m.FamilyType
+                });
         }
 
+        /// <summary>
+        /// Use this method to claim a position is a given game. Each family
+        /// can be claimed by only one person per game. The game id is part of the PlayerModel.
+        /// The method return the player model with a valid Guid in the uuid property,
+        /// or a message and an empty Guid in the uuid if the claim failed.
+        /// The player model is registered in a repository.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns></returns>
         [HttpPost("ClaimFamily")]
         public PlayerModel ClaimPlayer(PlayerModel player)
         {
             var client = Request.HttpContext.Connection.RemotePort.ToString() ?? "0";
-            var id = GetPlayerId(player.FamilyType);
+            var id = repository.ClaimPlayerId(player.GameId, player.FamilyType);
             player.Uuid = id;
-            return gameStatistics.ClaimPlayer(player, client);
+            return gameManagement.ClaimPlayer(player, client);
         }
 
+        /// <summary>
+        /// Update the name and/or avatar for a player. The familty type cannot be modified.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="player"></param>
+        /// <returns>The current player model is returned</returns>
         [HttpPut("Player/{id}")]
         public ActionResult<PlayerModel> UpdatePlayer(string id, [FromBody] PlayerModel player)
         {
             return ExecuteForUser(id, (playerData) =>
             {
-                gameStatistics.UpdatePlayer(playerData.FamilyType, player.Name, player.Avatar);
+                gameManagement.UpdatePlayer(playerData.Uuid, player.Name, player.Avatar);
                 return player;
             });
         }
 
-        [HttpPost("ResetGame")]
-        public long ResetGame()
+        /// <summary>
+        /// Resign from a game. The family is the game is released and the player
+        /// data is removed from the repository.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("Resign/{playerId}")]
+        public ActionResult<PlayerModel?> ExitGame(string playerId)
         {
-            gameStatistics.ResetGame();
-            return gameStatistics.GameId;
+            return ExecuteForUser(playerId, (playerData) =>
+            {
+                return gameManagement.ResignPlayer(playerData.Uuid);
+            });
         }
-
-        private static Guid GetPlayerId(FamilyTypes type) => type switch
-        {
-            FamilyTypes.Plant => Constants.Player1,
-            FamilyTypes.Animal => Constants.Player2,
-            FamilyTypes.Fungi => Constants.Player3,
-            FamilyTypes.Any => Guid.Empty,
-            _ => Guid.Empty
-        };
     }
 }

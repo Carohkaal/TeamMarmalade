@@ -1,47 +1,54 @@
-﻿namespace Rooting.Models.ResponseModels
+﻿using System;
+
+namespace Rooting.Models.ResponseModels
 {
-    public enum GameStatus
+    public enum GamePlayState
     {
         Unknown = 0,
 
         /// <summary>
         /// Waiting for all player to be claimed
         /// </summary>
-        WaitingForPlayers = 1,
+        WaitingForPlayers,
 
         /// <summary>
         /// All players have been claimed, the game can start
         /// </summary>
-        GameCanStart = 2,
+        AllFamiliesRegistered,
+
+        /// <summary>
+        /// Game is waiting for first cycle.
+        /// </summary>
+        Starting,
 
         /// <summary>
         /// The game engine is between turns and is waiting for the timer tick.
         /// </summary>
-        GameWaitingForEndOfTurn = 3,
+        GameWaitingForEndOfTurn,
 
         /// <summary>
         /// Game is running the calculation for next move
         /// </summary>
-        GameCalculation = 4,
+        GameCalculation,
 
         /// <summary>
         /// The game is paused.
         /// </summary>
-        GamePaused = 5,
+        GamePaused,
 
         /// <summary>
         /// The game is stopped before a winner was determined.
         /// </summary>
-        GameStopped = 6,
+        GameStopped,
 
         /// <summary>
         /// No more available moves. the game is finished.
         /// </summary>
-        GameFinished = 7,
+        GameFinished,
 
         /// <summary>
         /// Issues at the server.
         /// </summary>
-        ServerTimeout = 99
+        ServerTimeou
     }
 }

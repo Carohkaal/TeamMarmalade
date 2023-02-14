@@ -25,11 +25,18 @@ namespace Turnip.pages
     public partial class GameView : Page
     {
         private readonly ILogger<MainWindow> logger;
+        private readonly INavigationService navigationService;
+        private readonly IRootingWebApiClient api;
 
-        public GameView(ILogger<MainWindow> logger)
+        public GameView(
+            ILogger<MainWindow> logger,
+            INavigationService navigationService,
+            IRootingWebApiClient api
+            )
         {
             this.logger = logger;
-
+            this.navigationService = navigationService;
+            this.api = api;
             InitializeComponent();
 
             btnQuit.Click += OnQuit;
@@ -111,6 +118,22 @@ namespace Turnip.pages
         private Image? FindTile(int row, int column)
         {
             return this.FindName($"R{row:D2}{column:D2}") as Image;
+        }
+
+        private void OnBack(object sender, RoutedEventArgs e)
+        {
+            api.ExitGameAsync(Game.GameId, Game.UserId);
+            navigationService.NavigateTo(PageNames.StartGame);
+        }
+
+        private void OnStart(object sender, RoutedEventArgs e)
+        {
+            if (api.StartGameAsync(Game.GameId, Game.UserId, true))
+            {
+            }
+            else
+            {
+            }
         }
     }
 }

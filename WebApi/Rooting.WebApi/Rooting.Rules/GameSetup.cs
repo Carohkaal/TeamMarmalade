@@ -23,7 +23,6 @@ namespace Rooting.Rules
         public Dictionary<string, Requirement> Requirements { get; } = new();
         public Dictionary<string, ActionBase> Actions { get; } = new();
         public Dictionary<string, CardBase> Cards { get; } = new();
-        public Dictionary<int, PlayingCard> Deck { get; } = new();
 
         public int MapColums()
         {

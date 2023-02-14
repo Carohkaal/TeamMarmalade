@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using System.Numerics;
 using System.Runtime.Serialization;
+using Rooting.Rules;
 
 namespace Rooting.Rules
 {
@@ -30,193 +31,61 @@ namespace Rooting.Rules
         }
     }
 
-    public interface IGameStatistics
+    public enum GameUpdateStatus
     {
-        long GameId { get; }
-        int Generation { get; set; }
-        GameStatus CurrentGameStatus { get; }
-        IEnumerable<Player> Players { get; }
-        DateTime AutoStartTime { get; }
-        DateTime NextTurn { get; }
-        WorldMap WorldMap { get; }
-        TimeSpan GameLoopTime { get; }
-
-        void SetNextTime(string shout);
-
-        PlayingCard[] CurrentInHand(FamilyTypes familyType);
-
-        PlayingCard[] NotPlayedCards(FamilyTypes familyType);
-
-        bool IsPlayerPlaying(FamilyTypes familyType);
-
-        void PlayerIsPlaying(FamilyTypes familyType, bool playingStatus);
-
-        void TakeCardInHand(FamilyTypes familyType, int cardId);
+        None,
+        NotFound,
+        NotModified,
+        Modified
     }
 
-    public class GameStatistics : IGameStatistics
+    public class GameState
     {
-        public TimeSpan GameLoopTime { get; private set; }
-        private long gameId = DateTime.Today.Ticks;
-        private readonly ConcurrentDictionary<FamilyTypes, Player> activePlayers = new();
-        private readonly IGameDefinitionFactory gameDefinitionFactory;
+        public GameState(
+            string gameKeyIndex,
+            Guid gameId,
+            int gameLoopTimeInSeconds,
+            int gameCode,
+            GameSetup gameSetup,
+            IGameEngine gameEngine)
+        {
+            GameKeyIndex = gameKeyIndex;
+            GameId = gameId;
+            GameCode = gameCode;
+            this.gameEngine = gameEngine;
+            this.gameSetup = gameSetup;
+            GameLoopTime = TimeSpan.FromSeconds(gameLoopTimeInSeconds);
+            AutoStartTime = DateTime.Now.AddMinutes(5);
+        }
+
+        private readonly DateTime AutoStartTime;
+        private readonly GameSetup gameSetup;
         private readonly IGameEngine gameEngine;
-        private GameSetup gameSetup;
-        public long GameId => gameId;
-        public int Generation { get; set; }
-        public GameStatus CurrentGameStatus { get; private set; }
-        public IEnumerable<Player> Players => activePlayers.Values;
-        public DateTime AutoStartTime { get; private set; }
-        public GameLog gameLog = new();
-        public DateTime NextTurn { get; private set; }
-        public WorldMap WorldMap { get; private set; } = new WorldMap();
-        public string Shout { get; private set; }
 
         private readonly Player System = new Player
         {
             Name = "System"
         };
 
-        public GameStatistics(
-            IGameDefinitionFactory gameDefinitionFactory,
-            IGameEngine gameEngine,
-            int loopTimeInSeconds = 15)
+        public WorldMap WorldMap { get; private set; } = new WorldMap();
+        public TimeSpan GameLoopTime { get; private set; } = TimeSpan.FromSeconds(60);
+        public int Generation { get; private set; }
+        public string GameKeyIndex { get; private set; } = string.Empty;
+        public Guid GameId { get; private set; } = Guid.Empty;
+        public int GameCode { get; }
+        public GamePlayState GamePlayState { get; private set; } = GamePlayState.WaitingForPlayers;
+        public GameLog gameLog = new();
+        public string Shout { get; private set; } = string.Empty;
+        public DateTime NextTurn { get; private set; }
+        public IEnumerable<Guid> Players { get; } = new List<Guid>();
+
+        public Dictionary<int, PlayingCard> Deck { get; } = new();
+
+        private void AddGameLog(Player player, LogLevel level, string message)
         {
-            if (loopTimeInSeconds < 1) loopTimeInSeconds = 1;
-            if (loopTimeInSeconds > 120) loopTimeInSeconds = 120;
-            GameLoopTime = TimeSpan.FromSeconds(loopTimeInSeconds);
-            this.gameDefinitionFactory = gameDefinitionFactory;
-            this.gameEngine = gameEngine;
-            gameSetup = new GameSetup();
-            Shout = "Initializing...";
-            ResetGame();
-        }
-
-        public PlayerModel ClaimPlayer(PlayerModel model, string remoteIp)
-        {
-            if (CurrentGameStatus != GameStatus.WaitingForPlayers)
-            {
-                return new PlayerModel
-                {
-                    Name = model.Name,
-                    FamilyType = model.FamilyType,
-                    Avatar = model.Avatar,
-                    Uuid = Guid.Empty,
-                    Message = "The server is not accepting new players."
-                };
-            }
-
-            var message = string.Empty;
-            var player = new Player
-            {
-                Uuid = model.Uuid,
-                Name = model.Name,
-                FamilyType = model.FamilyType,
-                Avatar = model.Avatar,
-                RemoteIp = remoteIp
-            };
-            if (activePlayers.Values.Any(m => m.RemoteIp == remoteIp))
-            {
-                return new PlayerModel
-                {
-                    Name = player.Name,
-                    FamilyType = player.FamilyType,
-                    Avatar = player.Avatar,
-                    Uuid = Guid.Empty,
-                    Message = "This client already claimed a player."
-                };
-            }
-            if (activePlayers.TryAdd(player.FamilyType, player))
-            {
-                message = $"Claimed {player.FamilyType}";
-                Shout = $"Player {player.Name} claimed {player.FamilyType}";
-            }
-            else
-            {
-                player.Uuid = Guid.Empty;
-                message = $"Someone already claimed {player.FamilyType}";
-            }
-            return new PlayerModel
-            {
-                Name = player.Name,
-                FamilyType = player.FamilyType,
-                Avatar = player.Avatar,
-                Message = message,
-                Uuid = player.Uuid
-            };
-        }
-
-        public void ResetGame()
-        {
-            gameId = DateTime.Now.Ticks;
-            Generation = 0;
-            gameLog.StartedAtTime = DateTime.MinValue;
-            CurrentGameStatus = GameStatus.WaitingForPlayers;
-            activePlayers.Clear();
-            AutoStartTime = DateTime.Now.AddMinutes(20);
-            gameLog = new();
-            gameSetup = gameDefinitionFactory.NewGame(1);
-            WorldMap.InitWorld(gameSetup.MapRows(), gameSetup.MapColums(), gameSetup.Tiles());
-        }
-
-        public Player? Player(Guid playerId)
-        {
-            return activePlayers.Values.FirstOrDefault(m => m.Uuid == playerId);
-        }
-
-        public void UpdatePlayer(FamilyTypes family, string name, string avatar)
-        {
-            var player = activePlayers[family];
-            player.Name = name;
-            player.Avatar = avatar;
-
-            activePlayers.TryUpdate(family, player, player);
-        }
-
-        public CardModel[] Cards() => gameSetup.Cards.Values.Select(m => new CardModel
-        {
-            Name = m.Name,
-            Art = m.Art,
-            Cost = m.TotalCost,
-            Description = m.Description,
-            Range = m.PlayRange,
-            Tier = m.Tier,
-            Actions = m.Actions.Select(m => m.Name).ToArray(),
-            Requirements = m.Requirements.Select(m => m.Name).ToArray()
-        }).ToArray();
-
-        public PlayingCard[] CurrentInHand(FamilyTypes familyType) => gameSetup
-            .Deck.Values
-            .Where(m => m.FamilyType == familyType && m.PlayingState == PlayingState.InHand)
-            .ToArray();
-
-        public PlayingCard[] NotPlayedCards(FamilyTypes familyType) => gameSetup
-            .Deck.Values
-            .Where(m => m.FamilyType == familyType && m.PlayingState == PlayingState.InStock)
-            .ToArray();
-
-        public bool IsPlayerPlaying(FamilyTypes familyType)
-        {
-            var p = Players.FirstOrDefault(m => m.FamilyType == familyType);
-            if (p == null) return false;
-            return p.IsPlaying;
-        }
-
-        public void PlayerIsPlaying(FamilyTypes familyType, bool playingStatus)
-        {
-            var p = Players.FirstOrDefault(m => m.FamilyType == familyType);
-            if (p == null) return;
-            p.IsPlaying = playingStatus;
-        }
-
-        public void TakeCardInHand(FamilyTypes familyType, int cardId)
-        {
-            var card = gameSetup.Deck[cardId];
-            if (card.FamilyType != familyType)
-            {
-                throw new ArgumentException();
-            }
-            card.PlayingState = PlayingState.InHand;
+            var entry = new LogEntry(player, level, message);
+            gameLog.Status = GamePlayState;
+            gameLog.LogEntries.Add(entry);
         }
 
         public GameGeneration ReadGameStatus()
@@ -229,39 +98,107 @@ namespace Rooting.Rules
             return new GameGeneration
             {
                 CurrentTime = DateTime.Now,
-                GameStatus = this.CurrentGameStatus.ToString(),
-                Id = gameId,
+                GameStatus = this.GamePlayState.ToString(),
+                Id = GameId,
                 Generation = Generation,
                 NextTurn = NextTurn,
                 Shout = Shout
             };
         }
 
+        public GameGeneration GameStatusUserIntervention(Player player, GamePlayState gameStatus)
+        {
+            if (gameStatus == GamePlayState.GamePaused
+                && (GamePlayState == GamePlayState.GameWaitingForEndOfTurn
+                || GamePlayState == GamePlayState.GameCalculation
+                || GamePlayState == GamePlayState.GamePaused))
+            {
+                GamePlayState = GamePlayState.GamePaused;
+                AddGameLog(player, LogLevel.Information, "Game paused");
+                Shout = "Game is paused.";
+                return new GameGeneration
+                {
+                    CurrentTime = DateTime.Now,
+                    GameStatus = GamePlayState.ToString(),
+                    NextTurn = NextTurn,
+                    Id = GameId,
+                    Shout = Shout
+                };
+            }
+
+            if (gameStatus == GamePlayState.GameWaitingForEndOfTurn && GamePlayState == GamePlayState.GamePaused)
+            {
+                GamePlayState = GamePlayState.GameWaitingForEndOfTurn;
+                NextTurn = DateTime.Now.Add(GameLoopTime);
+                AddGameLog(player, LogLevel.Information, "Game resumed");
+                Shout = "Game resuming.";
+                return new GameGeneration
+                {
+                    CurrentTime = DateTime.Now,
+                    GameStatus = GamePlayState.ToString(),
+                    NextTurn = NextTurn,
+                    Generation = Generation,
+                    Id = GameId,
+                    Shout = Shout
+                };
+            }
+
+            if (gameStatus == GamePlayState.GameStopped && GamePlayState != GamePlayState.GameCalculation)
+            {
+                GamePlayState = GamePlayState.GameStopped;
+                AddGameLog(player, LogLevel.Information, "Game stopped");
+                Shout = "Game stopped.";
+                return new GameGeneration
+                {
+                    CurrentTime = DateTime.Now,
+                    GameStatus = GamePlayState.ToString(),
+                    NextTurn = DateTime.MaxValue,
+                    Generation = Generation,
+                    Id = GameId,
+                    Shout = Shout
+                };
+            }
+            else
+            {
+                AddGameLog(player, LogLevel.Warning, $"Modify state from {GamePlayState} to {gameStatus} failed.");
+                Shout = "Game status canot be modified.";
+                return new GameGeneration
+                {
+                    CurrentTime = DateTime.Now,
+                    GameStatus = GamePlayState.ToString(),
+                    NextTurn = NextTurn,
+                    Generation = Generation,
+                    Id = GameId,
+                    Shout = Shout
+                };
+            }
+        }
+
         public GameGeneration StartGame(Player player, bool force)
         {
-            if (!Players.Any(p => p.Uuid == player.Uuid)) throw new GameException("Invalid player");
+            if (!Players.Contains(player.Uuid)) throw new GameException("Invalid player");
             if (Players.Count() == 0) throw new GameException("No players");
 
             Shout = "Waiting for players";
             var r = new GameGeneration
             {
-                GameStatus = CurrentGameStatus.ToString(),
+                GameStatus = GamePlayState.ToString(),
                 CurrentTime = DateTime.Now,
                 Id = GameId,
                 NextTurn = NextTurn,
                 Shout = Shout
             };
 
-            if (CurrentGameStatus == GameStatus.WaitingForPlayers)
+            if (GamePlayState == GamePlayState.WaitingForPlayers)
             {
                 if (force)
                 {
                     AddGameLog(player, LogLevel.Warning, $"{player.Name} started the game with {Players.Count()} players.");
-                    CurrentGameStatus = GameStatus.GameWaitingForEndOfTurn;
+                    GamePlayState = GamePlayState.GameWaitingForEndOfTurn;
                     gameLog.StartedAtTime = DateTime.Now;
                     NextTurn = DateTime.Now.Add(GameLoopTime);
                     Shout = "Game Started";
-                    r.GameStatus = GameStatus.GameWaitingForEndOfTurn.ToString();
+                    r.GameStatus = GamePlayState.ToString();
                     r.NextTurn = NextTurn;
                     r.Shout = Shout;
 
@@ -272,14 +209,14 @@ namespace Rooting.Rules
                     r.NextTurn = AutoStartTime;
                 }
             }
-            else if (CurrentGameStatus == GameStatus.GameCanStart)
+            else if (GamePlayState == GamePlayState.AllFamiliesRegistered)
             {
                 AddGameLog(player, LogLevel.Warning, $"{player.Name} started the game.");
-                CurrentGameStatus = GameStatus.GameWaitingForEndOfTurn;
+                GamePlayState = GamePlayState.GameWaitingForEndOfTurn;
                 gameLog.StartedAtTime = DateTime.Now;
                 NextTurn = DateTime.Now.Add(GameLoopTime);
                 Shout = "Game Started";
-                r.GameStatus = GameStatus.GameWaitingForEndOfTurn.ToString();
+                r.GameStatus = GamePlayState.GameWaitingForEndOfTurn.ToString();
                 r.NextTurn = NextTurn;
                 r.Shout = Shout;
 
@@ -295,79 +232,14 @@ namespace Rooting.Rules
             return r;
         }
 
-        private void AddGameLog(Player player, LogLevel level, string message)
+        public void TakeCardInHand(Player player, int cardId)
         {
-            var entry = new LogEntry(player, level, message);
-            gameLog.Status = CurrentGameStatus;
-            gameLog.LogEntries.Add(entry);
-        }
-
-        public GameGeneration GameStatusUserIntervention(Player player, GameStatus gameStatus)
-        {
-            if (gameStatus == GameStatus.GamePaused
-                && (CurrentGameStatus == GameStatus.GameWaitingForEndOfTurn
-                || CurrentGameStatus == GameStatus.GameCalculation
-                || CurrentGameStatus == GameStatus.GamePaused))
+            var card = Deck[cardId];
+            if (card.PlayerId != player.Uuid)
             {
-                CurrentGameStatus = GameStatus.GamePaused;
-                AddGameLog(player, LogLevel.Information, "Game paused");
-                Shout = "Game is paused.";
-                return new GameGeneration
-                {
-                    CurrentTime = DateTime.Now,
-                    GameStatus = CurrentGameStatus.ToString(),
-                    NextTurn = NextTurn,
-                    Id = gameId,
-                    Shout = Shout
-                };
+                throw new ArgumentException();
             }
-
-            if (gameStatus == GameStatus.GameWaitingForEndOfTurn && CurrentGameStatus == GameStatus.GamePaused)
-            {
-                CurrentGameStatus = GameStatus.GameWaitingForEndOfTurn;
-                NextTurn = DateTime.Now.Add(GameLoopTime);
-                AddGameLog(player, LogLevel.Information, "Game resumed");
-                Shout = "Game resuming.";
-                return new GameGeneration
-                {
-                    CurrentTime = DateTime.Now,
-                    GameStatus = CurrentGameStatus.ToString(),
-                    NextTurn = NextTurn,
-                    Generation = Generation,
-                    Id = gameId,
-                    Shout = Shout
-                };
-            }
-
-            if (gameStatus == GameStatus.GameStopped && CurrentGameStatus != GameStatus.GameCalculation)
-            {
-                CurrentGameStatus = GameStatus.GameStopped;
-                AddGameLog(player, LogLevel.Information, "Game stopped");
-                Shout = "Game stopped.";
-                return new GameGeneration
-                {
-                    CurrentTime = DateTime.Now,
-                    GameStatus = CurrentGameStatus.ToString(),
-                    NextTurn = DateTime.MaxValue,
-                    Generation = Generation,
-                    Id = gameId,
-                    Shout = Shout
-                };
-            }
-            else
-            {
-                AddGameLog(player, LogLevel.Warning, $"Modify state from {CurrentGameStatus} to {gameStatus} failed.");
-                Shout = "Game status canot be modified.";
-                return new GameGeneration
-                {
-                    CurrentTime = DateTime.Now,
-                    GameStatus = CurrentGameStatus.ToString(),
-                    NextTurn = NextTurn,
-                    Generation = Generation,
-                    Id = gameId,
-                    Shout = Shout
-                };
-            }
+            card.PlayingState = PlayingState.InHand;
         }
 
         public PlayingCard PlayCard(Player player, PlayingCard playingCard, IOrigin origin)
@@ -390,7 +262,7 @@ namespace Rooting.Rules
                 return playingCard;
             }
 
-            var card = CurrentInHand(familyType).FirstOrDefault(m => m.Id == playingCard.Id);
+            var card = CurrentInHand(player.Uuid).FirstOrDefault(m => m.Id == playingCard.Id);
             if (card == null)
             {
                 var result = (PlayingCard)playingCard.Clone();
@@ -433,6 +305,205 @@ namespace Rooting.Rules
             Shout = shout;
             Generation++;
             NextTurn = NextTurn.Add(GameLoopTime);
+        }
+
+        public CardModel[] Cards() => gameSetup.Cards.Values.Select(m => new CardModel
+        {
+            Name = m.Name,
+            Art = m.Art,
+            Cost = m.TotalCost,
+            Description = m.Description,
+            Range = m.PlayRange,
+            Tier = m.Tier,
+            Actions = m.Actions.Select(m => m.Name).ToArray(),
+            Requirements = m.Requirements.Select(m => m.Name).ToArray()
+        }).ToArray();
+
+        public PlayingCard[] CurrentInHand(Guid playerId) => Deck.Values
+            .Where(m => m.PlayerId == playerId && m.PlayingState == PlayingState.InHand)
+            .ToArray();
+
+        public PlayingCard[] NotPlayedCards(Guid playerId) => Deck.Values
+            .Where(m => m.PlayerId == playerId && m.PlayingState == PlayingState.InStock)
+            .ToArray();
+    }
+
+    public class GameManagement
+    {
+        private const int defaultCycleTime = 15;
+        private readonly ConcurrentDictionary<string, Guid> activeGameKeys = new();
+        private readonly ConcurrentDictionary<Guid, Player> activePlayers = new();
+
+        private readonly ConcurrentDictionary<string, Guid> activeGamesIdentifiers = new();
+        private readonly ConcurrentDictionary<Guid, GameState> activeGameState = new();
+
+        private readonly IGameDefinitionFactory gameDefinitionFactory;
+        private readonly IGameEngine gameEngine;
+
+        public IEnumerable<Player> Players => activePlayers.Values;
+
+        public GameManagement(
+            IGameDefinitionFactory gameDefinitionFactory,
+            IGameEngine gameEngine)
+        {
+            this.gameDefinitionFactory = gameDefinitionFactory;
+            this.gameEngine = gameEngine;
+        }
+
+        public PlayerModel ClaimPlayer(PlayerModel model, string remoteIp)
+        {
+            // Define player model
+            var player = new Player
+            {
+                Uuid = Guid.NewGuid(),
+                GameUuid = Guid.Empty,
+                Name = model.Name,
+                FamilyType = model.FamilyType,
+                Avatar = model.Avatar,
+                RemoteIp = remoteIp,
+            };
+
+            // Validate player not playing
+            if (activePlayers.Values.Any(m => m.RemoteIp == remoteIp))
+            {
+                return new PlayerModel
+                {
+                    Name = player.Name,
+                    FamilyType = player.FamilyType,
+                    Avatar = player.Avatar,
+                    Uuid = Guid.Empty,
+                    GameUuid = Guid.Empty,
+                    Message = "This client already claimed a player."
+                };
+            }
+
+            // Claim game Uuid
+            var gameUuid = activeGamesIdentifiers.GetOrAdd(player.GameId, Guid.NewGuid());
+            var gameState = activeGameState.GetOrAdd(gameUuid, new GameState(player.GameId, gameUuid, defaultCycleTime, 1, gameDefinitionFactory.NewGame(1), gameEngine));
+            if (gameState.GamePlayState != GamePlayState.WaitingForPlayers)
+            {
+                return new PlayerModel
+                {
+                    Name = player.Name,
+                    FamilyType = player.FamilyType,
+                    Avatar = player.Avatar,
+                    Uuid = Guid.Empty,
+                    GameUuid = gameUuid,
+                    Message = "The server is not accepting new players."
+                };
+            }
+
+            // Find if familty claimed for this game
+            var gameKeyIndex = player.GameKey();
+            if (activeGameKeys.TryGetValue(gameKeyIndex, out _))
+            {
+                return new PlayerModel
+                {
+                    Name = player.Name,
+                    FamilyType = player.FamilyType,
+                    Avatar = player.Avatar,
+                    Uuid = Guid.Empty,
+                    GameUuid = Guid.Empty,
+                    Message = $"Someone already claimed {player.FamilyType} for this game"
+                };
+            };
+
+            // Register familty on game
+            if (!activeGameKeys.TryAdd(gameKeyIndex, player.Uuid))
+            {
+                return new PlayerModel
+                {
+                    Name = player.Name,
+                    FamilyType = player.FamilyType,
+                    Avatar = player.Avatar,
+                    Uuid = Guid.Empty,
+                    GameUuid = Guid.Empty,
+                    Message = $"Someone already claimed {player.FamilyType}"
+                };
+            }
+
+            // Player claimed
+            return new PlayerModel
+            {
+                Name = player.Name,
+                FamilyType = player.FamilyType,
+                Avatar = player.Avatar,
+                Uuid = player.Uuid,
+                GameUuid = gameUuid
+            };
+        }
+
+        public GameUpdateStatus ResetGame(Guid gameId)
+        {
+            if (gameId == Guid.Empty) return GameUpdateStatus.NotFound;
+
+            var game = activeGameState[gameId];
+            if (game == null) return GameUpdateStatus.NotFound;
+
+            var newGame = new GameState(
+                game.GameKeyIndex,
+                game.GameId,
+                (int)game.GameLoopTime.TotalSeconds,
+                game.GameCode,
+                gameDefinitionFactory.NewGame(game.GameCode),
+                gameEngine
+            );
+            if (!activeGameState.TryUpdate(gameId, game, newGame)) return GameUpdateStatus.NotModified;
+            return GameUpdateStatus.Modified;
+        }
+
+        public Player? Player(Guid playerId)
+        {
+            return (activePlayers.TryGetValue(playerId, out var value))
+                ? value
+                : null;
+        }
+
+        public void UpdatePlayer(Guid playerId, string name, string avatar)
+        {
+            var player = Player(playerId); if (player == null) return;
+            player.Name = name;
+            player.Avatar = avatar;
+
+            activePlayers.TryUpdate(playerId, player, player);
+        }
+
+        public PlayerModel? ResignPlayer(Guid playerId)
+        {
+            var player = Player(playerId);
+            if (player == null) return null;
+            var newPlayer = (Player)player.Clone();
+            newPlayer.IsPlaying = false;
+            var playerInfo = activePlayers.TryUpdate(playerId, newPlayer, player)
+                ? newPlayer
+                : player;
+            return new PlayerModel
+            {
+                Avatar = playerInfo.Avatar,
+                FamilyType = playerInfo.FamilyType,
+                GameId = playerInfo.GameId,
+                Message = playerInfo.IsPlaying ? "Still playing" : "Resigned",
+                Name = playerInfo.Name,
+                Uuid = playerInfo.Uuid
+            };
+        }
+
+        public bool IsPlayerPlaying(Guid playerId)
+        {
+            var player = Player(playerId);
+            if (player == null) return false;
+
+            return player.IsPlaying;
+        }
+
+        public void PlayerIsPlaying(Guid playerId, bool playingStatus)
+        {
+            var player = Player(playerId);
+            if (player == null) return;
+
+            var newStatus = (Player)player.Clone();
+            player.IsPlaying = playingStatus;
+            activePlayers.TryUpdate(playerId, newStatus, player);
         }
     }
 }

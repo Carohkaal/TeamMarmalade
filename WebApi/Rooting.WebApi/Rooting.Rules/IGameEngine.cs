@@ -4,7 +4,7 @@ namespace Rooting.Rules
 {
     public interface IGameEngine
     {
-        void ExecuteLoop(IGameStatistics gameStatistics);
+        void ExecuteLoop(GameState gameStatistics);
 
         void ApplyRule(string ruleName, IOrigin origin, WorldMap map);
 

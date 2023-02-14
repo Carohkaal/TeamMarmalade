@@ -6,11 +6,11 @@ namespace Rooting.WebApi.Controllers
 {
     public abstract class MarmaladeController : ControllerBase
     {
-        protected readonly GameStatistics gameStatistics;
+        protected readonly GameManagement gameManagement;
 
-        public MarmaladeController(GameStatistics gameStatistics)
+        public MarmaladeController(GameManagement gameStatistics)
         {
-            this.gameStatistics = gameStatistics;
+            this.gameManagement = gameStatistics;
         }
     }
 
@@ -18,7 +18,7 @@ namespace Rooting.WebApi.Controllers
     {
         protected readonly ILogger<TController> logger;
 
-        public MarmaladeController(GameStatistics gameStatistics, ILogger<TController> logger) : base(gameStatistics)
+        public MarmaladeController(GameManagement gameStatistics, ILogger<TController> logger) : base(gameStatistics)
         {
             this.logger = logger;
         }
@@ -32,7 +32,7 @@ namespace Rooting.WebApi.Controllers
                 return BadRequest("id is not a valid player id");
             }
 
-            var playerData = gameStatistics.Player(playerUuId);
+            var playerData = gameManagement.Player(playerUuId);
             if (playerData == null)
             {
                 return NotFound();
